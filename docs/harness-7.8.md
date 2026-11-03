@@ -1,17 +1,17 @@
 # VeriMission Core 7.8
 
-O V7.8 é o núcleo portátil para projetos que atravessam muitas conversas ou sessões. Ele congela uma missão com objetivo, escopo, exclusões, critérios executáveis e orçamento; registra ciclos de investigação; executa checks; guarda hashes de artefatos; permite claims e retratações; impede fechamento verificado sem evidência atual; e oferece retomada, exportação e backup.
+V7.8 is the portable core for projects that span many conversations or sessions. It freezes a mission with an objective, scope, exclusions, executable criteria, and budget; records investigation cycles; runs checks; stores artifact hashes; supports claims and retractions; prevents verified closure without current evidence; and provides resumption, export, and backup.
 
-Seus controles centrais são: recuperar antes de repetir, revisar evidências anteriores, planejar a hipótese e o teste, executar dentro do escopo, verificar por critérios e fechar com um próximo passo. Teto de alegação, denominadores de cobertura e auditoria de honestidade limitam o que pode ser concluído. O executor ajuda com proveniência, mas não detecta automaticamente mentiras nem avalia a suficiência semântica de um teste.
+Its central loop is: recover before repeating, review prior evidence, plan the hypothesis and test, work within scope, verify against criteria, and close with a concrete next step. Claim ceilings, coverage denominators, and honesty audits limit permitted conclusions. The executor improves provenance but cannot automatically detect dishonesty or judge the semantic sufficiency of a test.
 
-## Escolha esta versão quando
+## Choose this version when
 
-- o projeto é longo, mas o grafo de tarefas ainda pode ser gerenciado fora do executor;
-- você quer um núcleo menor e estável;
-- precisa de revisão explícita da missão, retratações e antirretrabalho;
-- não precisa das cápsulas/escopo do V7.9 ou da coordenação avançada do V8.0.
+- the project is long, but its task graph can remain outside the executor;
+- you want a smaller, stable core;
+- you need explicit mission revision, retractions, and anti-rework controls;
+- you do not need V7.9 capsules and evidence scope or V8.0 coordination.
 
-## Comandos
+## Commands
 
 ```text
 init migrate-sqlite start claim retract step-back consolidate
@@ -19,42 +19,19 @@ preview-mission revise-mission review check close interrupt
 resume validate metrics export backup
 ```
 
-Fluxo mínimo:
-
 ```powershell
 $h = '.\harnesses\v7.8\scripts\harness.py'
-$p = 'C:\projeto'
+$p = 'C:\project'
 python -B $h --project $p init --input "$p\mission.json"
-python -B $h --project $p review --topic 'componente'
+python -B $h --project $p review --topic 'component'
 python -B $h --project $p start --input "$p\plan.json"
 python -B $h --project $p check --cycle 1 --criterion C1
-python -B $h --project $p close --cycle 1 --outcome verified --next 'Próximo passo'
+python -B $h --project $p close --cycle 1 --outcome verified --next 'Concrete next step'
 python -B $h --project $p validate
 ```
 
-Para um projeto criado por uma publicação anterior, preserve `.harness/state.sqlite` e execute `python -B $h --project $p migrate-sqlite` uma única vez. Valide em seguida; o YAML passa a ser canônico e o SQLite permanece somente como origem legada preservada.
+For a project created by an earlier SQLite publication, preserve `.harness/state.sqlite` and run `migrate-sqlite` once. Validate immediately afterwards. YAML becomes canonical and SQLite remains preserved only as the legacy source.
 
-Retomada e diagnóstico:
+Mission revision is exceptional. Run `preview-mission` first. `revise-mission` requires an explicit user request or authorisation and personal interactive confirmation; never automate that confirmation.
 
-```powershell
-python -B $h --project $p resume
-python -B $h --project $p validate
-python -B $h --project $p metrics
-python -B $h --project $p export --output "$p\REPORT.md"
-python -B $h --project $p backup --output "$p\backups\state.yaml"
-```
-
-Correções e conhecimento:
-
-```powershell
-python -B $h --project $p claim --input "$p\claim.json"
-python -B $h --project $p retract --input "$p\retraction.json"
-python -B $h --project $p step-back --input "$p\step-back.json"
-python -B $h --project $p consolidate --input "$p\consolidation.json"
-```
-
-A revisão de missão é excepcional. Primeiro use `preview-mission`; `revise-mission` exige pedido/autorização explícita do usuário e confirmação interativa pessoal. Não automatize essa confirmação.
-
-## Skill correspondente
-
-Use [skills/skill-harness-v7-8](../skills/skill-harness-v7-8/) para dar ao agente as regras e o executor juntos. A skill pode ser chamada como `skill-harness-v7-8`.
+Use [skills/skill-harness-v7-8](../skills/skill-harness-v7-8/) and invoke `skill-harness-v7-8`.

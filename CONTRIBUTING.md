@@ -1,12 +1,12 @@
 # Contributing
 
-Contribuições devem preservar o objetivo de projetos longos verificáveis e as fronteiras de autorização.
+Contributions must preserve the goal of verifiable long-running projects and the project's authorisation boundaries.
 
-1. Abra uma issue descrevendo o problema observável e a versão afetada.
-2. Faça mudanças pequenas e mantenha compatibilidade explícita entre versões.
-3. Não enfraqueça checks, hashes, confirmação humana ou histórico para facilitar um teste.
-4. Adicione testes que possam falhar diante do problema real.
-5. Execute os testes da versão alterada e documente limitações.
-6. Não inclua dados privados, firmware ou logs de clientes.
+1. Open an issue describing the observable problem and affected version.
+2. Make small changes and keep compatibility between versions explicit.
+3. Do not weaken checks, hashes, human confirmation, or history merely to make a test pass.
+4. Add tests that fail when the real problem is present.
+5. Run the suite for the changed version and document limitations.
+6. Do not include private data, firmware, or customer logs.
 
-Use commits descritivos (`feat:`, `fix:`, `docs:`, `test:`). Uma alteração observável incompatível deve criar uma versão nova em vez de reescrever silenciosamente uma versão publicada.
+Use descriptive commits such as `feat:`, `fix:`, `docs:`, and `test:`. An incompatible observable change should create a new version rather than silently rewriting a published one.

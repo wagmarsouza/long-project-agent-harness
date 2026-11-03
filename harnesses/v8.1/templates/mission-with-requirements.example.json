@@ -1,16 +1,16 @@
 {
-  "objective": "SUBSTITUA pelo objetivo do novo projeto",
+  "objective": "REPLACE with the new project objective",
   "mode": "light",
   "in_scope": [
-    "SUBSTITUA pelo que pode ser alterado"
+    "REPLACE with what may be changed"
   ],
   "out_of_scope": [
-    "SUBSTITUA pelas exclusões"
+    "REPLACE with the exclusions"
   ],
   "criteria": [
     {
       "id": "C1",
-      "description": "SUBSTITUA por uma condição observável de sucesso",
+      "description": "REPLACE with an observable success condition",
       "argv": [
         "<PYTHON_EXE>",
         "tests/acceptance.py"
@@ -32,7 +32,7 @@
   "requirements": [
     {
       "id": "R1",
-      "description": "PREENCHA requisito observável aprovado",
+      "description": "ENTER an approved observable requirement",
       "criteria": [
         "C1"
       ]

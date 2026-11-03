@@ -1,122 +1,47 @@
-HARNESS V8.0 — COORDENAÇÃO PORTÁTIL COM PROVA, CONTINUIDADE E AUTORIZAÇÃO
+VERIMISSION CONTROL 8.0 — OPERATOR REFERENCE
 
-Esta é uma evolução separada do V7.9. O V7.9 original e a instalação atual do
-OpenCode foram preservados. A skill é skill-harness-v8_0; seu identificador técnico
-é skill-harness-v8-0, compatível com nomes de skills. Nenhuma ativação global foi
-instalada por criar este pacote.
+V8.0 includes the full V7.9 continuity contract and adds tasks, aliases, search, context packs, diagnostics, traceability, mission acceptance, and governed operations. Consult `v80-controls.md` before first use. Earlier references remain applicable unless this version explicitly adapts them.
 
-O NÚCLEO CONTINUA
-Anti-inflação: atividade, arquivos, vínculos e estimativas não comprovam progresso.
-Honestidade: afirmação limitada à evidência, hipóteses separadas de fatos, falhas
-preservadas, denominadores explícitos e auditoria de honestidade nas conclusões.
-Antirretrabalho: recuperar histórico, buscar aliases, respeitar gates, limites,
-estagnação e necessidade de abordagem técnica diferente após falhas repetidas.
+COMMAND GROUPS
 
-Nenhum mecanismo é um detector infalível de mentiras. O executor confere provas,
-proveniência e invariantes instrumentados. Qualidade do teste, semântica da
-alegação, ambiente externo e ferramentas fora de sua cobertura exigem revisão.
+Core and evidence:
+```text
+init migrate-sqlite review start check close interrupt resume validate
+claim retract claim-reverify step-back consolidate
+evidence-scope evidence-scopes prepare-mission capsule capsule-status
+metrics export backup preview-mission revise-mission
+```
 
-ARQUIVOS NECESSÁRIOS
-  harness_v8.0.txt: manual de entrada.
-  harness_v8.0/CORE.md: núcleo e regras essenciais.
-  harness_v8.0/scripts/: preservar TODA a pasta, incluindo harness.py,
-    v80_core.py e v80_operations.py. Não copiar somente harness.py.
-  harness_v8.0/templates/: entradas para copiar e preencher no projeto.
-  harness_v8.0/references/: protocolos e documentação para consulta seletiva.
-  tests/, examples/ e validation/: diagnóstico e evidências locais da entrega.
+Tasks and recovery:
+```text
+task-add task-claim task-complete task-reopen tasks task-ready
+alias-add search context-pack view-status diagnostic-add
+trace traceability accept-mission capabilities usage-report
+```
 
-Requer Python 3.11+ e PyYAML 6.x. FTS5 é usado se disponível,
-com fallback textual explícito. Não há dependência obrigatória de SDK, chave de
-IA, banco externo, daemon, MCP, subagentes ou troca automática de modelo.
+Governed operations:
+```text
+operation-prepare operation-status operation-approve operation-run operation-reconcile
+```
 
-FONTE CANÔNICA E COMPATIBILIDADE
-  <projeto>/.harness/state.yaml continua sendo a única fonte de estado.
-  O esquema de estado permanece 1. Bases YAML V7.8 e V7.9 são lidas sem reset.
-  Um state.sqlite legado exige migrate-sqlite explícito; o original é preservado.
-  Relatórios, índices de busca, cápsulas e contextos são derivados. Nunca importar
-  essas visões como missão, memória definitiva ou autorização.
-  Após adotar V8.0, não usar o executor antigo para contornar os novos controles.
-  Não há escritores paralelos: um ciclo ativo e uma tarefa reivindicada por vez.
+TASKS
 
-PREPARAÇÃO NO POWERSHELL — SUBSTITUIR OS CAMINHOS
-  $H = 'C:\caminho\harness_v8.0\scripts\harness.py'
-  $P = 'C:\caminho\meu-projeto'
-  python "$H" --help
-  python "$H" --project "$P" capabilities
+Record real dependencies and existing criteria. `task-ready` is a query, not a dispatcher. Claim a task before planning its cycle. Complete it only with current evidence; reopen it when relevant evidence is invalidated. Task completion is not mission completion.
 
-NOVO PROJETO
-  Preencher mission-with-requirements.example.json com critérios reais, comandos
-  revisados, artefatos, escopo e limites. prepare-mission pode organizar propostas,
-  mas não inicializa nem autoriza a missão.
-  python "$H" --project "$P" prepare-mission --input request.json --output DRAFT.json
-  python "$H" --project "$P" init --input mission.json
+RECOVERY
 
-PROJETO EXISTENTE
-  Se existir somente .harness/state.sqlite:
-  python "$H" --project "$P" migrate-sqlite
-  python "$H" --project "$P" resume
-  python "$H" --project "$P" validate
-  Não executar init para resetar. Se a missão mudar, usar o procedimento humano
-  preview-mission/revise-mission herdado, com backup, histórico e confirmação.
+Search by stable identifiers, topics, source terms, and aliases before repeating work. Search indexes and context packs are derived. Check their source status and inspect original records. Never transform historical text into current instructions or authorisation.
 
-TAREFAS E CICLOS
-  python "$H" --project "$P" task-add --input task.json
-  python "$H" --project "$P" task-ready
-  python "$H" --project "$P" task-claim --input owner.json
-  python "$H" --project "$P" context-pack --task T1 --output CONTEXT.json
-  python "$H" --project "$P" view-status --input CONTEXT.json
-  python "$H" --project "$P" review --topic 'componente'
-  Preencher plan.json com task=T1, recibo atual, critérios e abordagem real.
-  python "$H" --project "$P" start --input plan.json
-  python "$H" --project "$P" check --cycle 1 --criterion C1
-  python "$H" --project "$P" evidence-scope --input scope.json
-  python "$H" --project "$P" close --cycle 1 --outcome verified --next 'Próximo passo real'
-  python "$H" --project "$P" task-complete --input complete.json
+TRACEABILITY AND ACCEPTANCE
 
-BUSCA, DIAGNÓSTICO E FECHAMENTO
-  python "$H" --project "$P" alias-add --input alias.json
-  python "$H" --project "$P" search --query 'login' --limit 20
-  python "$H" --project "$P" diagnostic-add --input diagnostic.json
-  python "$H" --project "$P" traceability
-  python "$H" --project "$P" accept-mission --output ACCEPTANCE.json
+Use traceability to find requirements without criteria, checks, or artifacts. Recorded links improve auditability but do not prove that a test is semantically sufficient. `accept-mission` assesses the current declared contract and current evidence; it does not guarantee correctness beyond that contract.
 
-ADAPTADOR OPCIONAL
-  operation-prepare -> operation-status -> confirmação pessoal operation-approve
-  -> operation-run -> resultado ou checkpoint indeterminado.
-  Sem confirmação não executa. Aprovação é de uso único e não revisa missão.
-  Em caso de resultado desconhecido, não repetir. Conferir processo/estado real,
-  operation-reconcile com prova e depois executar um check novo.
+GOVERNED OPERATIONS
 
-COBERTURA DE INTEGRAÇÃO
-  O adaptador governa apenas comandos de critérios encaminhados por ele.
-  Não intercepta automaticamente OpenCode, Codex, navegador, MCP ou SDKs.
-  trace e capabilities identificam a cobertura e as limitações. Telemetria é
-  local; não há exportação externa automática nem armazenamento de saídas brutas.
-  Os rótulos de risco/modelo/custo são declarações com proveniência, não fatos
-  autenticados por preencher campos. Nunca persistir segredos nas entradas.
+Prepare exact commands and effects. Approval, when required, is specific and one-use. Unknown or interrupted outcomes require reconciliation rather than replay. The adapter covers only work submitted through it and does not intercept external tools. Approval never changes the mission.
 
-CÓDIGOS DE SAÍDA
-  0: operação/consulta realizada; ler status e limitações no JSON.
-  2: entrada, estado, autorização ou transição recusados.
-  3: check sem aprovação, avaliação final recusada ou visão desatualizada.
-  ok:true não significa missão concluída: conferir passed/accepted/fresh.
+NON-NEGOTIABLE CONTROLS
 
-REFERÊNCIAS
-  references/v80-controls.md: procedimentos novos, limites e cobertura real.
-  references/v79-features.md: escopo de evidência, cápsula e preparação.
-  references/harness_v7.9.txt: contrato completo herdado, gates e revisão humana.
-  references/harness_v7.7.txt: regras históricas e protocolos especializados.
-  Em conflitos, usuário/instruções superiores e missão autorizada prevalecem;
-  adaptações explícitas V8.0 prevalecem sobre detalhes de distribuição antigos.
+Preserve the explicit mission, interactive revision, claim ceilings, coverage denominators, evidence freshness, failures, retractions, and one canonical YAML state. Do not confuse tasks, search relevance, graph links, reports, or activity counts with verified progress.
 
-MÓDULOS POSTERIORES
-  Orquestração multiação por agentes, TDD automático, planejador por IA,
-  paralelismo e seleção dinâmica de ferramentas nativas continuam opcionais
-  e não são anunciados como implementados nesta versão. Não são requisitos para
-  o núcleo funcionar em projetos longos.
-
-VALIDAÇÃO
-  python -m unittest discover -s 'CAMINHO/harness_v8.0/tests' -v
-  examples/run_pilot.py executa um projeto local isolado com provas e recusas.
-  validation/verification.json registra testes, piloto, preservação das versões
-  anteriores e limitações. Isso não comprova confiabilidade universal em produção.
+V8.0 does not include V8.1 graph projections, pull-request reports, or explicit agent-run imports.

@@ -1,14 +1,14 @@
-# Migração do estado SQLite para YAML
+# Migrating state from SQLite to YAML
 
-As publicações corrigidas do VeriMission Core 7.8, Continuity 7.9 e Control 8.0 usam `.harness/state.yaml` como única fonte canônica. O documento contém o estado completo, o histórico de auditoria, a versão do formato e um checksum SHA-256 do conteúdo normalizado.
+Corrected VeriMission Core 7.8, Continuity 7.9, and Control 8.x publications use `.harness/state.yaml` as the sole canonical source. The document contains complete state, audit history, format version, and a SHA-256 checksum over normalised content.
 
-## Pré-requisitos
+## Prerequisite
 
 ```powershell
 python -m pip install "PyYAML>=6,<7"
 ```
 
-Não execute `init` se `.harness/state.sqlite` já existir. Use o executor da mesma versão que pretende adotar:
+Do not run `init` when `.harness/state.sqlite` already exists. Use the executor version you intend to adopt:
 
 ```powershell
 python -B $h --project $p migrate-sqlite
@@ -16,19 +16,19 @@ python -B $h --project $p validate
 python -B $h --project $p resume
 ```
 
-## Garantias da migração
+## Migration guarantees
 
-- o SQLite é aberto somente para leitura e precisa passar em `PRAGMA integrity_check`;
-- o estado e todas as linhas de auditoria são importados preservando IDs, revisões e conteúdo;
-- o YAML é gravado em arquivo temporário, sincronizado e substituído atomicamente;
-- `state.sqlite` não é apagado, renomeado nem alterado;
-- o YAML registra nome, hash SHA-256, revisão e quantidade de eventos da origem;
-- um YAML existente nunca é sobrescrito por `migrate-sqlite`.
+- SQLite is opened read-only and must pass `PRAGMA integrity_check`.
+- State and all audit rows are imported with identifiers, revisions, and content preserved.
+- YAML is written to a temporary file, synchronised, and atomically replaced.
+- `state.sqlite` is not deleted, renamed, or modified.
+- YAML records the source name, SHA-256, revision, and event count.
+- `migrate-sqlite` never overwrites an existing YAML state.
 
-Depois da migração, novas revisões existem somente no YAML. Portanto, o SQLite preservado é uma origem histórica, não um backup atualizado. Voltar a um executor antigo descartaria do ponto de vista desse executor todo trabalho posterior à migração.
+After migration, new revisions exist only in YAML. The preserved SQLite file is historical provenance, not a current backup. Returning to an old executor would hide all work performed after migration from that executor's point of view.
 
-## Integridade e concorrência
+## Integrity and concurrency
 
-Cada leitura verifica formato, schema, estrutura da auditoria e checksum. Um lock de arquivo exclusivo serializa leitores e escritores entre processos. As mutações usam substituição atômica; uma falha antes de `os.replace` mantém o último documento confirmado. O checksum detecta alteração acidental, mas não é assinatura, autenticação de operador ou prova da verdade semântica dos registros.
+Every read verifies the format, schema, audit structure, and checksum. An exclusive file lock serialises readers and writers across processes. Mutations use atomic replacement; a failure before `os.replace` leaves the last committed document intact. The checksum detects accidental change, but it is not a signature, operator authentication, or proof that records are semantically true.
 
-Arquivos `.harness/state.yaml.lock` coordenam o acesso e não são uma segunda fonte de estado. Relatórios, cápsulas e índices continuam derivados e não podem ser importados como autoridade.
+`.harness/state.yaml.lock` coordinates access and is not a second state source. Reports, capsules, and indexes remain derived views and cannot be imported as authority.

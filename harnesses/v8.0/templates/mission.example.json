@@ -1,12 +1,12 @@
 {
-  "objective": "SUBSTITUA pelo objetivo do novo projeto",
+  "objective": "REPLACE with the new project objective",
   "mode": "light",
-  "in_scope": ["SUBSTITUA pelo que pode ser alterado"],
-  "out_of_scope": ["SUBSTITUA pelas exclusões"],
+  "in_scope": ["REPLACE with what may be changed"],
+  "out_of_scope": ["REPLACE with the exclusions"],
   "criteria": [
     {
       "id": "C1",
-      "description": "SUBSTITUA por uma condição observável de sucesso",
+      "description": "REPLACE with an observable success condition",
       "argv": ["<PYTHON_EXE>", "tests/acceptance.py"],
       "artifacts": ["src/result.py", "tests/acceptance.py"]
     }

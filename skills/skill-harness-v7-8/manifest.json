@@ -3,48 +3,48 @@
   "files": [
     {
       "path": "skill-harness-v7-8/assets/templates/claim.example.json",
-      "sha256": "f4b9ffedbcc2e0a03378a59c51006a7ff98ade1e64b1fdd1e997b85984309c85",
-      "bytes": 234
+      "sha256": "de3cd44edc50a3644d41f811c107055e36b513c91c7c2c287adb60e979ee8bcf",
+      "bytes": 216
     },
     {
       "path": "skill-harness-v7-8/assets/templates/consolidation.example.json",
-      "sha256": "064e8d25845ff5f36759997fe9da295e13d53b82611f3b7ac6883c2b6d83d4b4",
-      "bytes": 156
+      "sha256": "9bad2eaa81ae75a7c1e719ed39c4487dc07dfa475bee955d730922312cf71fe1",
+      "bytes": 149
     },
     {
       "path": "skill-harness-v7-8/assets/templates/mission-revision.example.json",
-      "sha256": "ef5ccac896f6ab86a9f17cc4336ee7a0b7e650c0157ff10587115c76ad6e87e7",
-      "bytes": 820
+      "sha256": "49a85effc4bea2809fe3a8169e816d022259f7e8522dfe034630fa4a8cfeaa35",
+      "bytes": 762
     },
     {
       "path": "skill-harness-v7-8/assets/templates/mission.example.json",
-      "sha256": "a8ecf457688216e4640801603643dd86d38cf72b1f74706a2e39b25591fb81e6",
-      "bytes": 634
+      "sha256": "6d33dafd2624c486cf587cbf415b81e23a3f08f3062eb0eda502c165472c0f94",
+      "bytes": 601
     },
     {
       "path": "skill-harness-v7-8/assets/templates/plan.example.json",
-      "sha256": "449cbbd46aa5fb1bcc74f60cd803f1ea2fc18ccea3557a797a9b9e81cdd974df",
-      "bytes": 693
+      "sha256": "9c0405f41166d3e8b48bf749bcf5ea38d1a554d81cd01b0f2ff00d7f034f3448",
+      "bytes": 625
     },
     {
       "path": "skill-harness-v7-8/assets/templates/retraction.example.json",
-      "sha256": "e98dbf5101a32a4439f567d61790e00f04d477874e059795babf68e3a0e71136",
-      "bytes": 211
+      "sha256": "1ee855aa1506b9087ac79076a8a22e1e4dab62d4121560537e38516c5f472bb5",
+      "bytes": 201
     },
     {
       "path": "skill-harness-v7-8/assets/templates/step-back.example.json",
-      "sha256": "36b546cf0bbb5ab6346c3d0e74d7f06d9fd3ed5255ac1ff21c3bf6fe1a4f6207",
-      "bytes": 392
+      "sha256": "ea7ed6bdecbde59f4b346fd571d7be46fe9f25fd18dd9e15919f07da4f1db1dc",
+      "bytes": 372
     },
     {
       "path": "skill-harness-v7-8/references/harness_v7.7.txt",
-      "sha256": "01e552c2dda4f99b9cc76d2a810a28986216ddac8a533bf62060ddf1ba624990",
-      "bytes": 71275
+      "sha256": "0592ecda596d6be304ec0115fad9832e9dea414e578681e34a27efb51cc62f8a",
+      "bytes": 5646
     },
     {
       "path": "skill-harness-v7-8/references/harness_v7.8.txt",
-      "sha256": "454e06ca13884f8bd86c6fca958d360bc0f05a43b40d46077da81e6054be235b",
-      "bytes": 34204
+      "sha256": "5da5580b2c929d50debb15743b88b733ac75cdabc8d5612e9090a0e9b1aad59c",
+      "bytes": 4497
     },
     {
       "path": "skill-harness-v7-8/requirements.txt",
@@ -52,59 +52,34 @@
       "bytes": 15
     },
     {
-      "path": "skill-harness-v7-8/scripts/__pycache__/harness.cpython-314.pyc",
-      "sha256": "dd25f432cad6bddae76d5be79be96670370f138aea65166d81176a13c591f90c",
-      "bytes": 71139
-    },
-    {
-      "path": "skill-harness-v7-8/scripts/__pycache__/yaml_store.cpython-314.pyc",
-      "sha256": "ae3944dbecde3d950c5cc95fdc8f726d4e3e7bb66d256c8da750f7275325c3fc",
-      "bytes": 20861
-    },
-    {
       "path": "skill-harness-v7-8/scripts/harness.py",
-      "sha256": "558a7e43422ca20a2f1205930cb614440e497668f7d0e8ba9406adc145e44df7",
-      "bytes": 41763
+      "sha256": "004ea78e4d566c20dbafcb79f6f3a03b79674c1a5770f14481b23b0f3b4dab69",
+      "bytes": 41139
     },
     {
       "path": "skill-harness-v7-8/scripts/yaml_store.py",
-      "sha256": "f304f5dff52b3ab0c99e2acf1aee0210d6972d16504fff05637f55dde5ac842d",
-      "bytes": 11499
+      "sha256": "0241c39835ad0fd47e70fab883866accac079b6819572ea376f5d8d83f728ed3",
+      "bytes": 11230
     },
     {
       "path": "skill-harness-v7-8/SKILL.md",
-      "sha256": "78fc4517ebe614d31f525f3191c0e194bf40520456be95e6c2792b01ffb9cadf",
-      "bytes": 18078
-    },
-    {
-      "path": "skill-harness-v7-8/tests/__pycache__/test_harness.cpython-314.pyc",
-      "sha256": "ba95823231c0123059c2315c714bf3fb6a6cd527555cffe50bbeae7c01fcda90",
-      "bytes": 35749
-    },
-    {
-      "path": "skill-harness-v7-8/tests/__pycache__/test_mission_revision.cpython-314.pyc",
-      "sha256": "cec30f0c9f5b79ccd0968af873c7798bdd770d1f06466cb350b0fdba81013330",
-      "bytes": 25209
-    },
-    {
-      "path": "skill-harness-v7-8/tests/__pycache__/test_yaml_store.cpython-314.pyc",
-      "sha256": "bd5ce3d23d9536e72b91fd16a553217eeef9f78f62df6724a505ada96c1b192a",
-      "bytes": 9079
+      "sha256": "1a47020ff8d6c7567e6fe3126123f8a22e1306433d1ed0bee032527e970e936f",
+      "bytes": 7202
     },
     {
       "path": "skill-harness-v7-8/tests/test_harness.py",
-      "sha256": "85a3ed4edbdcfe408346f43e8474a3375e5844fd38c24f36d9af0ff98554dee5",
-      "bytes": 15289
+      "sha256": "d4d8c6bfaa50f1e42d22520a9f02601a41179644b0f244b2d3300715965bb41e",
+      "bytes": 15007
     },
     {
       "path": "skill-harness-v7-8/tests/test_mission_revision.py",
-      "sha256": "1717810da5e7e75dd5f792eb5c3f274f7e93fe699528ef605e0024837e345a3d",
-      "bytes": 10907
+      "sha256": "c6c0608fb91ffbeabca8de03bcd6deea4217c932b4a908745708ce1341c52dd6",
+      "bytes": 10702
     },
     {
       "path": "skill-harness-v7-8/tests/test_yaml_store.py",
-      "sha256": "a4d4cc57d451a30ad2676d8728da4d8055c7933d9a5ac32dd6234558c2b51421",
-      "bytes": 4472
+      "sha256": "e006852319929fc952a077b38fde9e4b7d643b938fafc939646ba4f2a2fb94da",
+      "bytes": 4378
     }
   ]
 }

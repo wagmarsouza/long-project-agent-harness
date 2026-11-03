@@ -1,10 +1,10 @@
 {
   "id": "D1",
-  "symptom": "PREENCHA o sintoma observado",
+  "symptom": "ENTER the observed symptom",
   "evidence": "failure.txt",
   "hypotheses": [
-    "PREENCHA hipótese, sem alegar causa provada"
+    "ENTER a hypothesis without claiming a proven cause"
   ],
   "criterion": "C1",
-  "next_test": "PREENCHA teste discriminante real"
+  "next_test": "ENTER a real discriminating test"
 }

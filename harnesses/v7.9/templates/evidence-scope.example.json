@@ -1,18 +1,18 @@
 {
   "cycle": 1,
-  "check_id": "COPIE o ID real retornado por check",
+  "check_id": "COPY the real ID returned by check",
   "method": "dynamic",
-  "environment": "DESCREVA o ambiente efetivamente usado; o rótulo não autentica produção",
-  "verifies": ["DESCREVA a conclusão delimitada sustentada pelo teste"],
-  "does_not_verify": ["DESCREVA a extrapolação que o teste não permite"],
-  "untested": ["LISTE condições relevantes não testadas"],
+  "environment": "DESCRIBE the environment actually used; the label does not authenticate production",
+  "verifies": ["DESCRIBE the bounded conclusion supported by the test"],
+  "does_not_verify": ["DESCRIBE the extrapolation that the test does not permit"],
+  "untested": ["LIST relevant untested conditions"],
   "coverage": [
     {
-      "label": "Casos explicitamente declarados",
+      "label": "Explicitly declared cases",
       "numerator": 0,
       "denominator": null,
-      "unit": "casos",
-      "universe": "PREENCHA o universo real ou declare que ainda é desconhecido",
+      "unit": "cases",
+      "universe": "ENTER the actual universe or state that it remains unknown",
       "exclusions": []
     }
   ]

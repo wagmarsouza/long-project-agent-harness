@@ -1,10 +1,10 @@
-# Migração das skills de análise binária e Renode
+# Migration of binary-analysis and Renode skills
 
-`binary-analysis-profile` e `renode-bench` foram movidas para [DisasmLedger](https://github.com/wagmarsouza/disasmledger). Os nomes das skills e os comandos de invocação em linguagem natural continuam os mesmos. O novo repositório publica as skills independentemente do VeriMission.
+`binary-analysis-profile` and `renode-bench` moved to [DisasmLedger](https://github.com/wagmarsouza/disasmledger). Skill names and natural-language invocation remain unchanged. The new repository publishes both skills independently of VeriMission.
 
 ```powershell
 npx skills add wagmarsouza/disasmledger --skill binary-analysis-profile
 npx skills add wagmarsouza/disasmledger --skill renode-bench
 ```
 
-Revise a versão instalada pelo seu agente e substitua as cópias antigas quando desejar. Releases e tags históricas do VeriMission continuam disponíveis; esta mudança afeta somente o ramo principal a partir da migração. Para integrar uma missão longa ao VeriMission, use o harness instalado e consulte a integração opcional documentada no DisasmLedger.
+Review the version installed by your agent and replace older copies when appropriate. Historical VeriMission releases and tags remain available; the move affects the main branch from the migration onwards. To integrate long-running work with VeriMission, use the installed harness and consult the optional integration guide in DisasmLedger.

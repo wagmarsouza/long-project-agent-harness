@@ -2,5 +2,5 @@
   "id": "OP1",
   "outcome": "not_executed",
   "evidence": "reconciliation.txt",
-  "reason": "PREENCHA resultado observado e por que não se deve repetir a operação"
+  "reason": "ENTER the observed outcome and why the operation must not be repeated"
 }

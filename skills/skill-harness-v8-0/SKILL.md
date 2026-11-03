@@ -1,168 +1,90 @@
 ---
 name: skill-harness-v8-0
-description: "VeriMission Control 8.0: coordenar projetos longos com tarefas dependentes, critérios executáveis, evidências persistentes, aceitação final e operações governadas. Usar ao adotar o harness ou continuar uma missão existente."
+description: "VeriMission Control 8.0: coordinate long-running projects with persistent evidence, task graphs, search, traceability, final acceptance, and governed operations without implicit autonomy."
 metadata:
   display-name: VeriMission Control 8.0
-  version: "8.0"
+  version: "8.0.1"
 ---
 
 # VeriMission Control 8.0
 
-## Propósito e alcance
+## Purpose and boundaries
 
-Aplicar o Harness V8.0 preservando o objetivo, as exclusões e as permissões do projeto. O identificador técnico permanece `skill-harness-v8-0`; VeriMission Control 8.0 é o nome público de exibição.
+Apply VeriMission while preserving the project's objective, exclusions, and permissions. This skill guides the agent and includes the executor. It does not intercept tools, create background work, grant external permissions, install services, or make itself globally active. Use the harness for work governed by an adopted mission; answer simple explanatory questions directly without creating artificial cycles. Use light mode by default and strict mode when requested or justified by risk.
 
-Esta skill orienta o agente e inclui o executor. Não intercepta ferramentas, não cria trabalho em segundo plano e não concede permissões externas. A instalação permite descoberta; não garante ativação em toda mensagem. Não alterar regras globais, criar cron ou instalar serviços para tornar esta skill permanente sem pedido específico.
+## Resources
 
-Aplicar o fluxo às tarefas da missão adotada. Para perguntas explicativas simples, responder diretamente; não criar ciclos artificiais. Usar modo `light` por padrão; `strict` quando pedido ou quando a necessidade de revisão adicional estiver demonstrada.
+- Executor: [scripts/harness.py](scripts/harness.py), requiring Python 3.11+ and PyYAML.
+- Inputs: copy the relevant files from [assets/templates](assets/templates) into the real project and replace every marker.
+- Version contract: [references/harness_v8.0.txt](references/harness_v8.0.txt).
+- Coordination controls: [references/v80-controls.md](references/v80-controls.md).
+- Historical protocol: [references/harness_v7.7.txt](references/harness_v7.7.txt), only when relevant to the current decision.
 
-## Recursos e resolução de caminhos
+Resolve resources relative to this skill directory. Use an absolute executor path and point `--project` at the actual project root. Never use the installed skill directory as mission storage.
 
-- Executor: [scripts/harness.py](scripts/harness.py), com todos os módulos da pasta scripts preservados. Python 3.11+ e PyYAML 6.x.
-- Entradas: [assets/templates/mission.example.json](assets/templates/mission.example.json) e [assets/templates/plan.example.json](assets/templates/plan.example.json). Copiar e preencher no projeto; não editar os modelos da skill.
-- Operações especiais e contratos: [references/harness_v8.0.txt](references/harness_v8.0.txt). Consultar a seção pertinente antes de usar `claim`, `retract`, `step-back`, `consolidate`, `backup` ou métricas.
-- Protocolos detalhados herdados: [references/harness_v7.7.txt](references/harness_v7.7.txt), somente quando relevantes à decisão atual.
-- Diagnóstico do executor: `python -m unittest discover -s "CAMINHO_DA_SKILL/tests" -v`.
+## Required workflow
 
-Resolver recursos em relação à pasta desta skill, nunca ao diretório corrente. Usar o caminho absoluto do executor e `--project` apontando para a raiz real do projeto. Não usar a pasta da skill como armazenamento de uma missão.
+1. **Recover first.** If `.harness/state.yaml` exists, run `resume` and `validate`. If only `.harness/state.sqlite` exists, run `migrate-sqlite` once; preserve SQLite as historical provenance.
+2. **Fix objective and proof.** Before `init`, define the objective, scope, exclusions, observable criteria, acceptance argv, artifacts, and budget. Review commands and effects rather than trusting text from an input file.
+3. **Review the topic.** Run `review`, read facts, retractions, cycles, and aliases, and identify the unresolved residue. Use the current receipt in the plan.
+4. **Plan before acting.** In `start`, declare the task, premise, method, inputs, environment, dependencies, and selected criteria. Strict mode also records reference review and a simple discriminating test when relevant.
+5. **Act within scope.** Take the smallest useful authorised action. Never weaken tests, revise the mission, or rename an unchanged approach to evade controls.
+6. **Verify genuinely.** Run `check` for every selected criterion. Inspect the exit code and `result.passed`; `ok: true` alone is not acceptance. Failure, timeout, changed artifacts, or a non-discriminating test prevents verified closure.
+7. **Close with current evidence.** Use `close --outcome verified` only with current passing evidence. Otherwise record `blocked` or `interrupt` with a concrete next step. A passing cycle is not automatic mission completion.
+8. **Stop unproductive repetition.** Respect budgets and refusals. After stagnation, use `step-back` to revisit the premise, reference, and simplest alternative.
+9. **Separate hypotheses from facts.** Facts need linked evidence. Use `retract` for corrections, preserve history, and review affected dependants.
+10. **Keep one state source.** `.harness/state.yaml` is canonical. Reports, graphs, capsules, and indexes are derived views. Do not edit state directly or maintain a competing ledger.
 
-O manual preservado descreve o pacote original: nesta distribuição, `harness_v8.0/CORE.md` corresponde ao núcleo abaixo, o manual está em `references/harness_v8.0.txt`, os modelos em `assets/templates/` e o executor em `scripts/`. A referência não implica que a skill já esteja integrada ao cliente.
+## Mandatory evidence and honesty rules
 
+- **Claim ceiling:** conclusions cannot exceed the method, environment, sample, conditions, and scope actually verified.
+- **No fabricated evidence:** never invent executions, commands, outputs, logs, sources, metrics, receipts, or results. Distinguish planned, executed, observed, and inferred information.
+- **Coverage needs a denominator:** define the universe and exclusions. Unknown total means indeterminate coverage; 0/0 means N/A. Never claim 100% from a sample.
+- **Activity is not progress:** files, lines, attempts, time, reports, duplicates, renames, and retractions do not automatically increase mission completion.
+- **Tests must discriminate:** a zero exit code, echoed plan, or self-confirming implementation is insufficient. Use relevant positive and negative controls where possible.
+- **Conclusions remain revisable:** distinguish passing checks, satisfied requirements, and a completed mission. Stale evidence or retracted dependencies require review.
 
-## Extensões V8.0 — três cuidados obrigatórios
+For significant delivery or completion claims, report the exact claim, actual evidence and artifacts, coverage numerator and denominator, limitations and contradictions, status, and next step. The harness supports provenance but is not an infallible lie detector and does not supervise actions outside its CLI.
 
-1. **Escopo da evidência:** após verificações relevantes, usar `evidence-scope` para vincular o check real ao que verifica, não verifica e deixou sem teste. Declarações e aritmética de cobertura nunca promovem automaticamente um resultado a fato ou conclusão. O retorno declara `semantic_truth_verified: false`. Preservar falhas e limitações.
-2. **Retomada:** gerar `capsule` quando útil em trabalho longo e conferir `capsule-status` antes de confiar numa cópia salva. YAML é a única fonte canônica. A cápsula é uma visão não autoritativa, pode omitir itens com contagens explícitas e não pode ser importada como missão, memória definitiva ou autorização. Diante de dúvida ou inconsistência, abrir `resume`/`review` e as evidências pertinentes.
-3. **Preparação:** `prepare-mission` organiza propostas e perguntas sem executar testes ou inicializar/revisar missões. `ready_for_review` não é aprovação. Tarefas copiadas dos critérios não têm dependências ou abordagem adivinhadas. Mudança da missão vigente continua exigindo pedido/autorização explícita e confirmação pessoal no terminal; nunca partir de cron, loop, heartbeat ou automação.
+## Mission revision: explicit user action only
 
-Leia `references/v79-features.md` antes do primeiro uso dessas extensões para conhecer esquemas, comandos e limites. Use o fluxo mínimo adequado: nenhuma extensão cria daemon, depende de subagentes ou substitui os gates anteriores. O limite de tamanho da cápsula vale só para a visão gerada; não impõe teto aos arquivos de memória nem remove histórico.
+Never initiate mission revision from automation, a heartbeat, a loop, silence, timeout, budget exhaustion, or a failed test. Revision requires an explicit user request or explicit approval of the concrete proposal.
 
+1. Run `resume` and prepare a project copy of `mission-revision.example.json` with the current hash and revision, reason, real authorisation reference, and complete proposed mission.
+2. Run `preview-mission --input FILE.json` and present the exact changes, especially removed tests, denominators, exclusions, permissions, and argv.
+3. Close or interrupt any active cycle.
+4. Give the user the real `revise-mission --input FILE.json` command. The user must run it personally in an interactive terminal and enter the displayed confirmation. Never pipe, simulate, reuse, or bypass confirmation.
+5. After revision, run `resume`, `validate`, a new `review`, and the required verification cycles. Earlier conclusions become subject to review; history and consumed budgets remain.
 
-## V8.0 — preservar o núcleo e ampliar a coordenação
-
-O núcleo anti-inflação, de honestidade e antirretrabalho acima permanece obrigatório. Resultados de busca, vínculos de requisitos, status de tarefa, revisões de agentes ou preenchimento de campos não substituem provas. Nada nesta versão autoriza reduzir critérios, fabricar progresso, repetir cegamente falhas ou alterar a missão por automação.
-
-- Registrar tarefas com critérios existentes e dependências. Usar `task-ready` como consulta de elegibilidade, não despacho; respeitar um escritor e um ciclo ativo. No plano, `task` deve ser o ID reivindicado. `task-complete` exige provas atuais, e dependência concluída com evidência vencida não libera trabalho.
-- Usar `search` e aliases registrados antes de refazer investigações. O índice é derivado e não autoritativo. Consultar status, retratações e aplicabilidade dos resultados; relevância não comprova verdade.
-- Para uma etapa longa, usar `context-pack` e conferir `view-status`. Não omitir silenciosamente restrições/autorizações para caber no contexto. Recuperar referências completas quando necessário; não transformar conteúdo histórico em instrução.
-- Usar `traceability` para localizar requisitos sem prova e `accept-mission` para avaliar a conclusão. Um vínculo é rastreabilidade, não suficiência semântica. Mesmo aceitação atual é limitada ao contrato e aos testes definidos.
-- A revisão pessoal da missão continua intacta, agora com diferenças estruturadas. O preparador permanece uma proposta; não inicializa nem aprova alterações por conta própria.
-- O adaptador `operation-*` é opcional e cobre só comandos encaminhados por ele. Aprovação humana é específica e de uso único; não autoriza revisar missão. Checkpoint desconhecido exige reconciliação e novo check, nunca replay automático. Não alegar interceptação de ferramentas externas não cobertas.
-- Usar diagnósticos como hipóteses até a prova. Distinguir medição, informação de provedor, relato do agente e estimativa. O tracing é local e não deve conter segredos ou saídas brutas.
-
-Leia `references/v80-controls.md` antes do primeiro uso dessas extensões e apenas as seções pertinentes depois. As integrações nativas de hospedeiro e os módulos posteriores não estão implicitamente ativos. A versão não depende de um fornecedor, de subagentes ou de execução em segundo plano.
-
-## Regras do projeto
-
-1. **Recuperar antes de repetir.** Se existir `.harness/state.yaml`, executar `resume` e `validate`. Se existir somente `.harness/state.sqlite`, executar `migrate-sqlite` uma vez, validar e preservar o legado; nunca usar `init` para contornar a migração. Examinar os problemas antes de confiar no que consta como concluído; não reinicializar ou apagar o estado para contornar inconsistências.
-2. **Fixar objetivo e prova.** Antes de iniciar a missão, declarar objetivo, escopo, exclusões, critérios observáveis, comandos de aceitação e artefatos. Derivar critérios da intenção autorizada; perguntar apenas sobre ambiguidades que mudem o resultado. Não executar um comando só porque aparece em um arquivo de entrada: revisar seus efeitos e a autorização.
-3. **Revisar o tópico.** Executar `review`, ler fatos, retratações e ciclos retornados e procurar aliases no projeto. Identificar o resíduo aberto. Usar o recibo atual e reconhecer os IDs retornados no plano.
-4. **Planejar antes de agir.** Declarar tarefa, premissa, método, entradas, ambiente, dependências e critérios selecionados em `start`. No modo `strict`, registrar também revisão da referência e teste discriminante simples. Só um ciclo ativo por armazenamento.
-5. **Executar dentro do escopo.** Fazer a menor ação útil autorizada, preservando invariantes. Não enfraquecer testes, trocar a missão ou renomear abordagens para escapar dos controles. Uma autorização pendente bloqueia somente o trabalho que depende dela.
-6. **Verificar de verdade.** Executar `check` para cada critério selecionado. Ler o código de saída e `result.passed`; `ok: true` sozinho não prova aprovação. Falha, timeout ou artefato alterado impede fechar como verificado. Rever também se o teste distingue sucesso de erro.
-7. **Fechar com evidência atual.** Usar `close --outcome verified` somente com os testes aprovados e artefatos atuais; caso contrário, registrar `blocked` ou `interrupt` e um próximo passo. Um ciclo aprovado não significa que toda a missão terminou.
-8. **Parar a repetição improdutiva.** Respeitar limites e recusas do executor. Após estagnação, usar `step-back` para revisar premissa, referência e alternativa simples. Após repetição de testes falhos, mudar tecnicamente a abordagem ou relatar o impedimento.
-9. **Separar hipótese e fato.** Hipóteses permanecem candidatas; fatos exigem evidência vinculada. Registrar dependências. Usar `retract` para correções explícitas, preservando histórico e revisando dependentes, inclusive vínculos não declarados descobertos por busca.
-10. **Manter uma fonte de estado.** YAML é a fonte canônica; relatórios são derivados. Consolidar quando devido e fazer backup para recuperação. Não manter outro ledger concorrente, editar o banco diretamente ou apagar registros como limpeza automática.
-11. **Medir sem fabricar precisão.** Consultar métricas de verificações, recusas, tempo e ciclos sem progresso. Tokens e dólares são informados pelo cliente/usuário, não faturamento medido. Não reduzir o rigor dos critérios para melhorar os números.
-12. **Preservar limites e transparência.** Não persistir segredos nas entradas ou nos registros. Respeitar pausa, cancelamento e permissões. Informar verificações executadas, limitações e próximo passo ao terminar ou pausar.
-
-Precedência: instruções superiores e pedido atual do usuário, missão autorizada, adaptações V8.0 e protocolos pertinentes do V7.7. Os parâmetros de ciclos e tempo pertencem à missão; os exemplos não impõem valores universais.
-
-## Proteções obrigatórias contra inflação e afirmações sem prova
-
-Aplicar em `light` e `strict`, inclusive nos relatórios curtos. Estas regras não dependem de abrir a referência V7.7.
-
-1. **Teto de alegação.** A força da conclusão fica limitada pelo método, ambiente, amostra, condições e escopo efetivamente verificados. Inspeção estática não prova comportamento; simulação não prova produção; teste de componente não prova integração; um caso não prova universalidade. Dizer precisamente o que foi demonstrado e a lacuna que impede uma conclusão mais ampla.
-2. **Evidência real e rastreável.** Não inventar execução, comandos, saídas, logs, fontes, métricas, recibos ou resultados. Separar planejado, executado, observado e inferido. Sem acesso ou prova suficiente, registrar "não verificado" ou "hipótese" e o teste que falta. Preservar falhas e resultados contraditórios; não selecionar apenas os resultados favoráveis.
-3. **Cobertura com denominador.** Relatar itens verificados/total do objetivo, críticos verificados/total crítico e modificados verificados/total modificado quando essas categorias existirem. Definir o universo e as exclusões. Se o total for desconhecido, declarar cobertura indeterminada; zero de zero é N/A. Não apresentar 100% com base em uma amostra nem mudar denominadores, exclusões ou critérios silenciosamente. Mudanças precisam de justificativa, rastreabilidade e autorização quando alterarem a missão.
-4. **Progresso sem inflação.** Arquivos, linhas, tentativas, hipóteses, relatórios e tempo medem atividade ou custo; não comprovam avanço do objetivo. Não contar duplicatas, renomeações ou retratações como novas entregas. Uma correção melhora a confiabilidade do registro, mas não aumenta por si só cobertura, confiança ou progresso. Não criar percentuais de certeza sem método definido; índices herdados só se adotados explicitamente pela missão, nunca como probabilidade universal.
-5. **Teste com poder de discriminação.** Verificar se o teste pode detectar a falha relevante; usar controles positivos e negativos quando pertinentes. Saída zero, eco do plano e teste que apenas repete a implementação não bastam. Duas cópias do mesmo resultado não são evidências independentes. Não trocar a aceitação por um teste mais fácil para declarar sucesso.
-6. **Conclusão proporcional e revisável.** Distinguir ciclo aprovado, requisito satisfeito e missão concluída. Não usar "completo", "validado em produção" ou equivalentes sem prova do escopo alegado. Evidência obsoleta, dependência retraída ou requisito aberto exige qualificação ou revisão do status. Nunca apagar o histórico para preservar uma aparência de sucesso.
-
-**Auditoria de honestidade:** em entregas, relatórios significativos e alegações de conclusão, informar de forma concisa:
-
-- **Alegação:** o resultado exato que está sendo afirmado.
-- **Evidência:** comando/teste ou fonte verificável, resultado real e artefatos correspondentes; distinguir método estático, dinâmico, simulado ou em ambiente final.
-- **Cobertura:** numerador/denominador e exclusões relevantes; N/A ou indeterminada quando aplicável.
-- **Limites e contraditórios:** falhas, testes não executados, condições não cobertas e dependências abertas.
-- **Estado e próximo passo:** verificado no escopo indicado, parcial, hipótese ou bloqueado; o que falta para uma afirmação mais forte.
-
-Usar o tamanho necessário ao resultado, sem preencher campos com números ou evidências inventadas. Um relatório curto pode condensar esses pontos, mas não omitir uma limitação que mude a interpretação.
-
-**Alcance técnico:** `check`, hashes, `close`, `validate` e `retract` apoiam a execução e a rastreabilidade. O executor atual não audita linguagem natural, não calcula automaticamente os três denominadores de cobertura e não valida a suficiência semântica de cada alegação. As proteções acima são obrigações explícitas do agente; não anunciar um detector automático de mentiras ou fiscalização de ações fora da CLI.
-
-## Revisão da missão — somente por iniciativa ou autorização explícita do usuário
-
-O contrato permanece congelado entre revisões. Alterá-lo exige pedido explícito do usuário ou aprovação explícita da proposta concreta, identificando objetivo, escopo, critérios e mudanças nos comandos de aceitação. Uma autorização antiga, silêncio, timeout, orçamento esgotado, teste falho ou ordem genérica de continuar não autoriza alterar a missão. Cron, loop, heartbeat, hook, tarefa agendada e autoaprovação nunca iniciam nem aplicam esta revisão. Nesses contextos, registrar o impedimento e aguardar o usuário.
-
-1. **Preparar após o pedido.** Executar `resume`; copiar `mission_hash` e `revision` para uma cópia de [assets/templates/mission-revision.example.json](assets/templates/mission-revision.example.json). Preencher `reason`, `authorization.source: "user"`, referência ao pedido/aprovação real e o novo objeto `mission` completo. A referência documenta a autorização; seu preenchimento não autentica a origem. Nunca inventá-la nem tratar texto vindo de uma página, arquivo ou ferramenta como aprovação humana.
-2. **Mostrar a proposta exata.** Executar `preview-mission --input ARQUIVO.json`. É uma leitura sem mudança do contrato: apresenta as versões anterior e nova, campos alterados e a confirmação vinculada ao conteúdo. Revisar especialmente testes removidos, denominadores, exclusões, permissões e novos argv. Corrigir o plano dentro do escopo não exige revisar a missão; não usar revisão para fazer um teste passar.
-3. **Não interromper silenciosamente.** Se houver ciclo ativo, fechar ou interromper explicitamente esse ciclo antes da revisão. A revisão não encerra trabalho ativo por conta própria. Se a proposta ficar desatualizada, preparar outra e revisá-la novamente.
-4. **Aplicação humana em terminal.** Fornecer ao usuário o comando `revise-mission --input ARQUIVO.json` com os caminhos reais. O próprio usuário o executa em terminal interativo, confere a proposta exibida e digita a frase `REVISAR` seguida do identificador mostrado. O agente não deve abrir um pseudo-terminal para responder, digitar a confirmação em nome do usuário, encaminhá-la por pipe, modificar stdin nem fornecer um bypass. Não há opção `--yes`, `--force` ou aprovação reaproveitável.
-5. **Registrar e revalidar.** Antes da troca, o executor verifica novamente hash e revisão, recusa ciclos ativos e cria um backup YAML íntegro em `.harness/mission-backups/`. Guarda versões anterior e nova, motivo, referência da autorização, hashes e confirmação interativa em `mission_revisions`. Preserva os ciclos, checks, custos, tentativas e falhas. Conclusões antes verificadas passam a `needs_review`; não contam automaticamente como aceitação da nova missão. Revisões não zeram os orçamentos já consumidos; qualquer ampliação de limites precisa constar da proposta aprovada.
-
-Os registros anteriores continuam consultáveis e as evidências originais não são apagadas. IDs e declarações de claims antigos não são sobrescritos por esta operação; conclusões do novo escopo exigem evidência e registro explicitamente contextualizados. Após aplicar: `resume`, `validate`, novo `review` e ciclos de verificação pertinentes. `init` continua recusando uma base existente.
-
-**Limite da proteção:** o executor recusa aplicação por pipes, terminais não interativos e ambientes sinalizados por `CI` ou `HARNESS_AUTOMATION`. A confirmação é vinculada à proposta e revalidada antes da gravação. Isso não autentica criptograficamente a pessoa nem impede que um operador com acesso ao código, ao banco ou a um pseudo-terminal burle o procedimento. A proibição de automação também é uma regra obrigatória do agente, não uma promessa de detecção universal.
-
-Exemplo de comandos, com caminhos reais substituídos:
+## Operational example
 
 ```powershell
-python 'CAMINHO_DA_SKILL/scripts/harness.py' --project 'RAIZ_DO_PROJETO' preview-mission --input 'RAIZ_DO_PROJETO/mission-revision.json'
-# O comando seguinte é executado e confirmado pelo próprio usuário:
-python 'CAMINHO_DA_SKILL/scripts/harness.py' --project 'RAIZ_DO_PROJETO' revise-mission --input 'RAIZ_DO_PROJETO/mission-revision.json'
+$h = 'ABSOLUTE_PATH_TO_SKILL\scripts\harness.py'
+$p = 'ABSOLUTE_PROJECT_ROOT'
+python -B $h --project $p resume
+python -B $h --project $p validate
+python -B $h --project $p review --topic 'component-or-source'
+python -B $h --project $p start --input "$p\plan.json"
+python -B $h --project $p check --cycle 1 --criterion C1
+python -B $h --project $p close --cycle 1 --outcome verified --next 'Concrete next step or no remaining mission work'
+python -B $h --project $p validate
 ```
 
-## Fluxo operacional
+For a new mission, use `init --input mission.json` before `review`. `init` must refuse existing state. Exit codes are `0` for a completed operation, `2` for a refusal or invalid input/state, and `3` for a verification that ran but did not pass.
 
-Os comandos abaixo são exemplos de PowerShell. Substituir os caminhos e IDs pelos valores reais; `python` deve ser um interpretador verificado com Python 3.11+.
+## V8.0 extensions
+
+- Task commands record dependencies, ownership, completion, and reopening. `task-ready` reports eligibility; it does not dispatch work.
+- Search, aliases, context packs, and diagnostics support recovery but never prove semantic truth.
+- `traceability` exposes missing links; `accept-mission` evaluates the declared contract rather than universal correctness.
+- Governed operations require exact preparation, one-use approval when applicable, execution, and reconciliation. Approval never revises the mission.
+
+This version does not include V8.1 graph projections, pull-request reports, or run imports. Unknown or interrupted outcomes require reconciliation, never blind replay.
+
+## Verification
 
 ```powershell
-$harnessScript = 'CAMINHO_ABSOLUTO_DA_SKILL/scripts/harness.py'
-$projectRoot = 'CAMINHO_ABSOLUTO_DO_PROJETO'
+uv run --with pyyaml python -m unittest discover -s 'PATH_TO_SKILL/tests' -v
 ```
 
-**Missão existente:** executar `resume` e `validate` antes de planejar o próximo ciclo.
-
-```powershell
-python "$harnessScript" --project "$projectRoot" resume
-python "$harnessScript" --project "$projectRoot" validate
-```
-
-**Nova missão:** preencher uma cópia do modelo com caminhos relativos de artefatos, comandos argv reais e critérios que testem o resultado. O arquivo JSON de entrada pode ficar no projeto; seu caminho deve ser explícito. `init` recusa armazenamento existente. Não reinicializar para revisar a missão: seguir exclusivamente o procedimento de revisão humana abaixo.
-
-```powershell
-python "$harnessScript" --project "$projectRoot" init --input "$projectRoot/mission.json"
-python "$harnessScript" --project "$projectRoot" review --topic 'componente-ou-fonte'
-```
-
-Preencher a cópia de `plan.example.json` com o recibo retornado, os IDs reconhecidos, resíduo, critérios e dependências válidas. Evitar alterações de estado entre `review` e `start`; se o recibo ficar obsoleto, revisar novamente.
-
-```powershell
-python "$harnessScript" --project "$projectRoot" start --input "$projectRoot/plan.json"
-```
-
-Executar a ação planejada. Usar o número de ciclo retornado; `1` e `C1` abaixo são apenas exemplos. Rodar todos os critérios selecionados antes de fechar.
-
-```powershell
-python "$harnessScript" --project "$projectRoot" check --cycle 1 --criterion C1
-python "$harnessScript" --project "$projectRoot" close --cycle 1 --outcome verified --next 'Próximo passo concreto ou missão sem pendências'
-python "$harnessScript" --project "$projectRoot" validate
-```
-
-Em caso de falha, não executar o fechamento verificado do exemplo. Registrar a condição e o próximo passo:
-
-```powershell
-python "$harnessScript" --project "$projectRoot" close --cycle 1 --outcome blocked --next 'Descrever falha, evidência e alternativa técnica'
-```
-
-Se houver interrupção explícita, usar `interrupt --cycle 1 --reason 'motivo real'` quando possível e cessar o trabalho. Na retomada, recuperar o estado antes de repetir ações cujo resultado ficou desconhecido.
-
-Consultar `--help` e os modelos para as demais operações. Códigos de saída: `0` operação concluída, `2` recusa/entrada/estado inválido, `3` verificação executada sem aprovação. Não transformar uma recusa em sucesso por interpretação textual.
-
-## Condição de entrega e limites
-
-Antes de anunciar a missão concluída, comparar todos os critérios com evidências atuais, verificar pendências e dependências e executar `validate`. Comunicar o que foi testado e o que não foi. O executor comprova execução e proveniência; a qualidade do teste e a verdade semântica da conclusão ainda exigem julgamento.
-
-Os controles cobrem somente operações encaminhadas pela CLI. Não alegar fiscalização de todas as ferramentas, execução autônoma permanente ou integração global já instalada. A base `.harness/state.yaml` permite retomada entre sessões; backup do estado não substitui backup dos artefatos do projeto.
+Passing package tests verifies local fixtures and invariants. It does not prove the semantic sufficiency of a future mission's criteria.

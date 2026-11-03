@@ -1,17 +1,17 @@
 {
-  "topic": "nome da fonte ou do componente",
-  "task": "identificador estável da tarefa",
-  "premise": "hipótese técnica que será posta à prova",
-  "residual": "o que a revisão mostrou que ainda falta responder",
-  "review_id": "COPIE o id retornado por review",
+  "topic": "source or component name",
+  "task": "stable task identifier",
+  "premise": "technical hypothesis to be tested",
+  "residual": "what the review showed remains unresolved",
+  "review_id": "COPY the ID returned by review",
   "reviewed_claims": [],
   "relies_on": [],
   "criteria": ["C1"],
   "approach": {
-    "method": "método concreto",
-    "inputs": "entradas efetivamente usadas",
-    "environment": "condições técnicas relevantes"
+    "method": "concrete method",
+    "inputs": "inputs actually used",
+    "environment": "relevant technical conditions"
   },
-  "reference_review": "necessário no modo strict: o que a referência já responde",
-  "simplest_test": "necessário no modo strict: teste mais simples que distingue as hipóteses"
+  "reference_review": "required in strict mode: what the reference already answers",
+  "simplest_test": "required in strict mode: simplest test that distinguishes the hypotheses"
 }

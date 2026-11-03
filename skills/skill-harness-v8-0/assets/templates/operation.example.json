@@ -4,6 +4,6 @@
   "criterion": "C1",
   "effect": "local",
   "risk": "read",
-  "reason": "PREENCHA o motivo da operação exata",
-  "request_ref": "REFERENCIE o pedido real; nunca invente autorização"
+  "reason": "ENTER the reason for the exact operation",
+  "request_ref": "REFERENCE the real request; never invent authorisation"
 }

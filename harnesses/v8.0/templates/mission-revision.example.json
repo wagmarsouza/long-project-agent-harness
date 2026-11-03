@@ -1,21 +1,21 @@
 {
-  "expected_mission_hash": "COPIE mission_hash retornado por resume",
+  "expected_mission_hash": "COPY mission_hash returned by resume",
   "expected_revision": 0,
-  "reason": "DESCREVA a mudança pedida ou explicitamente autorizada pelo usuário",
+  "reason": "DESCRIBE the change requested or explicitly authorised by the user",
   "authorization": {
     "source": "user",
-    "reference": "REFERENCIE o pedido ou a aprovação real do usuário; nunca invente autorização"
+    "reference": "REFERENCE the real user request or approval; never invent authorisation"
   },
   "mission": {
-    "objective": "PREENCHA o novo objetivo autorizado",
+    "objective": "ENTER the new authorised objective",
     "mode": "light",
-    "in_scope": ["PREENCHA o escopo autorizado"],
-    "out_of_scope": ["PREENCHA as exclusões"],
+    "in_scope": ["ENTER the authorised scope"],
+    "out_of_scope": ["ENTER the exclusions"],
     "criteria": [
       {
         "id": "C1",
-        "description": "PREENCHA o novo critério observável de aceitação",
-        "argv": ["CAMINHO_REAL_DO_PYTHON", "tests/acceptance.py"],
+        "description": "ENTER the new observable acceptance criterion",
+        "argv": ["REAL_PYTHON_PATH", "tests/acceptance.py"],
         "artifacts": ["src/result.py", "tests/acceptance.py"]
       }
     ]

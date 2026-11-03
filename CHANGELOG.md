@@ -1,5 +1,11 @@
 # Changelog
 
+## Publication v2.1.2 — 2026-11-03
+
+- Standardised all current VeriMission documentation, skill metadata, templates, and operator references in neutral international English.
+- Preserved the executors and their behavioural tests; all four suites and the skill validator pass.
+- Extended canonical LF packaging to every published harness and skill manifest.
+
 ## Publication v2.1.1 — 2026-11-03
 
 - Fixed V8.1 manifest hashes to describe canonical Git/archive bytes and pinned the package to LF line endings across operating systems. Runtime behavior is unchanged.
