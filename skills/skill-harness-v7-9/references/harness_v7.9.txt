@@ -1,4 +1,4 @@
-﻿================================================================================
+================================================================================
 HARNESS V7.9 — NÚCLEO CURTO + EXECUÇÃO VERIFICÁVEL
 ================================================================================
 Versão: 7.8. Preparado em 02/11/2026.
@@ -10,7 +10,7 @@ ATUALIZAÇÃO V7.9 — CONTRATO DE PRESERVAÇÃO
 
 Mantidos: gates, checks executados, missão congelada entre revisões humanas,
 histórico, dependências, retratações, modo light/strict, budgets, estagnação,
-consolidação, retomada, SQLite canônico, uso sob demanda e Python sem dependências.
+consolidação, retomada, YAML canônico, uso sob demanda e Python sem dependências.
 Nenhuma instalação, configuração global ou missão existente é alterada por criar
 este pacote. Não foram incorporados frameworks externos nem código de terceiros.
 
@@ -27,7 +27,7 @@ Escopo é uma declaração vinculada a evidência, não um carimbo de verdade.
 Cápsula é uma visão regenerável, não outra fonte de estado.
 Rascunho é proposta, não contrato aprovado nem autorização para executar.
 O código 3 de capsule-status indica visão desatualizada. As consultas derivadas
-não escrevem no SQLite nem invalidam review. Dados antigos permanecem legíveis.
+não escrevem no YAML nem invalidam review. Dados antigos permanecem legíveis.
 
 A skill portátil chama-se skill-harness-v7_9 (identificador técnico
 skill-harness-v7-9, sem ponto ou underscore). Está em pacote separado e não foi
@@ -57,7 +57,7 @@ caminho real. O pacote não instala nada no OpenCode e não cria cron ou serviç
 8. Métricas de verificações, falhas, recusas, tempo e custo informado.
 9. Divulgação progressiva: CORE.md carregado; referência extensa só quando pertinente.
 10. Limites de ciclos, duração, verificações e custo declarado por missão.
-11. Uma única fonte de estado SQLite; relatórios e resumos são visões derivadas.
+11. Uma única fonte de estado YAML; relatórios e resumos são visões derivadas.
 12. Piloto local reproduzível, com falha, correção, aceitação e recuperação.
 
 O V7.9 não acrescenta uma nova coleção de regras arbitrárias. Converte parte do
@@ -125,7 +125,7 @@ G1 — REVISÃO E ANTIRRETRABALHO
   Critério já concluído exige motivo explícito de revalidação.
 
   Limite: a consulta do executor compara o tópico exato. O agente ainda precisa
-  procurar aliases, termos da fonte e artefatos externos ao banco. Confirmar IDs
+  procurar aliases, termos da fonte e artefatos externos ao estado. Confirmar IDs
   lidos não prova que o agente compreendeu o texto. O gate não lê todo o disco.
 
 G2 — REPETIÇÃO E CUSTO
@@ -178,7 +178,7 @@ Não usar "python -c pass" ou criação de um arquivo como prova de um objetivo 
 
 A missão fica congelada por hash entre revisões. A revisão autorizada usa
 preview-mission e revise-mission, com confirmação humana interativa e backup.
-Nunca editar o banco para
+Nunca editar o arquivo canônico para
 ocultar uma mudança ou reinicializar sobre a base existente.
 
 ## Revisão da missão — somente por iniciativa ou autorização explícita do usuário
@@ -189,11 +189,11 @@ O contrato permanece congelado entre revisões. Alterá-lo exige pedido explíci
 2. **Mostrar a proposta exata.** Executar `preview-mission --input ARQUIVO.json`. É uma leitura sem mudança do contrato: apresenta as versões anterior e nova, campos alterados e a confirmação vinculada ao conteúdo. Revisar especialmente testes removidos, denominadores, exclusões, permissões e novos argv. Corrigir o plano dentro do escopo não exige revisar a missão; não usar revisão para fazer um teste passar.
 3. **Não interromper silenciosamente.** Se houver ciclo ativo, fechar ou interromper explicitamente esse ciclo antes da revisão. A revisão não encerra trabalho ativo por conta própria. Se a proposta ficar desatualizada, preparar outra e revisá-la novamente.
 4. **Aplicação humana em terminal.** Fornecer ao usuário o comando `revise-mission --input ARQUIVO.json` com os caminhos reais. O próprio usuário o executa em terminal interativo, confere a proposta exibida e digita a frase `REVISAR` seguida do identificador mostrado. O agente não deve abrir um pseudo-terminal para responder, digitar a confirmação em nome do usuário, encaminhá-la por pipe, modificar stdin nem fornecer um bypass. Não há opção `--yes`, `--force` ou aprovação reaproveitável.
-5. **Registrar e revalidar.** Antes da troca, o executor verifica novamente hash e revisão, recusa ciclos ativos e cria um backup SQLite íntegro em `.harness/mission-backups/`. Guarda versões anterior e nova, motivo, referência da autorização, hashes e confirmação interativa em `mission_revisions`. Preserva os ciclos, checks, custos, tentativas e falhas. Conclusões antes verificadas passam a `needs_review`; não contam automaticamente como aceitação da nova missão. Revisões não zeram os orçamentos já consumidos; qualquer ampliação de limites precisa constar da proposta aprovada.
+5. **Registrar e revalidar.** Antes da troca, o executor verifica novamente hash e revisão, recusa ciclos ativos e cria um backup YAML íntegro em `.harness/mission-backups/`. Guarda versões anterior e nova, motivo, referência da autorização, hashes e confirmação interativa em `mission_revisions`. Preserva os ciclos, checks, custos, tentativas e falhas. Conclusões antes verificadas passam a `needs_review`; não contam automaticamente como aceitação da nova missão. Revisões não zeram os orçamentos já consumidos; qualquer ampliação de limites precisa constar da proposta aprovada.
 
 Os registros anteriores continuam consultáveis e as evidências originais não são apagadas. IDs e declarações de claims antigos não são sobrescritos por esta operação; conclusões do novo escopo exigem evidência e registro explicitamente contextualizados. Após aplicar: `resume`, `validate`, novo `review` e ciclos de verificação pertinentes. `init` continua recusando uma base existente.
 
-**Limite da proteção:** o executor recusa aplicação por pipes, terminais não interativos e ambientes sinalizados por `CI` ou `HARNESS_AUTOMATION`. A confirmação é vinculada à proposta e revalidada antes da gravação. Isso não autentica criptograficamente a pessoa nem impede que um operador com acesso ao código, ao banco ou a um pseudo-terminal burle o procedimento. A proibição de automação também é uma regra obrigatória do agente, não uma promessa de detecção universal.
+**Limite da proteção:** o executor recusa aplicação por pipes, terminais não interativos e ambientes sinalizados por `CI` ou `HARNESS_AUTOMATION`. A confirmação é vinculada à proposta e revalidada antes da gravação. Isso não autentica criptograficamente a pessoa nem impede que um operador com acesso ao código, ao arquivo canônico ou a um pseudo-terminal burle o procedimento. A proibição de automação também é uma regra obrigatória do agente, não uma promessa de detecção universal.
 
 Exemplo de comandos, com caminhos reais substituídos:
 
@@ -218,7 +218,7 @@ Entrega:
     validation/                       resultados e evidências do piloto
 
 Cada projeto inicializado usa:
-  <projeto>/.harness/state.sqlite     fonte canônica transacional
+  <projeto>/.harness/state.yaml     fonte canônica transacional
 
 Na base ficam missão, revisão, ciclos, checks, afirmações, dependências,
 retratações, step-backs, consolidações e eventos de auditoria.
@@ -226,11 +226,11 @@ Não há ledger JSON paralelo a atualizar manualmente.
 
 resume, metrics e export consultam a mesma fonte. Um relatório exportado é
 identificado como gerado e não pode substituir um arquivo alheio silenciosamente.
-SQLite serializa as escritas; um ciclo ativo impede outro início no mesmo projeto.
+Um lock de arquivo serializa as escritas YAML; um ciclo ativo impede outro início no mesmo projeto.
 As verificações em andamento mantêm a transação e outro escritor espera ou falha.
 
 Arquivos de evidência permanecem no projeto e precisam continuar disponíveis.
-O banco guarda seus hashes, não cópias completas. Backup somente da base não
+O estado guarda seus hashes, não cópias completas. Backup somente da base não
 preserva os artefatos externos a ela: inclua-os no backup normal do projeto.
 Não impor teto fixo à memória; controlar relevância e custo de recuperação.
 
@@ -238,7 +238,7 @@ Não impor teto fixo à memória; controlar relevância e custo de recuperação
 6. EXECUTAR A CLI
 ================================================================================
 
-Requisito: Python 3.11 ou superior com sqlite3. Só usa a biblioteca padrão.
+Requisito: Python 3.11 ou superior com PyYAML 6.x. Usa também PyYAML 6.x.
 Não requer chave de IA, banco externo ou pacote pago. Os comandos da missão
 podem, por sua vez, depender de programas que o próprio projeto utiliza.
 
@@ -250,6 +250,10 @@ Exemplo de preparação no PowerShell — ajuste os caminhos:
 
 Se python não apontar para o interpretador correto, use seu executável completo
 ou, se disponível: uv run --python 3.12 python <argumentos>.
+
+Se existir apenas <projeto>/.harness/state.sqlite de uma publicação anterior,
+execute `migrate-sqlite` uma vez. O comando valida e preserva o SQLite, importa
+estado e auditoria e cria state.yaml atomicamente. Não execute init nesse caso.
 
 AJUDA
   python "$H" --help
@@ -396,7 +400,7 @@ CONSOLIDAR
 Cinco campos de listas: failures_and_dead_ends, retractions_and_repairs,
 established_facts, open_questions e patterns_and_actions. Lista vazia é explícita.
 A ferramenta valida a base e lê os ciclos completos da janela diretamente do
-SQLite, registrando IDs e hash do conjunto. O agente é responsável pela análise
+YAML, registrando IDs e hash do conjunto. O agente é responsável pela análise
 das cinco seções; preencher um campo não prova a qualidade da análise.
 
 Não inicia outro ciclo quando a consolidação está vencida. Também não consolida
@@ -441,14 +445,14 @@ Mudança de qualidade exige comparação observada; não inventar economia perce
 10. BACKUP E RETOMADA
 ================================================================================
 
-  python "$H" --project "$P" backup --output 'HARNESS_STATE_BACKUP.sqlite'
+  python "$H" --project "$P" backup --output 'HARNESS_STATE_BACKUP.yaml'
 
-Usa a API de backup SQLite e verifica a integridade da cópia. Não sobrescreve um
+Usa a API de backup YAML e verifica a integridade da cópia. Não sobrescreve um
 backup existente; o diretório pai precisa existir. Faça também backup dos arquivos
 de evidência e do projeto, pois a base só guarda suas identidades.
 
 Para recuperar uma cópia, interrompa operações da CLI, preserve a base atual,
-verifique a identidade da cópia e restaure no local .harness/state.sqlite do
+verifique a identidade da cópia e restaure no local .harness/state.yaml do
 projeto correspondente. Não restaure uma base antiga como se contivesse fatos
 posteriores à sua data. Execute validate e resume antes de continuar.
 A restauração destrutiva não é automatizada por esta versão.
@@ -539,7 +543,7 @@ automaticamente por este pacote.
 - Os hashes detectam alteração dos artefatos listados, não todas as mudanças do
   repositório. Declare provas suficientes e use revisão/diff para alterações fora
   dessas listas. Não há snapshot completo do sistema.
-- O hash da missão protege contra alteração acidental pelo fluxo; o banco não é
+- O hash da missão protege contra alteração acidental pelo fluxo; o arquivo não é
   um cofre inviolável. Um operador com escrita no arquivo pode adulterá-lo.
 - Apenas dependências declaradas participam da propagação. Busca em texto livre
   continua sendo trabalho adicional e não pode ser declarada completa sem exame.
@@ -558,12 +562,12 @@ automaticamente por este pacote.
 Mantido: honestidade, leitura prévia, fronteiras de prova, prioridade da missão,
 gates, falhas, consolidação, correção de dependências, continuidade e escopo.
 
-Adaptado: a contabilidade manual redundante vira estado único SQLite e visões;
+Adaptado: a contabilidade manual redundante vira estado único YAML e visões;
 o modelo sempre carrega somente o núcleo curto, se o hospedeiro for configurado;
 critérios selecionados congelam no começo; controles simples permanecem no light.
 
 Ainda normativo: escolha de teste, compreensão de fontes, autorização, proteção
-de invariantes externas, semântica de uma afirmação e busca fora do banco.
+de invariantes externas, semântica de uma afirmação e busca fora do estado.
 Não afirmar que todas as 71 regras históricas foram automatizadas.
 
 Projetos antigos: não executar init sobre seu conhecimento existente nem apagar
@@ -573,7 +577,7 @@ como referência até uma migração explicitamente validada.
 
 V7.7 original permaneceu intacto e uma cópia foi incluída em references/.
 A identidade dos arquivos entregues e os resultados da validação ficam no
-manifesto do pacote. O pacote usa somente a biblioteca padrão do Python.
+manifesto do pacote. O executor usa a biblioteca padrão do Python e PyYAML 6.x.
 
 
 EXTENSÕES V7.9 — REFERÊNCIA OPERACIONAL
@@ -581,7 +585,7 @@ EXTENSÕES V7.9 — REFERÊNCIA OPERACIONAL
 ## Extensões V7.9 — três cuidados obrigatórios
 
 1. **Escopo da evidência:** após verificações relevantes, usar `evidence-scope` para vincular o check real ao que verifica, não verifica e deixou sem teste. Declarações e aritmética de cobertura nunca promovem automaticamente um resultado a fato ou conclusão. O retorno declara `semantic_truth_verified: false`. Preservar falhas e limitações.
-2. **Retomada:** gerar `capsule` quando útil em trabalho longo e conferir `capsule-status` antes de confiar numa cópia salva. SQLite é a única fonte canônica. A cápsula é uma visão não autoritativa, pode omitir itens com contagens explícitas e não pode ser importada como missão, memória definitiva ou autorização. Diante de dúvida ou inconsistência, abrir `resume`/`review` e as evidências pertinentes.
+2. **Retomada:** gerar `capsule` quando útil em trabalho longo e conferir `capsule-status` antes de confiar numa cópia salva. YAML é a única fonte canônica. A cápsula é uma visão não autoritativa, pode omitir itens com contagens explícitas e não pode ser importada como missão, memória definitiva ou autorização. Diante de dúvida ou inconsistência, abrir `resume`/`review` e as evidências pertinentes.
 3. **Preparação:** `prepare-mission` organiza propostas e perguntas sem executar testes ou inicializar/revisar missões. `ready_for_review` não é aprovação. Tarefas copiadas dos critérios não têm dependências ou abordagem adivinhadas. Mudança da missão vigente continua exigindo pedido/autorização explícita e confirmação pessoal no terminal; nunca partir de cron, loop, heartbeat ou automação.
 
 Leia `references/v79-features.md` antes do primeiro uso dessas extensões para conhecer esquemas, comandos e limites. Use o fluxo mínimo adequado: nenhuma extensão cria daemon, depende de subagentes ou substitui os gates anteriores. O limite de tamanho da cápsula vale só para a visão gerada; não impõe teto aos arquivos de memória nem remove histórico.

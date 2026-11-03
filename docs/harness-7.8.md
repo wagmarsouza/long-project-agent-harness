@@ -14,7 +14,7 @@ Seus controles centrais são: recuperar antes de repetir, revisar evidências an
 ## Comandos
 
 ```text
-init start claim retract step-back consolidate
+init migrate-sqlite start claim retract step-back consolidate
 preview-mission revise-mission review check close interrupt
 resume validate metrics export backup
 ```
@@ -32,6 +32,8 @@ python -B $h --project $p close --cycle 1 --outcome verified --next 'Próximo pa
 python -B $h --project $p validate
 ```
 
+Para um projeto criado por uma publicação anterior, preserve `.harness/state.sqlite` e execute `python -B $h --project $p migrate-sqlite` uma única vez. Valide em seguida; o YAML passa a ser canônico e o SQLite permanece somente como origem legada preservada.
+
 Retomada e diagnóstico:
 
 ```powershell
@@ -39,7 +41,7 @@ python -B $h --project $p resume
 python -B $h --project $p validate
 python -B $h --project $p metrics
 python -B $h --project $p export --output "$p\REPORT.md"
-python -B $h --project $p backup --output "$p\backups\state.sqlite"
+python -B $h --project $p backup --output "$p\backups\state.yaml"
 ```
 
 Correções e conhecimento:

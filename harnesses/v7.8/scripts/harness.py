@@ -291,7 +291,7 @@ class Harness:
             return {'cycle': cycle_id, 'gates': cycle['gates'], 'acceptance_frozen': criteria}
 
     def check(self, cycle_id, criterion_id):
-        # Holding the SQLite write transaction prevents two check/close operations
+        # Holding the YAML store lock prevents two check/close operations
         # from racing. A second writer waits or fails without executing its command.
         with self.state(write=True) as state:
             cycle = self.cycle(state, cycle_id)

@@ -62,7 +62,7 @@ recovered = invoke('resume')
 assert recovered['recent_cycles'][-1]['status'] == 'verified'
 assert recovered['claims']['total-three-cases']['status'] == 'verified'
 invoke('validate')
-invoke('backup', '--output', 'verified-state.sqlite')
+invoke('backup', '--output', 'verified-state.yaml')
 invoke('export', '--output', 'REPORT.md')
 check_id = recovered['recent_cycles'][-1]['checks'][-1]['id']
 scope = invoke('evidence-scope', '--input', payload('scope.json', {
@@ -75,10 +75,10 @@ assert not scope['semantic_truth_verified']
 capsule = invoke('capsule', '--output', 'CAPSULE.json')
 assert not capsule['authoritative'] and not capsule['mission_complete_asserted']
 assert invoke('capsule-status', '--input', 'CAPSULE.json')['fresh']
-before_prepare = (project / '.harness/state.sqlite').read_bytes()
+before_prepare = (project / '.harness/state.yaml').read_bytes()
 draft = invoke('prepare-mission', '--input', payload('request.json', mission), '--output', 'DRAFT.json')
 assert draft['status'] == 'ready_for_review' and not draft['can_apply'] and not draft['task_plan_ready']
-assert before_prepare == (project / '.harness/state.sqlite').read_bytes()
+assert before_prepare == (project / '.harness/state.yaml').read_bytes()
 assert invoke('capsule-status', '--input', 'CAPSULE.json')['fresh']
 original_calculator = (project / 'calculator.py').read_bytes()
 (project / 'calculator.py').write_bytes(original_calculator + b'\n# temporary drift fixture\n')

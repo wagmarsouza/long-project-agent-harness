@@ -17,7 +17,7 @@ O V8 não é um daemon nem intercepta todas as ferramentas do agente. `task-read
 Núcleo e evidência:
 
 ```text
-init review start check close interrupt resume validate
+init migrate-sqlite review start check close interrupt resume validate
 claim retract claim-reverify step-back consolidate
 evidence-scope evidence-scopes prepare-mission capsule capsule-status
 metrics export backup preview-mission revise-mission

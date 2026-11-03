@@ -6,7 +6,7 @@ O V7.9 mantém o núcleo V7.8 e acrescenta três mecanismos para trabalhos que d
 - `capsule` e `capsule-status`: criam uma visão resumida de retomada e conferem se ela ainda corresponde ao estado canônico;
 - `prepare-mission`: organiza uma proposta de missão sem inicializar, aprovar ou executar comandos.
 
-Esses recursos não promovem resultados a fatos. A cápsula é uma visão derivada; SQLite permanece a fonte canônica. `prepare-mission` produz rascunho, não autorização. `semantic_truth_verified` permanece falso para declarações de escopo.
+Esses recursos não promovem resultados a fatos. A cápsula é uma visão derivada; YAML permanece a fonte canônica. `prepare-mission` produz rascunho, não autorização. `semantic_truth_verified` permanece falso para declarações de escopo.
 
 ## Escolha esta versão quando
 
@@ -21,6 +21,8 @@ Além dos comandos V7.8:
 ```text
 evidence-scope evidence-scopes prepare-mission capsule capsule-status
 ```
+
+`migrate-sqlite` também está disponível para converter explicitamente um estado legado. Ele nunca sobrescreve um `state.yaml` existente e preserva `state.sqlite` como evidência da migração.
 
 Fluxo básico igual ao V7.8:
 

@@ -62,7 +62,7 @@ recovered = invoke('resume')
 assert recovered['recent_cycles'][-1]['status'] == 'verified'
 assert recovered['claims']['total-three-cases']['status'] == 'verified'
 invoke('validate')
-invoke('backup', '--output', 'verified-state.sqlite')
+invoke('backup', '--output', 'verified-state.yaml')
 invoke('export', '--output', 'REPORT.md')
 metrics = invoke('metrics')
 assert metrics['checks_failed'] == 1 and metrics['checks_passed'] == 1

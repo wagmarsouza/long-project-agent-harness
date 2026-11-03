@@ -1,0 +1,110 @@
+{
+  "version": "7.8",
+  "files": [
+    {
+      "path": "skill-harness-v7-8/assets/templates/claim.example.json",
+      "sha256": "f4b9ffedbcc2e0a03378a59c51006a7ff98ade1e64b1fdd1e997b85984309c85",
+      "bytes": 234
+    },
+    {
+      "path": "skill-harness-v7-8/assets/templates/consolidation.example.json",
+      "sha256": "064e8d25845ff5f36759997fe9da295e13d53b82611f3b7ac6883c2b6d83d4b4",
+      "bytes": 156
+    },
+    {
+      "path": "skill-harness-v7-8/assets/templates/mission-revision.example.json",
+      "sha256": "ef5ccac896f6ab86a9f17cc4336ee7a0b7e650c0157ff10587115c76ad6e87e7",
+      "bytes": 820
+    },
+    {
+      "path": "skill-harness-v7-8/assets/templates/mission.example.json",
+      "sha256": "a8ecf457688216e4640801603643dd86d38cf72b1f74706a2e39b25591fb81e6",
+      "bytes": 634
+    },
+    {
+      "path": "skill-harness-v7-8/assets/templates/plan.example.json",
+      "sha256": "449cbbd46aa5fb1bcc74f60cd803f1ea2fc18ccea3557a797a9b9e81cdd974df",
+      "bytes": 693
+    },
+    {
+      "path": "skill-harness-v7-8/assets/templates/retraction.example.json",
+      "sha256": "e98dbf5101a32a4439f567d61790e00f04d477874e059795babf68e3a0e71136",
+      "bytes": 211
+    },
+    {
+      "path": "skill-harness-v7-8/assets/templates/step-back.example.json",
+      "sha256": "36b546cf0bbb5ab6346c3d0e74d7f06d9fd3ed5255ac1ff21c3bf6fe1a4f6207",
+      "bytes": 392
+    },
+    {
+      "path": "skill-harness-v7-8/references/harness_v7.7.txt",
+      "sha256": "01e552c2dda4f99b9cc76d2a810a28986216ddac8a533bf62060ddf1ba624990",
+      "bytes": 71275
+    },
+    {
+      "path": "skill-harness-v7-8/references/harness_v7.8.txt",
+      "sha256": "454e06ca13884f8bd86c6fca958d360bc0f05a43b40d46077da81e6054be235b",
+      "bytes": 34204
+    },
+    {
+      "path": "skill-harness-v7-8/requirements.txt",
+      "sha256": "b4603b9468ade4d639d2c6f73b89d50e1fa5d227c73ab15be0382cca478513e6",
+      "bytes": 15
+    },
+    {
+      "path": "skill-harness-v7-8/scripts/__pycache__/harness.cpython-314.pyc",
+      "sha256": "dd25f432cad6bddae76d5be79be96670370f138aea65166d81176a13c591f90c",
+      "bytes": 71139
+    },
+    {
+      "path": "skill-harness-v7-8/scripts/__pycache__/yaml_store.cpython-314.pyc",
+      "sha256": "ae3944dbecde3d950c5cc95fdc8f726d4e3e7bb66d256c8da750f7275325c3fc",
+      "bytes": 20861
+    },
+    {
+      "path": "skill-harness-v7-8/scripts/harness.py",
+      "sha256": "558a7e43422ca20a2f1205930cb614440e497668f7d0e8ba9406adc145e44df7",
+      "bytes": 41763
+    },
+    {
+      "path": "skill-harness-v7-8/scripts/yaml_store.py",
+      "sha256": "f304f5dff52b3ab0c99e2acf1aee0210d6972d16504fff05637f55dde5ac842d",
+      "bytes": 11499
+    },
+    {
+      "path": "skill-harness-v7-8/SKILL.md",
+      "sha256": "78fc4517ebe614d31f525f3191c0e194bf40520456be95e6c2792b01ffb9cadf",
+      "bytes": 18078
+    },
+    {
+      "path": "skill-harness-v7-8/tests/__pycache__/test_harness.cpython-314.pyc",
+      "sha256": "ba95823231c0123059c2315c714bf3fb6a6cd527555cffe50bbeae7c01fcda90",
+      "bytes": 35749
+    },
+    {
+      "path": "skill-harness-v7-8/tests/__pycache__/test_mission_revision.cpython-314.pyc",
+      "sha256": "cec30f0c9f5b79ccd0968af873c7798bdd770d1f06466cb350b0fdba81013330",
+      "bytes": 25209
+    },
+    {
+      "path": "skill-harness-v7-8/tests/__pycache__/test_yaml_store.cpython-314.pyc",
+      "sha256": "bd5ce3d23d9536e72b91fd16a553217eeef9f78f62df6724a505ada96c1b192a",
+      "bytes": 9079
+    },
+    {
+      "path": "skill-harness-v7-8/tests/test_harness.py",
+      "sha256": "85a3ed4edbdcfe408346f43e8474a3375e5844fd38c24f36d9af0ff98554dee5",
+      "bytes": 15289
+    },
+    {
+      "path": "skill-harness-v7-8/tests/test_mission_revision.py",
+      "sha256": "1717810da5e7e75dd5f792eb5c3f274f7e93fe699528ef605e0024837e345a3d",
+      "bytes": 10907
+    },
+    {
+      "path": "skill-harness-v7-8/tests/test_yaml_store.py",
+      "sha256": "a4d4cc57d451a30ad2676d8728da4d8055c7933d9a5ac32dd6234558c2b51421",
+      "bytes": 4472
+    }
+  ]
+}

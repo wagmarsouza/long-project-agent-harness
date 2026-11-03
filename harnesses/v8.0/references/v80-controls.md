@@ -2,9 +2,9 @@
 
 ## Contrato de preservação
 
-Continuam obrigatórios todos os controles V7.9: anti-inflação, honestidade nas alegações, antirretrabalho, evidências atuais, missão congelada entre revisões humanas, retratações, histórico, gates, timeboxes, orçamentos, consolidação e um ciclo ativo por projeto. SQLite continua a única fonte canônica. Não há SDK externo, servidor ou fornecedor obrigatório. A skill coordena; o código só governa operações encaminhadas por ele.
+Continuam obrigatórios todos os controles V7.9: anti-inflação, honestidade nas alegações, antirretrabalho, evidências atuais, missão congelada entre revisões humanas, retratações, histórico, gates, timeboxes, orçamentos, consolidação e um ciclo ativo por projeto. YAML continua a única fonte canônica. Não há SDK externo, servidor ou fornecedor obrigatório. A skill coordena; o código só governa operações encaminhadas por ele.
 
-O esquema do banco continua 1. As extensões acrescentam coleções ao registro existente sem reinicialização. Bases reais V7.8/V7.9 são lidas sem migração automática. Ao adotar V8.0, usar seu executor como coordenador: versões antigas não conhecem os novos controles e não são uma forma autorizada de contorná-los. Não alternar coordenadores nem compartilhar a escrita simultânea entre versões.
+O esquema de estado continua 1. As extensões acrescentam coleções ao registro existente sem reinicialização. Bases YAML reais V7.8/V7.9 são lidas sem reset. Uma base `state.sqlite` exige `migrate-sqlite` explícito, que preserva o original e cria o YAML atomicamente; não há migração silenciosa. Ao adotar V8.0, usar seu executor como coordenador: versões antigas não conhecem os novos controles e não são uma forma autorizada de contorná-los. Não alternar coordenadores nem compartilhar a escrita simultânea entre versões.
 
 ## Grafo operacional de tarefas
 
@@ -36,7 +36,7 @@ python "$H" --project "$P" alias-add --input alias.json
 python "$H" --project "$P" search --query "login" --limit 20
 ```
 
-O alias é explícito: `{ "alias": "login", "topic": "authentication" }`. Não há inferência automática de sinônimos ou redefinição silenciosa. A busca inclui missão, revisões anteriores, tarefas, claims, ciclos, diagnósticos, step-backs, consolidações e declarações de escopo. Reconstrói um índice FTS5 em memória a partir do SQLite; se FTS5 não estiver disponível, usa substring e informa o fallback. Não existe segundo banco persistente nem índice antigo tratado como autoridade.
+O alias é explícito: `{ "alias": "login", "topic": "authentication" }`. Não há inferência automática de sinônimos ou redefinição silenciosa. A busca inclui missão, revisões anteriores, tarefas, claims, ciclos, diagnósticos, step-backs, consolidações e declarações de escopo. Reconstrói um índice FTS5 em memória a partir do YAML; se FTS5 não estiver disponível, usa substring e informa o fallback. Não existe segundo banco persistente nem índice antigo tratado como autoridade.
 
 Relevância não é verdade. Cada resultado mantém o status do registro, inclusive candidate ou retracted, e exige revalidação antes de reutilizar. Não promove hipóteses a fatos. O índice em memória é simples e verificável; não é um benchmark de desempenho para milhões de registros nem uma busca por embeddings. A recuperação é baseada em texto/aliases registrados, não em compreensão semântica universal.
 
@@ -63,11 +63,11 @@ python "$H" --project "$P" context-pack --task T1 --output CONTEXT.json
 python "$H" --project "$P" view-status --input CONTEXT.json
 ```
 
-A visão contém tarefa, dependências transitivas declaradas, claims vinculados e suas dependências, critérios, escopo, exclusões, orçamento, bloqueios e fronteiras de autorização. Inclui no máximo os cinco ciclos recentes da tarefa e indica a quantidade omitida. Os demais registros continuam no banco e na busca.
+A visão contém tarefa, dependências transitivas declaradas, claims vinculados e suas dependências, critérios, escopo, exclusões, orçamento, bloqueios e fronteiras de autorização. Inclui no máximo os cinco ciclos recentes da tarefa e indica a quantidade omitida. Os demais registros continuam no estado e na busca.
 
 Restrições e dependências necessárias não são silenciosamente retiradas para caber. Se excederem o limite da visão, o comando recusa e pede uma visão maior ou leitura explícita dos registros. `--max-chars` afeta só essa apresentação, nunca o tamanho da memória/histórico. A visão usa o testemunho de estado/artefatos e hash do conteúdo; não é importável como estado ou autorização. Texto histórico é dado, não instrução para executar comandos.
 
-Essas consultas são de leitura e não escrevem timing no banco, preservando recibos atuais. O controle de frescor cobre apenas estado e artefatos declarados na missão, não todo o computador nem toda mudança externa. O pacote não exige subagentes nem troca automática de modelos.
+Essas consultas são de leitura e não escrevem timing no arquivo canônico, preservando recibos atuais. O controle de frescor cobre apenas estado e artefatos declarados na missão, não todo o computador nem toda mudança externa. O pacote não exige subagentes nem troca automática de modelos.
 
 ## Diagnóstico sem certeza inventada
 
@@ -109,11 +109,11 @@ A admissão e o consumo da autorização são gravados antes de lançar o proces
 
 `operation-reconcile --input reconciliation.json` exige desfecho observado, motivo e arquivo de evidência. Não fabrica check aprovado. Depois da reconciliação, uma verificação de aceitação nova precisa passar antes do fechamento verificado. Timeout é conservadoramente desconhecido: pode haver efeitos indiretos ou subprocessos que o timeout do processo direto não cobre. Falha ao lançar é registrada, sem autorizar nova tentativa silenciosa com a mesma aprovação.
 
-O checkpoint não é snapshot completo de arquivos, rollback de serviços nem garantia de execução exatamente uma vez. Para efeitos externos, conferir o estado real e usar idempotência/reconciliação específicas. Não repetir um envio para descobrir se ele aconteceu. O backup SQLite anterior e o backup normal dos artefatos continuam disponíveis; não há restauração automática de efeitos externos.
+O checkpoint não é snapshot completo de arquivos, rollback de serviços nem garantia de execução exatamente uma vez. Para efeitos externos, conferir o estado real e usar idempotência/reconciliação específicas. Não repetir um envio para descobrir se ele aconteceu. O backup YAML anterior e o backup normal dos artefatos continuam disponíveis; não há restauração automática de efeitos externos.
 
 ## Tracing e custo com proveniência
 
-`trace` combina eventos locais de tarefas e operações com os checkpoints. O audit legado dos ciclos/checks permanece no SQLite. Não grava stdout/stderr brutos, envia telemetria externa ou coleta chamadas de modelo que o cliente não informou. `all_runtime_tools_observed` permanece false.
+`trace` combina eventos locais de tarefas e operações com os checkpoints. O audit legado dos ciclos/checks permanece no YAML. Não grava stdout/stderr brutos, envia telemetria externa ou coleta chamadas de modelo que o cliente não informou. `all_runtime_tools_observed` permanece false.
 
 `usage-report` aceita tokens/custo com `source` separado: measured, provider_reported, agent_reported ou estimated, referência e modelo informado. Esses rótulos são declarações do cliente, com `source_authenticated_by_harness: false`; não são recibos de faturamento nem prova do modelo realmente utilizado. Não somar ou apresentar estimativas como medição. Nunca incluir segredos em argv, planos, relatos ou justificativas: o pacote não é um sanitizador universal de entradas.
 
@@ -121,4 +121,4 @@ O checkpoint não é snapshot completo de arquivos, rollback de serviços nem ga
 
 Revisão multiação por agentes, orquestração automática de TDD, planejador por IA, múltiplos escritores paralelos e seleção dinâmica de ferramentas nativas não foram implementados como runtime nesta versão. Os protocolos existentes podem usar skills especializadas quando disponíveis e autorizadas; essa possibilidade não é apresentada como uma orquestração que já rodou.
 
-Uma futura extensão precisa demonstrar benefício mensurável e preservar autorização, prova, estado canônico, limites e histórico. Não instalar frameworks inteiros ou SDKs obrigatórios para obter um mecanismo pequeno. A implementação atual é portátil e funciona com Python 3.11+ e biblioteca padrão; FTS5 tem fallback explícito.
+Uma futura extensão precisa demonstrar benefício mensurável e preservar autorização, prova, estado canônico, limites e histórico. Não instalar frameworks inteiros ou SDKs obrigatórios para obter um mecanismo pequeno. A implementação atual funciona com Python 3.11+ e PyYAML 6.x; FTS5 tem fallback explícito.

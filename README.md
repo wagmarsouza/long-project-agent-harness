@@ -10,11 +10,13 @@
 
 [Identidade visual e versões do logo](docs/branding.md)
 
+[Guia de migração SQLite → YAML](docs/yaml-migration.md)
+
 [![skills.sh](https://skills.sh/b/wagmarsouza/long-project-agent-harness)](https://skills.sh/wagmarsouza/long-project-agent-harness)
 
 VeriMission é uma família de harnesses locais e skills para agentes que trabalham em projetos longos, com missão explícita, evidências verificáveis, retomada entre sessões e controles contra inflação de progresso. As skills especializadas de análise binária e bancadas Renode estão agora no projeto independente [DisasmLedger](https://github.com/wagmarsouza/disasmledger).
 
-O projeto não fornece um agente autônomo nem amplia permissões. O harness coordena trabalho executado por um agente ou operador, registra ciclos em SQLite e verifica critérios por comandos declarados. A qualidade semântica dos testes e das conclusões continua exigindo julgamento.
+O projeto não fornece um agente autônomo nem amplia permissões. O harness coordena trabalho executado por um agente ou operador, registra ciclos em YAML e verifica critérios por comandos declarados. A qualidade semântica dos testes e das conclusões continua exigindo julgamento.
 
 ## Componentes
 
@@ -29,7 +31,7 @@ As versões são preservadas lado a lado. V7.9 estende V7.8; V8.0 amplia a coord
 ## Requisitos
 
 - Python 3.11 ou superior.
-- Biblioteca padrão do Python e SQLite incluído no Python para os harnesses.
+- PyYAML 6.x (`python -m pip install -r requirements.txt`). O importador legado usa o `sqlite3` da biblioteca padrão apenas durante `migrate-sqlite`.
 - Um cliente de agentes que reconheça pastas com `SKILL.md`, para usar as skills.
 
 ## Início rápido com o VeriMission Control 8.0
@@ -62,7 +64,18 @@ python -B $harness --project $project close --cycle 1 --outcome verified --next 
 python -B $harness --project $project validate
 ```
 
-`init` cria `.harness/state.sqlite` no projeto. Não edite esse banco diretamente. Em uma missão existente, comece com `resume` e `validate`; não execute `init` novamente.
+`init` cria `.harness/state.yaml` no projeto. Não edite esse arquivo diretamente: o checksum detecta alteração externa. Em uma missão existente em YAML, comece com `resume` e `validate`; não execute `init` novamente.
+
+### Migração de projetos anteriores
+
+Se o projeto ainda contém `.harness/state.sqlite`, não execute `init`. Atualize o código do harness e rode uma única vez:
+
+```powershell
+python -B $harness --project $project migrate-sqlite
+python -B $harness --project $project validate
+```
+
+O comando valida o banco legado, cria atomicamente `.harness/state.yaml`, importa o estado e toda a auditoria, grava hash e proveniência da migração e mantém `state.sqlite` byte a byte como cópia legada. A partir daí, somente o YAML é canônico. Se a migração falhar, nenhum YAML parcial substitui o estado anterior.
 
 ## Instalação das skills
 
@@ -134,9 +147,9 @@ assets/branding/            logos VeriMission para temas claro e escuro
 Execute os testes da versão usada:
 
 ```powershell
-python -B -m unittest discover -s '.\harnesses\v7.8\tests' -v
-python -B -m unittest discover -s '.\harnesses\v7.9\tests' -v
-python -B -m unittest discover -s '.\harnesses\v8.0\tests' -v
+uv run --with pyyaml python -m unittest discover -s '.\harnesses\v7.8\tests' -v
+uv run --with pyyaml python -m unittest discover -s '.\harnesses\v7.9\tests' -v
+uv run --with pyyaml python -m unittest discover -s '.\harnesses\v8.0\tests' -v
 ```
 
 Os testes de análise binária e Renode estão no [DisasmLedger](https://github.com/wagmarsouza/disasmledger).

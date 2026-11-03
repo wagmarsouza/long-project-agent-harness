@@ -1,16 +1,16 @@
 """Mission changes require explicit provenance and interactive human confirmation."""
 import copy
-from contextlib import closing
 import importlib.util
 import io
 import json
 from pathlib import Path
-import sqlite3
 import subprocess
 import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+
+import yaml
 
 SCRIPT = Path(__file__).resolve().parents[1] / 'scripts/harness.py'
 spec = importlib.util.spec_from_file_location('revision_harness', SCRIPT)
@@ -156,8 +156,7 @@ class MissionRevisionTests(unittest.TestCase):
         self.assertEqual(entry['after'], after['mission'])
         backup = self.root / result['backup']
         self.assertEqual(module.file_digest(backup), result['backup_sha256'])
-        with closing(sqlite3.connect(backup)) as connection:
-            backed_up = json.loads(connection.execute('SELECT body FROM state WHERE id=1').fetchone()[0])
+        backed_up = yaml.safe_load(backup.read_text(encoding='utf-8'))['state']
         self.assertEqual(backed_up, before)
         self.assertTrue(self.h.validate()['passed'])
         self.assertEqual(self.h.metrics()['criteria_verified'], 0)

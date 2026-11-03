@@ -1,4 +1,4 @@
-﻿HARNESS V8.0 — COORDENAÇÃO PORTÁTIL COM PROVA, CONTINUIDADE E AUTORIZAÇÃO
+HARNESS V8.0 — COORDENAÇÃO PORTÁTIL COM PROVA, CONTINUIDADE E AUTORIZAÇÃO
 
 Esta é uma evolução separada do V7.9. O V7.9 original e a instalação atual do
 OpenCode foram preservados. A skill é skill-harness-v8_0; seu identificador técnico
@@ -25,13 +25,14 @@ ARQUIVOS NECESSÁRIOS
   harness_v8.0/references/: protocolos e documentação para consulta seletiva.
   tests/, examples/ e validation/: diagnóstico e evidências locais da entrega.
 
-Requer Python 3.11+ com SQLite e biblioteca padrão. FTS5 é usado se disponível,
+Requer Python 3.11+ e PyYAML 6.x. FTS5 é usado se disponível,
 com fallback textual explícito. Não há dependência obrigatória de SDK, chave de
 IA, banco externo, daemon, MCP, subagentes ou troca automática de modelo.
 
 FONTE CANÔNICA E COMPATIBILIDADE
-  <projeto>/.harness/state.sqlite continua sendo a única fonte de estado.
-  O esquema permanece 1. Bases V7.8 e V7.9 são lidas sem reset/migração automática.
+  <projeto>/.harness/state.yaml continua sendo a única fonte de estado.
+  O esquema de estado permanece 1. Bases YAML V7.8 e V7.9 são lidas sem reset.
+  Um state.sqlite legado exige migrate-sqlite explícito; o original é preservado.
   Relatórios, índices de busca, cápsulas e contextos são derivados. Nunca importar
   essas visões como missão, memória definitiva ou autorização.
   Após adotar V8.0, não usar o executor antigo para contornar os novos controles.
@@ -51,6 +52,8 @@ NOVO PROJETO
   python "$H" --project "$P" init --input mission.json
 
 PROJETO EXISTENTE
+  Se existir somente .harness/state.sqlite:
+  python "$H" --project "$P" migrate-sqlite
   python "$H" --project "$P" resume
   python "$H" --project "$P" validate
   Não executar init para resetar. Se a missão mudar, usar o procedimento humano

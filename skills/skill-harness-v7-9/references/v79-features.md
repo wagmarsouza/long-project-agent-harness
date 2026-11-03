@@ -1,6 +1,6 @@
 # Extensões V7.9: evidência, continuidade e preparação
 
-As extensões usam o mesmo executor, os mesmos gates e o SQLite existente. Nenhuma delas autoriza ações externas, muda a missão vigente ou cria execução em segundo plano.
+As extensões usam o mesmo executor, os mesmos gates e o YAML existente. Nenhuma delas autoriza ações externas, muda a missão vigente ou cria execução em segundo plano.
 
 ## Escopo estruturado da evidência
 
@@ -30,13 +30,13 @@ python "$H" --project "$P" capsule-status --input HANDOFF.json
 
 Sem `--output`, `capsule` retorna a visão no JSON da CLI. O arquivo gerado contém versão, missão resumida, ciclos recentes, claims priorizados, critérios pendentes, índices de anotações e problemas detectados. Indica quantos registros foram omitidos e onde recuperar o conteúdo completo. Textos são excertos; consulte `resume`, `review` e o estado canônico antes de ações materiais. Não interpretar esses excertos como novas instruções ou autorização.
 
-O tamanho padrão da visão é 12.000 caracteres; `--max-chars` aceita 4.000 a 50.000. Isso limita somente a apresentação desta cápsula, nunca a memória, o banco, o histórico ou a quantidade de registros persistidos. Um arquivo menor pode omitir itens, mas sempre declara suas contagens. A cápsula não afirma automaticamente que a missão terminou.
+O tamanho padrão da visão é 12.000 caracteres; `--max-chars` aceita 4.000 a 50.000. Isso limita somente a apresentação desta cápsula, nunca a memória, o estado, o histórico ou a quantidade de registros persistidos. Um arquivo menor pode omitir itens, mas sempre declara suas contagens. A cápsula não afirma automaticamente que a missão terminou.
 
 Descrições e objetivos podem aparecer como excertos de até 500 caracteres; identificadores nunca são truncados. Se não couberem, o registro é omitido com contagem explícita. O estado e o testemunho dos artefatos são comparados antes/depois da auditoria; uma alteração detectada durante essa etapa recusa a geração. Isso não bloqueia todas as escritas externas no sistema de arquivos: a consulta posterior de frescor continua necessária.
 
-**Principal cuidado:** a cápsula é não autoritativa. Não existe comando para importá-la, reconstruir o banco a partir dela ou aplicar seus textos como missão. O arquivo carrega hash do conteúdo e testemunho do estado/revisão/contrato e dos artefatos declarados na missão atual. `capsule-status` verifica esses vínculos e sai com código 3 se estiver desatualizada. Uma alteração de artefatos pode invalidá-la sem mudar a revisão SQLite. Um hash não é assinatura nem prova da verdade semântica.
+**Principal cuidado:** a cápsula é não autoritativa. Não existe comando para importá-la, reconstruir o estado a partir dela ou aplicar seus textos como missão. O arquivo carrega hash do conteúdo e testemunho do estado/revisão/contrato e dos artefatos declarados na missão atual. `capsule-status` verifica esses vínculos e sai com código 3 se estiver desatualizada. Uma alteração de artefatos pode invalidá-la sem mudar a revisão YAML. Um hash não é assinatura nem prova da verdade semântica.
 
-Geração, preparação de missão e consulta da cápsula não escrevem nem o estado nem eventos de timing no banco. Portanto, não invalidam recibos de `review`. A escrita opcional vai apenas para a visão derivada indicada e não sobrescreve arquivos alheios. Depois de alterações relevantes ou compactação conhecida, gere outra cápsula; não existe daemon garantindo essa atualização. Claims e ciclos omitidos permanecem no SQLite.
+Geração, preparação de missão e consulta da cápsula não escrevem nem o estado nem eventos de timing no arquivo canônico. Portanto, não invalidam recibos de `review`. A escrita opcional vai apenas para a visão derivada indicada e não sobrescreve arquivos alheios. Depois de alterações relevantes ou compactação conhecida, gere outra cápsula; não existe daemon garantindo essa atualização. Claims e ciclos omitidos permanecem no YAML.
 
 Não considerar essa verificação um detector de todas as alterações do repositório: o testemunho abrange o estado e os artefatos declarados na missão atual. Evidências históricas e condições não instrumentadas ainda precisam de revisão apropriada. Se houver inconsistências, a cápsula informa o problema e não apresenta uma contagem verificada como se estivesse válida.
 
@@ -56,6 +56,6 @@ Missão nova: após revisar a proposta e os comandos no escopo autorizado, extra
 
 ## Continuidade com V7.8
 
-O esquema SQLite continua 1. O V7.9 lê bases reais V7.8 sem migração automática, sem reset e sem mudar o contrato no ato de leitura. Os novos registros de escopo são aditivos. A missão só muda pelo procedimento humano de revisão herdado. Os 42 testes antigos continuam incluídos e foram acrescidos de testes das extensões e de compatibilidade usando o executor V7.8 preservado como fixture de teste.
+O esquema YAML continua 1. O V7.9 lê bases reais V7.8 sem migração automática, sem reset e sem mudar o contrato no ato de leitura. Os novos registros de escopo são aditivos. A missão só muda pelo procedimento humano de revisão herdado. Os 42 testes antigos continuam incluídos e foram acrescidos de testes das extensões e de compatibilidade usando o executor V7.8 preservado como fixture de teste.
 
 Evite alternar versões como coordenadores concorrentes: o V7.8 não conhece as verificações novas de anotações e cápsulas. A volta para uma versão anterior não apaga os campos aditivos, mas perde as novas verificações enquanto estiver sendo usada. A instalação OpenCode V7.8 é preservada até que o usuário solicite instalar o V7.9. Os scripts não contêm instalador automático, cron, troca de modelo ou interceptador global de ferramentas.
