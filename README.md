@@ -1,3 +1,9 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/branding/verimission-logo-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/branding/verimission-logo-light.png">
+  <img alt="VeriMission" src="assets/branding/verimission-logo-light.png" width="760">
+</picture>
+
 # VeriMission
 
 **Controle baseado em evidências para projetos longos com agentes de IA.**
@@ -137,6 +143,7 @@ skills/                     pacotes de instruções para agentes
   binary-analysis-profile/
   renode-bench/
 docs/                       descrição e comandos de cada componente
+assets/branding/            logos VeriMission para temas claro e escuro
 ```
 
 ## Verificação
