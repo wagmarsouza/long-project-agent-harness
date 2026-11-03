@@ -19,7 +19,9 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                 return None
             require(nonempty(value), "RUN_TIME", field + " must be an ISO-8601 timestamp")
             try:
-                return datetime.fromisoformat(value.replace("Z", "+00:00"))
+                stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
+                require(stamp.tzinfo is not None, "RUN_TIME", field + " must include a timezone")
+                return stamp
             except ValueError:
                 raise Refusal("RUN_TIME", field + " must be an ISO-8601 timestamp")
 
@@ -94,6 +96,7 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                     self.write_view(output, payload)
                 else:
                     path = self.project_file(output, exists=False)
+                    require(not path.exists(), "OUTPUT_EXISTS", "Choose a new output path; existing files are preserved")
                     path.parent.mkdir(parents=True, exist_ok=True)
                     path.write_text(self._graph_text(payload, format_name), encoding="utf-8")
             return payload if format_name == "json" else {"format": format_name, "source": payload["source"], "output": output,
@@ -249,6 +252,7 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                     self.write_view(output, payload)
                 else:
                     path = self.project_file(output, exists=False)
+                    require(not path.exists(), "OUTPUT_EXISTS", "Choose a new output path; existing files are preserved")
                     path.parent.mkdir(parents=True, exist_ok=True)
                     lines = ["# VeriMission PR report", "", "- Base: `" + base + "`", "- Head: `" + head + "`",
                              "- State revision: `" + str(witness["state_revision"]) + "`", "- Human review: **required**", "",

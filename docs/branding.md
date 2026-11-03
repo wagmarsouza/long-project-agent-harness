@@ -29,5 +29,6 @@ Os arquivos desta página usam fundo transparente e possuem versões para temas 
 - **VeriMission Core 7.8** — ID técnico `skill-harness-v7-8`.
 - **VeriMission Continuity 7.9** — ID técnico `skill-harness-v7-9`.
 - **VeriMission Control 8.0** — ID técnico `skill-harness-v8-0`.
+- **VeriMission Control 8.1** — ID técnico `skill-harness-v8-1`.
 
 Os IDs técnicos das skills de harness permanecem estáveis. As skills `binary-analysis-profile` e `renode-bench` usam agora a marca [DisasmLedger](https://github.com/wagmarsouza/disasmledger), em repositório próprio.
