@@ -1,4 +1,4 @@
-# Harness 7.9
+# VeriMission Continuity 7.9
 
 O V7.9 mantém o núcleo V7.8 e acrescenta três mecanismos para trabalhos que duram muitas sessões:
 

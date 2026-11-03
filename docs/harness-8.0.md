@@ -1,4 +1,4 @@
-# Harness 8.0
+# VeriMission Control 8.0
 
 O V8.0 é a versão indicada para missões extensas com várias frentes e dependências. Ele preserva o V7.9 e acrescenta grafo de tarefas, claims revalidáveis, aliases e busca, diagnósticos, contexto por tarefa, matriz de rastreabilidade, avaliação final da missão e um adaptador local opcional para operações governadas.
 

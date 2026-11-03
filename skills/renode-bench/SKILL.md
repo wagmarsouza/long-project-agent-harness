@@ -1,11 +1,12 @@
 ---
 name: renode-bench
-description: Preparar, executar e interpretar bancadas Renode reproduzíveis para firmware autorizado, com rastreabilidade de configuração, traces e limites explícitos entre emulação e hardware.
+description: "VeriMission Renode Lab: preparar, executar e interpretar bancadas Renode reproduzíveis para firmware autorizado, com rastreabilidade de configuração, traces e limites explícitos entre emulação e hardware."
 metadata:
+  display-name: VeriMission Renode Lab
   version: "1.0.0"
 ---
 
-# Renode Bench
+# VeriMission Renode Lab
 
 Use esta skill quando o usuário pedir uma bancada Renode, trace de boot, execução headless de firmware autorizado ou análise de um trace de program counter. Ela é independente de alvo, placa e projeto.
 

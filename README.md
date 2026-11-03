@@ -1,8 +1,10 @@
-# Long Project Agent Harnesses
+# VeriMission
+
+**Controle baseado em evidências para projetos longos com agentes de IA.**
 
 [![skills.sh](https://skills.sh/b/wagmarsouza/long-project-agent-harness)](https://skills.sh/wagmarsouza/long-project-agent-harness)
 
-Harnesses locais e skills para agentes que trabalham em projetos longos, com missão explícita, evidências verificáveis, retomada entre sessões e controles contra inflação de progresso. O repositório também inclui dois complementos especializados: análise binária e bancadas Renode.
+VeriMission é uma família de harnesses locais e skills para agentes que trabalham em projetos longos, com missão explícita, evidências verificáveis, retomada entre sessões e controles contra inflação de progresso. O repositório também inclui dois complementos especializados: análise binária e bancadas Renode.
 
 O projeto não fornece um agente autônomo nem amplia permissões. O harness coordena trabalho executado por um agente ou operador, registra ciclos em SQLite e verifica critérios por comandos declarados. A qualidade semântica dos testes e das conclusões continua exigindo julgamento.
 
@@ -10,11 +12,11 @@ O projeto não fornece um agente autônomo nem amplia permissões. O harness coo
 
 | Componente | Finalidade | Quando escolher |
 | --- | --- | --- |
-| [Harness 7.8](docs/harness-7.8.md) | Núcleo estável de missão, revisão, ciclos, checks, claims, retratações e recuperação | Projetos longos que precisam de disciplina e rastreabilidade com menor superfície operacional |
-| [Harness 7.9](docs/harness-7.9.md) | Acrescenta escopo de evidência, cápsulas de retomada e preparação de missão | Projetos longos com muitas sessões e necessidade de declarar exatamente o que cada teste cobre |
-| [Harness 8.0](docs/harness-8.0.md) | Acrescenta grafo de tarefas, busca, rastreabilidade, contexto, aceitação final e operações governadas | Projetos maiores, com dependências, múltiplas frentes e critérios formais de conclusão |
-| [Binary Analysis Profile](docs/binary-analysis-profile.md) | Especializa o V8 em identidade de binários, mapas de endereço, unidades e testemunhos | Desassemblagem, firmware e reconstrução de comportamento em missões longas |
-| [Renode Bench](docs/renode-bench.md) | Orienta bancadas Renode reproduzíveis e análise de traces de PC | Emulação autorizada, trace de boot e comparação de comportamento em modelo |
+| [VeriMission Core 7.8](docs/harness-7.8.md) | Núcleo estável de missão, revisão, ciclos, checks, claims, retratações e recuperação | Projetos longos que precisam de disciplina e rastreabilidade com menor superfície operacional |
+| [VeriMission Continuity 7.9](docs/harness-7.9.md) | Acrescenta escopo de evidência, cápsulas de retomada e preparação de missão | Projetos longos com muitas sessões e necessidade de declarar exatamente o que cada teste cobre |
+| [VeriMission Control 8.0](docs/harness-8.0.md) | Acrescenta grafo de tarefas, busca, rastreabilidade, contexto, aceitação final e operações governadas | Projetos maiores, com dependências, múltiplas frentes e critérios formais de conclusão |
+| [VeriMission Binary](docs/binary-analysis-profile.md) | Especializa o V8 em identidade de binários, mapas de endereço, unidades e testemunhos | Desassemblagem, firmware e reconstrução de comportamento em missões longas |
+| [VeriMission Renode Lab](docs/renode-bench.md) | Orienta bancadas Renode reproduzíveis e análise de traces de PC | Emulação autorizada, trace de boot e comparação de comportamento em modelo |
 
 As versões são preservadas lado a lado. V7.9 estende V7.8; V8.0 amplia a coordenação sem transformar resultados em verdade automática. O perfil de análise binária e a bancada Renode são skills separadas: uma organiza evidência de desassemblagem; a outra conduz execução emulada.
 
@@ -25,7 +27,7 @@ As versões são preservadas lado a lado. V7.9 estende V7.8; V8.0 amplia a coord
 - Um cliente de agentes que reconheça pastas com `SKILL.md`, para usar as skills.
 - Renode instalado separadamente somente para a skill `renode-bench`.
 
-## Início rápido com o Harness V8.0
+## Início rápido com o VeriMission Control 8.0
 
 Clone o repositório e defina caminhos reais:
 
@@ -63,13 +65,13 @@ python -B $harness --project $project validate
 
 As cinco skills estão publicadas no [skills.sh](https://skills.sh/) e podem ser instaladas pelo cliente oficial `skills`:
 
-| Skill | Página no catálogo | Instalação individual |
-| --- | --- | --- |
-| `skill-harness-v7-8` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/skill-harness-v7-8) | `npx skills add wagmarsouza/long-project-agent-harness --skill skill-harness-v7-8` |
-| `skill-harness-v7-9` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/skill-harness-v7-9) | `npx skills add wagmarsouza/long-project-agent-harness --skill skill-harness-v7-9` |
-| `skill-harness-v8-0` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/skill-harness-v8-0) | `npx skills add wagmarsouza/long-project-agent-harness --skill skill-harness-v8-0` |
-| `binary-analysis-profile` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/binary-analysis-profile) | `npx skills add wagmarsouza/long-project-agent-harness --skill binary-analysis-profile` |
-| `renode-bench` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/renode-bench) | `npx skills add wagmarsouza/long-project-agent-harness --skill renode-bench` |
+| Nome público | ID técnico | Página no catálogo | Instalação individual |
+| --- | --- | --- | --- |
+| VeriMission Core 7.8 | `skill-harness-v7-8` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/skill-harness-v7-8) | `npx skills add wagmarsouza/long-project-agent-harness --skill skill-harness-v7-8` |
+| VeriMission Continuity 7.9 | `skill-harness-v7-9` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/skill-harness-v7-9) | `npx skills add wagmarsouza/long-project-agent-harness --skill skill-harness-v7-9` |
+| VeriMission Control 8.0 | `skill-harness-v8-0` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/skill-harness-v8-0) | `npx skills add wagmarsouza/long-project-agent-harness --skill skill-harness-v8-0` |
+| VeriMission Binary | `binary-analysis-profile` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/binary-analysis-profile) | `npx skills add wagmarsouza/long-project-agent-harness --skill binary-analysis-profile` |
+| VeriMission Renode Lab | `renode-bench` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/renode-bench) | `npx skills add wagmarsouza/long-project-agent-harness --skill renode-bench` |
 
 Para listar o que o instalador encontra antes de copiar qualquer arquivo:
 

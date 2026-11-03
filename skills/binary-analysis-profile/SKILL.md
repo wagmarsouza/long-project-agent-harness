@@ -1,12 +1,13 @@
 ---
 name: binary-analysis-profile
-description: Complementar o Harness V8.0 em missões longas de desassemblagem e análise binária, com identidade do alvo, mapas de endereços, unidades estáveis, evidências e retomada sem inflar conclusões.
+description: "VeriMission Binary: complementar o Harness V8.0 em missões longas de desassemblagem e análise binária, com identidade do alvo, mapas de endereços, unidades estáveis e conclusões limitadas pela evidência."
 metadata:
+  display-name: VeriMission Binary
   version: "1.0"
   target-harness: "8.0"
 ---
 
-# Perfil de análise binária para o Harness V8.0
+# VeriMission Binary
 
 Aplicar junto à skill do Harness V8.0 quando a missão envolver firmware, executáveis, desassemblagem ou reconstrução de comportamento. Este complemento especializa a análise; não substitui o coordenador, altera a missão, instala ferramentas ou cria execução em segundo plano. Não depende de um emulador, fabricante, arquitetura ou projeto específico.
 

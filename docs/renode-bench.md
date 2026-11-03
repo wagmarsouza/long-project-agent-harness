@@ -1,4 +1,4 @@
-# Renode Bench
+# VeriMission Renode Lab
 
 Esta skill cria uma bancada Renode genérica para firmware autorizado. Ela orienta configuração headless, registro do alvo, execução inicialmente sem hooks, preservação de logs/traces e interpretação de um PC trace. A versão pública não contém firmware, endereços, nomes de produto ou caminhos de projetos privados.
 

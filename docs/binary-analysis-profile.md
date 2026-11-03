@@ -1,4 +1,4 @@
-# Binary Analysis Profile
+# VeriMission Binary
 
 Esta skill complementa o Harness V8.0 em desassemblagem, firmware e reconstrução de comportamento. Ela fixa a identidade do binário e da configuração, distingue offset de arquivo/VA/espaço de endereço, cria unidades estáveis e confere relatórios de testemunhos sem promover observações a verdade semântica.
 

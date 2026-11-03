@@ -1,4 +1,4 @@
-# Harness 7.8
+# VeriMission Core 7.8
 
 O V7.8 é o núcleo portátil para projetos que atravessam muitas conversas ou sessões. Ele congela uma missão com objetivo, escopo, exclusões, critérios executáveis e orçamento; registra ciclos de investigação; executa checks; guarda hashes de artefatos; permite claims e retratações; impede fechamento verificado sem evidência atual; e oferece retomada, exportação e backup.
 

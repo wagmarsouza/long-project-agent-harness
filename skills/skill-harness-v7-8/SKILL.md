@@ -1,16 +1,16 @@
 ---
 name: skill-harness-v7-8
-description: Conduzir projetos com o Harness V7.8, critérios de aceitação executáveis, ciclos verificados, evidências persistentes e retomada. Usar quando solicitado como skill-harness-v7.8, ao adotar o harness num projeto ou ao continuar uma missão já inicializada por ele.
+description: "VeriMission Core 7.8: conduzir projetos longos com critérios de aceitação executáveis, ciclos verificados, evidências persistentes e retomada. Usar ao adotar o harness ou continuar uma missão existente."
 metadata:
-  display-name: skill-harness-v7.8
+  display-name: VeriMission Core 7.8
   version: "7.8"
 ---
 
-# skill-harness-v7.8
+# VeriMission Core 7.8
 
 ## Propósito e alcance
 
-Aplicar o Harness V7.8 preservando o objetivo, as exclusões e as permissões do projeto. O identificador técnico é `skill-harness-v7-8`; o nome de exibição é `skill-harness-v7.8`.
+Aplicar o Harness V7.8 preservando o objetivo, as exclusões e as permissões do projeto. O identificador técnico permanece `skill-harness-v7-8`; VeriMission Core 7.8 é o nome público de exibição.
 
 Esta skill orienta o agente e inclui o executor. Não intercepta ferramentas, não cria trabalho em segundo plano e não concede permissões externas. A instalação permite descoberta; não garante ativação em toda mensagem. Não alterar regras globais, criar cron ou instalar serviços para tornar esta skill permanente sem pedido específico.
 
