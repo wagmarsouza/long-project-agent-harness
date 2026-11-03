@@ -1,5 +1,9 @@
 # Changelog
 
+## Publication v2.1.1 — 2026-11-03
+
+- Fixed V8.1 manifest hashes to describe canonical Git/archive bytes and pinned the package to LF line endings across operating systems. Runtime behavior is unchanged.
+
 ## VeriMission 8.1 — 2026-11-03
 
 - Added read-only JSON, Mermaid, and DOT graph projections with source revision and hashes.

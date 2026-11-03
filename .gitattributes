@@ -1,0 +1,3 @@
+# Published V8.1 manifests hash the canonical LF bytes in Git archives.
+/harnesses/v8.1/** text eol=lf
+/skills/skill-harness-v8-1/** text eol=lf
