@@ -1,0 +1,33 @@
+{
+  "format": "verimission-explicit-run-v1",
+  "id": "RUN-UNIQUE",
+  "agent": "codex",
+  "source": {
+    "path": "evidence/agent-run.jsonl",
+    "format": "DECLARE_O_FORMATO_REAL_EXPORTADO",
+    "record_locator": "ID_DA_SESSAO_TURNO_OU_EVENTO"
+  },
+  "status": "unknown",
+  "started_at": "2026-01-01T00:00:00+00:00",
+  "ended_at": null,
+  "attempt": 1,
+  "retry_of": null,
+  "usage": [
+    {
+      "provider": "PROVEDOR_OU_UNKNOWN",
+      "model": "MODELO_OU_UNKNOWN",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "cost": {
+        "status": "unpriced",
+        "amount_usd": null,
+        "method": "preco indisponivel",
+        "pricing_ref": ""
+      }
+    }
+  ],
+  "subagents": [],
+  "notes": "Registre somente valores sustentados pela fonte; desconhecido nao e zero."
+}

@@ -1,0 +1,10 @@
+{
+  "id": "T1",
+  "title": "PREENCHA a tarefa dentro da missão vigente",
+  "criteria": [
+    "C1"
+  ],
+  "depends_on": [],
+  "relies_on": [],
+  "priority": 1
+}

@@ -1,0 +1,6 @@
+{
+  "id": "identificador da afirmação antiga",
+  "what_falls": "texto exato da afirmação antiga",
+  "reason": "correção explícita e seu motivo",
+  "correction_evidence": "evidence/correction.txt"
+}
