@@ -97,6 +97,11 @@ class InsightTests(unittest.TestCase):
         self.assertEqual(summary["subagent_links"], 1)
         self.assertTrue(summary["possible_parent_child_double_counting"])
 
+    def test_empty_cost_summary_does_not_claim_complete_accounting(self):
+        summary = self.h.cost_summary()
+        self.assertEqual(summary["runs"], 0)
+        self.assertFalse(summary["complete_cost_total_available"])
+
     def test_unpriced_cost_cannot_be_disguised_as_zero(self):
         entry = self.run_record("RUN-1")
         entry["usage"][0]["cost"]["amount_usd"] = 0

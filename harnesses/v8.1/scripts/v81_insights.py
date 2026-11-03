@@ -192,7 +192,7 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                     "attempt_records": len(runs), "retry_runs": sum(run["retry_of"] is not None for run in runs),
                     "subagent_links": subagent_links, "possible_parent_child_double_counting": subagent_links > 0,
                     "totals": totals, "by_agent": by_agent,
-                    "complete_cost_total_available": totals["unpriced_rows"] == 0,
+                    "complete_cost_total_available": bool(runs) and totals["unpriced_rows"] == 0,
                     "limitations": ["Actual and estimated amounts are reported separately.",
                                     "Unpriced usage is unknown, not zero.",
                                     "Imported metadata is not authenticated by the harness beyond hashing the referenced source file."]}
