@@ -1,5 +1,16 @@
 HARNESS V8.1 — COORDENAÇÃO PORTÁTIL COM PROVA, CONTINUIDADE E AUTORIZAÇÃO
 
+EXTENSÕES V8.1
+  graph --format json|mermaid|dot [--output ARQUIVO]
+  report-pr --base REF --head REF --format json|markdown [--output ARQUIVO]
+  adapter-template --agent codex|opencode|claude|hermes
+  run-import --agent AGENTE --input ARQUIVO.json
+  cost-summary
+  Consultar references/v81-projections-and-runs.md para esquemas e limites.
+  Projeções e imports não alteram missão, promovem claims ou concedem autorização.
+  Custos/tokens desconhecidos usam null; relações pai/subagente exigem revisão
+  de possível dupla contagem. Todo relatório de PR requer revisão humana.
+
 Esta é uma evolução separada do V7.9. O V7.9 original e a instalação atual do
 OpenCode foram preservados. A skill é skill-harness-v8_1; seu identificador técnico
 é skill-harness-v8-1, compatível com nomes de skills. Nenhuma ativação global foi

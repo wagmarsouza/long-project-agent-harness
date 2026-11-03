@@ -113,8 +113,8 @@
     },
     {
       "path": "skill-harness-v8-1/references/harness_v8.1.txt",
-      "sha256": "05e9dd5f62f848730e0c39a31690327326a7d0d539a09d451ca620538f30d1e7",
-      "bytes": 6854
+      "sha256": "ee4569b0ae964cd2dfd97ef2b51cbf9c569b0c7b72585d08413543a40a7936b2",
+      "bytes": 7455
     },
     {
       "path": "skill-harness-v8-1/references/v79-features.md",
@@ -153,8 +153,8 @@
     },
     {
       "path": "skill-harness-v8-1/scripts/v81_insights.py",
-      "sha256": "8a1f1df7f60df5cfd3f21ecda250e9c80e7dfe497a4eed9cf2e7c0f0cb1e79b8",
-      "bytes": 23619
+      "sha256": "fcb38df3b55f180a5acef6e57399b89dca127c8c1d90e939837235b82344e232",
+      "bytes": 24364
     },
     {
       "path": "skill-harness-v8-1/scripts/yaml_store.py",

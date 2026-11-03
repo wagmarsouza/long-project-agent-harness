@@ -256,6 +256,11 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                     path.parent.mkdir(parents=True, exist_ok=True)
                     lines = ["# VeriMission PR report", "", "- Base: `" + base + "`", "- Head: `" + head + "`",
                              "- State revision: `" + str(witness["state_revision"]) + "`", "- Human review: **required**", "",
+                             "- Mission SHA-256: `" + witness["mission_hash"] + "`",
+                             "- State SHA-256: `" + witness["state_sha256"] + "`", "",
+                             "## Scope", "", payload["scope"]["objective"], "",
+                             "In scope: " + json.dumps(payload["scope"]["in_scope"], ensure_ascii=False),
+                             "Out of scope: " + json.dumps(payload["scope"]["out_of_scope"], ensure_ascii=False), "",
                              "## Coverage", "", "| Universe | Verified | Total |", "| --- | ---: | ---: |",
                              "| Requirements | " + str(req_verified) + " | " + str(len(matrix["requirements"])) + " |",
                              "| Criteria | " + str(criterion_verified) + " | " + str(len(matrix["criteria"])) + " |",
@@ -264,6 +269,8 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                     lines.extend("- `" + item["status"] + "` " + ", ".join("`" + path + "`" for path in item["paths"]) for item in changed)
                     lines.extend(["", "## Checks", ""])
                     lines.extend("- Cycle " + str(row["cycle"]) + " / `" + row["criterion"] + "`: " + ("passed" if row["passed"] else "not passed") for row in checks)
+                    lines.extend(["", "### Evidence hashes", "", "```json", json.dumps(checks, ensure_ascii=False, indent=2), "```",
+                                  "", "### State audit", "", "```json", json.dumps(audit, ensure_ascii=False, indent=2), "```"])
                     lines.extend(["", "## Claims and retractions", ""])
                     lines.extend("- `" + row["id"] + "` — " + row["status"] + ": " + row["statement"] for row in claims)
                     lines.extend(["", "## Required human review", ""] + ["- " + question for question in payload["human_review"]["questions"]] +
