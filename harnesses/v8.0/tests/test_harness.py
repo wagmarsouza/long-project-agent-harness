@@ -99,7 +99,7 @@ class HarnessTests(unittest.TestCase):
 
     def test_no_escape_or_store_as_evidence(self):
         self.refuse('PATH', lambda: self.h.project_file('../other'))
-        self.refuse('PATH', lambda: self.h.project_file('.harness/state.sqlite'))
+        self.refuse('PATH', lambda: self.h.project_file('.harness/state.yaml'))
 
     def test_init_never_resets_history(self):
         self.finish()
@@ -194,9 +194,9 @@ class HarnessTests(unittest.TestCase):
 
     def test_backup_is_consistent_and_export_cannot_overwrite_user_file(self):
         self.finish()
-        result = self.h.backup('snapshot.sqlite')
+        result = self.h.backup('snapshot.yaml')
         self.assertEqual(result['integrity'], 'ok')
-        self.assertTrue((self.root / 'snapshot.sqlite').is_file())
+        self.assertTrue((self.root / 'snapshot.yaml').is_file())
         report = self.h.export('report.md')
         self.assertTrue((self.root / 'report.md').read_text(encoding='utf-8').startswith('# GENERATED'))
         self.h.export('report.md')

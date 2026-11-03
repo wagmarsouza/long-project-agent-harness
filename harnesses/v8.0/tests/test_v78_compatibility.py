@@ -38,17 +38,19 @@ class CompatibilityTests(unittest.TestCase):
                         'kind': 'fact', 'cycle': self.cid, 'criterion': 'C1'})
         self.old.close(self.cid, 'verified', 'Legacy acceptance passed')
         self.new = new.Harness(self.root)
+        self.legacy_bytes = self.old.db.read_bytes()
+        self.migration = self.new.migrate_sqlite()
 
     def tearDown(self):
         self.temp.cleanup()
 
-    def test_reading_legacy_store_needs_no_migration_and_changes_no_bytes(self):
-        before = self.old.db.read_bytes()
+    def test_explicit_migration_preserves_legacy_bytes_and_history(self):
         self.assertTrue(self.new.validate()['passed'])
         self.assertEqual(self.new.resume()['claims']['legacy-fact']['status'], 'verified')
         self.new.capsule(output='CAPSULE.json')
         self.assertTrue(self.new.capsule_status('CAPSULE.json')['fresh'])
-        self.assertEqual(self.old.db.read_bytes(), before)
+        self.assertEqual(self.old.db.read_bytes(), self.legacy_bytes)
+        self.assertEqual(self.migration['canonical_store'], '.harness/state.yaml')
 
     def test_new_scope_annotation_preserves_legacy_contract_and_cycle(self):
         before = self.old.resume()
