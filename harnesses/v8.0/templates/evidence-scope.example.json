@@ -1,0 +1,19 @@
+{
+  "cycle": 1,
+  "check_id": "COPIE o ID real retornado por check",
+  "method": "dynamic",
+  "environment": "DESCREVA o ambiente efetivamente usado; o rótulo não autentica produção",
+  "verifies": ["DESCREVA a conclusão delimitada sustentada pelo teste"],
+  "does_not_verify": ["DESCREVA a extrapolação que o teste não permite"],
+  "untested": ["LISTE condições relevantes não testadas"],
+  "coverage": [
+    {
+      "label": "Casos explicitamente declarados",
+      "numerator": 0,
+      "denominator": null,
+      "unit": "casos",
+      "universe": "PREENCHA o universo real ou declare que ainda é desconhecido",
+      "exclusions": []
+    }
+  ]
+}

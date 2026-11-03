@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.sqlite
+*.sqlite-*
+.harness/
+.env
+.env.*
+*.pem
+*.key
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

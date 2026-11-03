@@ -1,0 +1,12 @@
+{
+  "format": "binary-unit-v1",
+  "id": "U1",
+  "target_sha256": "SUBSTITUA_PELO_SHA256_DO_BINARIO",
+  "segment": "SUBSTITUA_SEGMENTO",
+  "file_offset": 4,
+  "size": 4,
+  "virtual_address": 4100,
+  "isa_mode": "unknown",
+  "classification": "candidate_function",
+  "boundary_hypothesis": "SUBSTITUA_PELA_JUSTIFICATIVA_E_ALTERNATIVAS"
+}

@@ -1,0 +1,8 @@
+{
+  "task": "mesmo identificador da tarefa",
+  "premise": "mesma premissa dos ciclos sem avanço",
+  "reference_review": "o que foi relido e o que responde",
+  "data_model_review": "configuração/dados/lógica existente examinados",
+  "simpler_alternative": "alternativa concreta ainda não testada",
+  "next_test": "teste e resultado que confirmariam ou refutariam a alternativa"
+}

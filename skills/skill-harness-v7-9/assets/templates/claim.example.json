@@ -1,0 +1,9 @@
+{
+  "id": "identificador-unico",
+  "topic": "mesmo tópico usado na revisão",
+  "statement": "afirmação específica limitada à prova disponível",
+  "kind": "fact",
+  "cycle": 1,
+  "criterion": "C1",
+  "depends_on": []
+}

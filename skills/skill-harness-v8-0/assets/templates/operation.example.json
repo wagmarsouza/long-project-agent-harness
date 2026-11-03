@@ -1,0 +1,9 @@
+{
+  "id": "OP1",
+  "cycle": 1,
+  "criterion": "C1",
+  "effect": "local",
+  "risk": "read",
+  "reason": "PREENCHA o motivo da operação exata",
+  "request_ref": "REFERENCIE o pedido real; nunca invente autorização"
+}

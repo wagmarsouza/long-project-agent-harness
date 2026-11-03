@@ -1,0 +1,23 @@
+{
+  "expected_mission_hash": "COPIE mission_hash retornado por resume",
+  "expected_revision": 0,
+  "reason": "DESCREVA a mudança pedida ou explicitamente autorizada pelo usuário",
+  "authorization": {
+    "source": "user",
+    "reference": "REFERENCIE o pedido ou a aprovação real do usuário; nunca invente autorização"
+  },
+  "mission": {
+    "objective": "PREENCHA o novo objetivo autorizado",
+    "mode": "light",
+    "in_scope": ["PREENCHA o escopo autorizado"],
+    "out_of_scope": ["PREENCHA as exclusões"],
+    "criteria": [
+      {
+        "id": "C1",
+        "description": "PREENCHA o novo critério observável de aceitação",
+        "argv": ["CAMINHO_REAL_DO_PYTHON", "tests/acceptance.py"],
+        "artifacts": ["src/result.py", "tests/acceptance.py"]
+      }
+    ]
+  }
+}
