@@ -77,6 +77,7 @@ class InsightTests(unittest.TestCase):
             self.assertEqual(template["agent"], agent)
             self.assertEqual(template["usage"][0]["cost"]["status"], "unpriced")
             self.assertIsNone(template["usage"][0]["cost"]["amount_usd"])
+            self.assertIsNone(template["usage"][0]["input_tokens"])
         imported = self.h.run_import(self.run_record("RUN-1"), "codex")
         self.assertFalse(imported["adapter"]["native_format_parsed"])
         self.assertFalse(imported["claims_promoted"])
@@ -94,6 +95,7 @@ class InsightTests(unittest.TestCase):
         self.assertFalse(summary["complete_cost_total_available"])
         self.assertEqual(summary["retry_runs"], 1)
         self.assertEqual(summary["subagent_links"], 1)
+        self.assertTrue(summary["possible_parent_child_double_counting"])
 
     def test_unpriced_cost_cannot_be_disguised_as_zero(self):
         entry = self.run_record("RUN-1")

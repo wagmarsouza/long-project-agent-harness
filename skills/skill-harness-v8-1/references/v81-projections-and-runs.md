@@ -44,7 +44,7 @@ python "$H" --project "$P" cost-summary
 
 O V8.1 escolhe importação explícita e verificável, não parsers frágeis de logs nativos. A entrada `verimission-explicit-run-v1` aponta para um arquivo de exportação/evidência dentro do projeto, declara seu formato real e localiza o registro. O executor calcula o SHA-256 da fonte, valida o esquema e preserva a declaração. Ele não afirma compreender o conteúdo nativo (`native_format_parsed: false`) e não autentica automaticamente o relato.
 
-Para cada modelo, os quatro contadores de tokens são literais observados; se não forem conhecidos, explique a limitação nas notas em vez de tratá-los como estimativa invisível. Custos têm três estados:
+Para cada modelo, os quatro contadores de tokens são literais observados; se não forem conhecidos, use `null`. Zero significa zero realmente observado, não ausência de dado. Custos têm três estados:
 
 - `actual`: valor de recibo/relatório do provedor, com referência;
 - `estimated`: cálculo reproduzível, com método e tabela de preço referenciada;

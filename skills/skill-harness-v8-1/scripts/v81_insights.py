@@ -104,7 +104,7 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
             require(isinstance(row, dict) and set(row) == required and nonempty(row["provider"]) and nonempty(row["model"]),
                     "RUN_USAGE", "Usage rows require provider, model, four token counters, and cost")
             for key in ("input_tokens", "output_tokens", "cache_read_tokens", "cache_write_tokens"):
-                require(type(row[key]) is int and row[key] >= 0, "RUN_USAGE", key + " must be a nonnegative integer")
+                require(row[key] is None or (type(row[key]) is int and row[key] >= 0), "RUN_USAGE", key + " must be null (unknown) or a nonnegative observed integer")
             cost = row["cost"]
             require(isinstance(cost, dict) and set(cost) == {"status", "amount_usd", "method", "pricing_ref"} and
                     cost["status"] in COST_STATES and nonempty(cost["method"]), "RUN_COST", "Cost requires status, amount_usd, method, and pricing_ref")
@@ -156,8 +156,8 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                     "source": {"path": "evidence/agent-run.jsonl", "format": "declare-real-export-format", "record_locator": "turn/session/event identifier"},
                     "status": "unknown", "started_at": "2026-01-01T00:00:00+00:00", "ended_at": None,
                     "attempt": 1, "retry_of": None,
-                    "usage": [{"provider": "unknown", "model": "unknown", "input_tokens": 0, "output_tokens": 0,
-                               "cache_read_tokens": 0, "cache_write_tokens": 0,
+                    "usage": [{"provider": "unknown", "model": "unknown", "input_tokens": None, "output_tokens": None,
+                               "cache_read_tokens": None, "cache_write_tokens": None,
                                "cost": {"status": "unpriced", "amount_usd": None, "method": "provider price unavailable", "pricing_ref": ""}}],
                     "subagents": [], "notes": "Transcribe only fields supported by the hashed source; unknown is not zero except literal observed token counters."}
 
@@ -166,13 +166,17 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                 runs = list(state.get("agent_runs", {}).values())
                 witness = self.source_witness(state)
             totals = {"actual_usd": 0.0, "estimated_usd": 0.0, "unpriced_rows": 0,
-                      "input_tokens": 0, "output_tokens": 0, "cache_read_tokens": 0, "cache_write_tokens": 0}
+                      "input_tokens": 0, "output_tokens": 0, "cache_read_tokens": 0, "cache_write_tokens": 0,
+                      "unreported_token_fields": 0}
             by_agent = {agent: {"runs": 0, "actual_usd": 0.0, "estimated_usd": 0.0, "unpriced_rows": 0} for agent in AGENTS}
             for run in runs:
                 by_agent[run["agent"]]["runs"] += 1
                 for row in run["usage"]:
                     for key in ("input_tokens", "output_tokens", "cache_read_tokens", "cache_write_tokens"):
-                        totals[key] += row[key]
+                        if row[key] is None:
+                            totals["unreported_token_fields"] += 1
+                        else:
+                            totals[key] += row[key]
                     cost = row["cost"]
                     if cost["status"] == "unpriced":
                         totals["unpriced_rows"] += 1
@@ -181,9 +185,11 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                         field = cost["status"] + "_usd"
                         totals[field] += cost["amount_usd"]
                         by_agent[run["agent"]][field] += cost["amount_usd"]
+            subagent_links = sum(len(run["subagents"]) for run in runs)
             return {"format": "verimission-cost-summary-v1", "source": witness, "runs": len(runs),
-                    "attempts": sum(run["attempt"] for run in runs), "retry_runs": sum(run["retry_of"] is not None for run in runs),
-                    "subagent_links": sum(len(run["subagents"]) for run in runs), "totals": totals, "by_agent": by_agent,
+                    "attempt_records": len(runs), "retry_runs": sum(run["retry_of"] is not None for run in runs),
+                    "subagent_links": subagent_links, "possible_parent_child_double_counting": subagent_links > 0,
+                    "totals": totals, "by_agent": by_agent,
                     "complete_cost_total_available": totals["unpriced_rows"] == 0,
                     "limitations": ["Actual and estimated amounts are reported separately.",
                                     "Unpriced usage is unknown, not zero.",
