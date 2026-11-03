@@ -60,7 +60,8 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
         def _graph_text(payload, format_name):
             lookup = {row["id"]: "n" + str(i) for i, row in enumerate(payload["nodes"])}
             if format_name == "mermaid":
-                lines = ["%% VeriMission projection; source revision " + str(payload["source"]["state_revision"]), "flowchart LR"]
+                lines = ["%% VeriMission projection; source revision " + str(payload["source"]["state_revision"]),
+                         "%% Payload SHA-256 " + payload["payload_sha256"], "flowchart LR"]
                 for row in payload["nodes"]:
                     label = (row["kind"] + " | " + row["label"] + " | " + row["status"]).replace('"', "'").replace("\n", " ")
                     lines.append("  " + lookup[row["id"]] + '["' + label + '"]')
@@ -68,7 +69,8 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                     if row["from"] in lookup and row["to"] in lookup:
                         lines.append("  " + lookup[row["from"]] + " -->|" + row["kind"] + "| " + lookup[row["to"]])
                 return "\n".join(lines) + "\n"
-            lines = ["// VeriMission projection; source revision " + str(payload["source"]["state_revision"]), "digraph verimission {"]
+            lines = ["// VeriMission projection; source revision " + str(payload["source"]["state_revision"]),
+                     "// Payload SHA-256 " + payload["payload_sha256"], "digraph verimission {"]
             for row in payload["nodes"]:
                 label = (row["kind"] + " | " + row["label"] + " | " + row["status"]).replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
                 lines.append("  " + lookup[row["id"]] + ' [label="' + label + '"];')
@@ -214,6 +216,7 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
             audit = self.validate()
             with self.state() as state:
                 witness = self.source_witness(state)
+                require(audit["revision"] == witness["state_revision"], "ASSESSMENT_DRIFT", "State changed after audit; regenerate the report")
                 matrix = self.matrix(state)
                 cycles = [row for row in state["cycles"] if row["mission_hash"] == state["mission_hash"]]
                 checks = [{"cycle": cycle["id"], "criterion": check["criterion"], "passed": check["passed"],
