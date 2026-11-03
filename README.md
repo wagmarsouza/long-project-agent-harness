@@ -1,5 +1,7 @@
 # Long Project Agent Harnesses
 
+[![skills.sh](https://skills.sh/b/wagmarsouza/long-project-agent-harness)](https://skills.sh/wagmarsouza/long-project-agent-harness)
+
 Harnesses locais e skills para agentes que trabalham em projetos longos, com missão explícita, evidências verificáveis, retomada entre sessões e controles contra inflação de progresso. O repositório também inclui dois complementos especializados: análise binária e bancadas Renode.
 
 O projeto não fornece um agente autônomo nem amplia permissões. O harness coordena trabalho executado por um agente ou operador, registra ciclos em SQLite e verifica critérios por comandos declarados. A qualidade semântica dos testes e das conclusões continua exigindo julgamento.
@@ -56,6 +58,34 @@ python -B $harness --project $project validate
 `init` cria `.harness/state.sqlite` no projeto. Não edite esse banco diretamente. Em uma missão existente, comece com `resume` e `validate`; não execute `init` novamente.
 
 ## Instalação das skills
+
+### Instalação pelo catálogo aberto
+
+As cinco skills estão publicadas no [skills.sh](https://skills.sh/) e podem ser instaladas pelo cliente oficial `skills`:
+
+| Skill | Página no catálogo | Instalação individual |
+| --- | --- | --- |
+| `skill-harness-v7-8` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/skill-harness-v7-8) | `npx skills add wagmarsouza/long-project-agent-harness --skill skill-harness-v7-8` |
+| `skill-harness-v7-9` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/skill-harness-v7-9) | `npx skills add wagmarsouza/long-project-agent-harness --skill skill-harness-v7-9` |
+| `skill-harness-v8-0` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/skill-harness-v8-0) | `npx skills add wagmarsouza/long-project-agent-harness --skill skill-harness-v8-0` |
+| `binary-analysis-profile` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/binary-analysis-profile) | `npx skills add wagmarsouza/long-project-agent-harness --skill binary-analysis-profile` |
+| `renode-bench` | [skills.sh](https://skills.sh/wagmarsouza/long-project-agent-harness/renode-bench) | `npx skills add wagmarsouza/long-project-agent-harness --skill renode-bench` |
+
+Para listar o que o instalador encontra antes de copiar qualquer arquivo:
+
+```powershell
+npx skills add wagmarsouza/long-project-agent-harness --list
+```
+
+Para instalar todas as skills do repositório no agente escolhido:
+
+```powershell
+npx skills add wagmarsouza/long-project-agent-harness --all
+```
+
+O suporte e o caminho final variam conforme o agente. Revise os arquivos antes da instalação: skills executam com as permissões concedidas ao agente hospedeiro.
+
+### Instalação manual
 
 Copie somente as skills desejadas para a pasta de descoberta do cliente, mantendo cada diretório inteiro. Exemplos:
 
