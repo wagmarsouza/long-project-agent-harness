@@ -8,6 +8,8 @@
 
 **Controle baseado em evidências para projetos longos com agentes de IA.**
 
+[Identidade visual e versões do logo](docs/branding.md)
+
 [![skills.sh](https://skills.sh/b/wagmarsouza/long-project-agent-harness)](https://skills.sh/wagmarsouza/long-project-agent-harness)
 
 VeriMission é uma família de harnesses locais e skills para agentes que trabalham em projetos longos, com missão explícita, evidências verificáveis, retomada entre sessões e controles contra inflação de progresso. O repositório também inclui dois complementos especializados: análise binária e bancadas Renode.
