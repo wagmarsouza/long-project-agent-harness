@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import sqlite3
+import threading
 import time
 import uuid
 
@@ -36,12 +37,24 @@ def _file_digest(path):
 class _FileLock:
     """Portable exclusive advisory lock with a bounded wait."""
 
+    _guard = threading.RLock()
+    _held = {}
+
     def __init__(self, path, timeout=10):
         self.path = Path(path)
         self.timeout = timeout
         self.stream = None
+        self.key = str(self.path.resolve())
+        self.owner = threading.get_ident()
+        self.reentrant = False
 
     def __enter__(self):
+        with self._guard:
+            held = self._held.get(self.key)
+            if held is not None and held['owner'] == self.owner:
+                held['count'] += 1
+                self.reentrant = True
+                return self
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.stream = self.path.open('a+b')
         if self.stream.seek(0, os.SEEK_END) == 0:
@@ -57,6 +70,8 @@ class _FileLock:
                 else:
                     import fcntl
                     fcntl.flock(self.stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                with self._guard:
+                    self._held[self.key] = {'owner': self.owner, 'count': 1}
                 return self
             except (OSError, BlockingIOError):
                 if time.monotonic() >= deadline:
@@ -66,6 +81,15 @@ class _FileLock:
                 time.sleep(0.05)
 
     def __exit__(self, _type, _value, _traceback):
+        with self._guard:
+            held = self._held.get(self.key)
+            if held is not None:
+                held['count'] -= 1
+                if held['count']:
+                    return
+                del self._held[self.key]
+        if self.reentrant:
+            return
         if self.stream is None:
             return
         self.stream.seek(0)

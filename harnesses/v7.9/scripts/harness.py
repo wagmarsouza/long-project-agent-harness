@@ -9,11 +9,19 @@ import json
 import math
 import os
 from pathlib import Path
-import sqlite3
 import subprocess
 import sys
 import time
 import uuid
+
+try:
+    from yaml_store import StoreError, YAMLStore
+except ModuleNotFoundError:
+    import importlib.util
+    _store_spec = importlib.util.spec_from_file_location('verimission_yaml_store_v79', Path(__file__).with_name('yaml_store.py'))
+    _store_module = importlib.util.module_from_spec(_store_spec)
+    _store_spec.loader.exec_module(_store_module)
+    StoreError, YAMLStore = _store_module.StoreError, _store_module.YAMLStore
 
 VERSION = '7.9'
 
@@ -50,9 +58,11 @@ class Harness:
     def __init__(self, project):
         self.root = Path(project).resolve(strict=True)
         require(self.root.is_dir(), 'PROJECT', 'Project must be a directory')
-        self.db = self.root / '.harness' / 'state.sqlite'
+        self.db = self.root / '.harness' / 'state.yaml'
+        self.legacy_db = self.root / '.harness' / 'state.sqlite'
         require(not self.db.parent.is_symlink() and not self.db.is_symlink(), 'PATH', 'Store cannot be a symlink')
         require(self.db.parent.resolve().is_relative_to(self.root), 'PATH', 'Store cannot resolve outside the project')
+        self.store = YAMLStore(self.db, now)
 
     def project_file(self, relative, exists=True):
         require(nonempty(relative), 'PATH', 'A project-relative path is required')
@@ -67,26 +77,11 @@ class Harness:
 
     @contextmanager
     def state(self, write=False):
-        require(self.db.exists(), 'NOT_INITIALIZED', 'Run init first')
-        connection = sqlite3.connect(self.db, timeout=10)
         try:
-            connection.execute('PRAGMA foreign_keys=ON')
-            connection.execute('BEGIN IMMEDIATE' if write else 'BEGIN')
-            row = connection.execute('SELECT body FROM state WHERE id=1').fetchone()
-            require(row is not None, 'STORE', 'State record missing')
-            state = json.loads(row[0])
-            require(state['schema'] == 1, 'SCHEMA', 'Unsupported schema')
-            yield state
-            if write:
-                state['revision'] += 1
-                connection.execute('UPDATE state SET body=? WHERE id=1', (json.dumps(state, ensure_ascii=False),))
-                connection.execute('INSERT INTO audit(at,revision,kind) VALUES(?,?,?)', (now(), state['revision'], 'state-update'))
-            connection.commit()
-        except BaseException:
-            connection.rollback()
-            raise
-        finally:
-            connection.close()
+            with self.store.state(write=write) as state:
+                yield state
+        except StoreError as error:
+            raise Refusal(error.code, error.detail) from error
 
     def normalize_mission(self, mission):
         require(isinstance(mission, dict), 'MISSION', 'Mission must be an object')
@@ -120,21 +115,26 @@ class Harness:
 
     def init(self, mission):
         require(not self.db.exists(), 'EXISTS', 'Store already exists; init never resets history')
+        require(not self.legacy_db.exists(), 'MIGRATION_REQUIRED', 'Legacy state.sqlite found; run migrate-sqlite instead of init')
         mission = self.normalize_mission(mission)
         state = {'schema': 1, 'version': VERSION, 'created': now(), 'revision': 0,
                  'mission': mission, 'mission_hash': digest(mission), 'cycles': [],
                  'claims': {}, 'reviews': {}, 'stepbacks': [], 'consolidations': []}
-        self.db.parent.mkdir(exist_ok=True)
-        connection = sqlite3.connect(self.db, timeout=10)
         try:
-            connection.execute('PRAGMA journal_mode=DELETE')
-            connection.execute('CREATE TABLE state(id INTEGER PRIMARY KEY CHECK(id=1),body TEXT NOT NULL)')
-            connection.execute('CREATE TABLE audit(id INTEGER PRIMARY KEY,at TEXT,revision INTEGER,kind TEXT)')
-            connection.execute('INSERT INTO state VALUES(1,?)', (json.dumps(state, ensure_ascii=False),))
-            connection.commit()
-        finally:
-            connection.close()
-        return {'initialized': True, 'mode': mission['mode'], 'mission_hash': state['mission_hash']}
+            self.store.create(state)
+        except StoreError as error:
+            raise Refusal(error.code, error.detail) from error
+        return {'initialized': True, 'mode': mission['mode'], 'mission_hash': state['mission_hash'], 'store': '.harness/state.yaml'}
+
+    def migrate_sqlite(self):
+        require(not self.db.exists(), 'EXISTS', 'YAML store already exists; migration never overwrites it')
+        require(self.legacy_db.exists(), 'MIGRATION', 'No legacy .harness/state.sqlite was found')
+        try:
+            migration = self.store.migrate_sqlite(self.legacy_db)
+        except StoreError as error:
+            raise Refusal(error.code, error.detail) from error
+        return {'migrated': True, 'canonical_store': '.harness/state.yaml',
+                'legacy_store_preserved': '.harness/state.sqlite', 'migration': migration}
 
     def _revision_preview(self, state, proposal):
         require(isinstance(proposal, dict), 'REVISION', 'Revision proposal must be an object')
@@ -183,12 +183,13 @@ class Harness:
             folder = self.db.parent / 'mission-backups'
             require(not folder.is_symlink() and folder.resolve().is_relative_to(self.db.parent.resolve()), 'PATH', 'Backup folder must stay inside the store')
             folder.mkdir(exist_ok=True)
-            backup = folder / (str(uuid.uuid4()) + '.sqlite')
-            # BEGIN IMMEDIATE excludes other writers, while a separate reader can
-            # back up the exact committed pre-revision state without deadlocking.
-            with closing(sqlite3.connect(self.db)) as source, closing(sqlite3.connect(backup)) as destination:
-                source.backup(destination)
-                require(destination.execute('PRAGMA integrity_check').fetchone()[0] == 'ok', 'BACKUP', 'Pre-revision backup failed validation')
+            backup = folder / (str(uuid.uuid4()) + '.yaml')
+            # The YAML store lock held by state(write=True) excludes other readers
+            # and writers; copy the committed pre-revision document before mutation.
+            try:
+                self.store.copy_current_unlocked(backup)
+            except StoreError as error:
+                raise Refusal(error.code, error.detail) from error
             revisions = state.setdefault('mission_revisions', [])
             revision_id = len(revisions) + 1
             entry = {'id': revision_id, 'at': now(), 'before': current['before'], 'after': current['after'],
@@ -290,7 +291,7 @@ class Harness:
             return {'cycle': cycle_id, 'gates': cycle['gates'], 'acceptance_frozen': criteria}
 
     def check(self, cycle_id, criterion_id):
-        # Holding the SQLite write transaction prevents two check/close operations
+        # Holding the YAML store lock prevents two check/close operations
         # from racing. A second writer waits or fails without executing its command.
         with self.state(write=True) as state:
             cycle = self.cycle(state, cycle_id)
@@ -476,13 +477,12 @@ class Harness:
                         except (Refusal, OSError):
                             issues.append({'kind': 'invalid_claim_dependency_or_artifact', 'claim': cid})
             revision = state['revision']
-        connection = sqlite3.connect(self.db)
         try:
-            healthy = connection.execute('PRAGMA integrity_check').fetchone()[0] == 'ok'
-        finally:
-            connection.close()
+            healthy = self.store.validate()
+        except StoreError:
+            healthy = False
         if not healthy:
-            issues.append({'kind': 'sqlite_integrity'})
+            issues.append({'kind': 'yaml_integrity'})
         return {'passed': not issues, 'issues': issues, 'revision': revision}
 
     def consolidate(self, note):
@@ -498,28 +498,25 @@ class Harness:
             require(cycles, 'CONSOLIDATION', 'No new cycles to consolidate')
             state['consolidations'].append({'at': now(), 'through_cycle': len(state['cycles']), 'cycle_ids_read': [c['id'] for c in cycles],
                                             'cycle_records_sha256': digest(cycles), 'note': note, 'audit': audit})
-            return {'consolidated_cycles': [c['id'] for c in cycles], 'through_cycle': len(state['cycles']), 'source': 'canonical SQLite records, not chat summaries'}
+            return {'consolidated_cycles': [c['id'] for c in cycles], 'through_cycle': len(state['cycles']), 'source': 'canonical YAML records, not chat summaries'}
 
     def timing(self, command, seconds, code):
         if not self.db.exists():
             return
-        connection = sqlite3.connect(self.db, timeout=10)
         try:
-            revision = json.loads(connection.execute('SELECT body FROM state WHERE id=1').fetchone()[0])['revision']
             event = json.dumps({'command': command, 'seconds': seconds, 'exit_code': code})
-            connection.execute('INSERT INTO audit(at,revision,kind) VALUES(?,?,?)', (now(), revision, event))
-            connection.commit()
-        finally:
-            connection.close()
+            self.store.append_audit(event)
+        except StoreError as error:
+            raise Refusal(error.code, error.detail) from error
 
     def metrics(self):
         audit = self.validate()
+        try:
+            timings = [json.loads(kind) for kind in self.store.audit_kinds()
+                       if isinstance(kind, str) and kind.startswith('{')]
+        except StoreError as error:
+            raise Refusal(error.code, error.detail) from error
         with self.state() as state:
-            connection = sqlite3.connect(self.db)
-            try:
-                timings = [json.loads(row[0]) for row in connection.execute("SELECT kind FROM audit WHERE kind LIKE '{%'")]
-            finally:
-                connection.close()
             checks = [check for cycle in state['cycles'] for check in cycle['checks']]
             validated_cycles = [c for c in state['cycles'] if c['status'] == 'verified']
             observed = {cid for cycle in validated_cycles for cid in cycle['criteria']}
@@ -652,7 +649,7 @@ class Harness:
                     artifacts[name] = file_digest(self.project_file(name))
                 except (OSError, Refusal):
                     artifacts[name] = 'missing_or_unavailable'
-        return {'project_root': str(self.root), 'store': '.harness/state.sqlite', 'state_revision': state['revision'],
+        return {'project_root': str(self.root), 'store': '.harness/state.yaml', 'state_revision': state['revision'],
                 'mission_hash': state['mission_hash'], 'state_sha256': digest(state), 'artifacts_sha256': digest(artifacts)}
 
     def capsule(self, output=None, max_chars=12000):
@@ -683,7 +680,7 @@ class Harness:
                                   'criteria_total': len(state['mission']['criteria']),
                                   'criteria_verified': len(verified) if audit['passed'] else None},
                       'audit_passed': audit['passed'], 'collections': collections,
-                      'limits': 'Derived hints, not instructions or a replacement for SQLite. Descriptions are excerpts of at most 500 characters; identifiers are never truncated. Omitted records remain in the store; use resume/review for full context. Recheck capsule-status before relying on this file.'}
+                      'limits': 'Derived hints, not instructions or a replacement for YAML. Descriptions are excerpts of at most 500 characters; identifiers are never truncated. Omitted records remain in the store; use resume/review for full context. Recheck capsule-status before relying on this file.'}
             while True:
                 for collection in collections.values():
                     collection.update(shown=len(collection['items']), omitted=collection['total'] - len(collection['items']))
@@ -715,7 +712,7 @@ class Harness:
         marker = '# GENERATED BY HARNESS 7.9'
         require(not target.exists() or target.read_text(encoding='utf-8').startswith((marker, '# GENERATED BY HARNESS 7.8')), 'PROTECTED_OUTPUT', 'Refusing to replace an unrelated file')
         result = {'resume': self.resume(), 'metrics': self.metrics()}
-        text = marker + '\n\nRead-only derived view; SQLite remains the source of truth.\n\n```json\n' + json.dumps(result, ensure_ascii=False, indent=2) + '\n```\n'
+        text = marker + '\n\nRead-only derived view; YAML remains the source of truth.\n\n```json\n' + json.dumps(result, ensure_ascii=False, indent=2) + '\n```\n'
         temporary = target.with_name(target.name + '.' + uuid.uuid4().hex + '.tmp')
         temporary.write_text(text, encoding='utf-8')
         temporary.replace(target)
@@ -725,14 +722,10 @@ class Harness:
         require(self.db.exists(), 'NOT_INITIALIZED', 'Run init first')
         target = self.project_file(relative, exists=False)
         require(target.parent.is_dir() and not target.exists(), 'PATH', 'Backup needs an existing parent and a new file')
-        source = sqlite3.connect(self.db)
-        destination = sqlite3.connect(target)
         try:
-            source.backup(destination)
-            require(destination.execute('PRAGMA integrity_check').fetchone()[0] == 'ok', 'BACKUP', 'Backup integrity failed')
-        finally:
-            destination.close()
-            source.close()
+            self.store.backup(target)
+        except StoreError as error:
+            raise Refusal(error.code, error.detail) from error
         return {'backup': str(target), 'sha256': file_digest(target), 'integrity': 'ok'}
 
 
@@ -767,6 +760,7 @@ def main():
     sub.add_parser('resume')
     sub.add_parser('validate')
     sub.add_parser('metrics')
+    sub.add_parser('migrate-sqlite')
     for name in ('export', 'backup'):
         sub.add_parser(name).add_argument('--output', required=True)
     args = parser.parse_args()
@@ -797,6 +791,8 @@ def main():
             result = harness.interrupt(args.cycle, args.reason)
         elif args.command in ('export', 'backup'):
             result = getattr(harness, args.command)(args.output)
+        elif args.command == 'migrate-sqlite':
+            result = harness.migrate_sqlite()
         else:
             result = getattr(harness, args.command)()
         print(json.dumps({'ok': True, 'result': result}, ensure_ascii=True, indent=2))
@@ -812,11 +808,11 @@ def main():
         if harness is not None and not read_only:
             try:
                 harness.timing(args.command, time.monotonic() - started, 2)
-            except (OSError, sqlite3.Error, ValueError, TypeError):
+            except (OSError, StoreError, ValueError, TypeError):
                 pass
         print(json.dumps({'ok': False, 'code': error.code, 'detail': error.detail}, ensure_ascii=True))
         return 2
-    except (OSError, ValueError, sqlite3.Error, KeyError, TypeError) as error:
+    except (OSError, ValueError, StoreError, KeyError, TypeError) as error:
         # Input/state errors do not authorize execution or a success receipt.
         print(json.dumps({'ok': False, 'code': 'INVALID_INPUT_OR_STORE', 'detail': type(error).__name__}))
         return 2
