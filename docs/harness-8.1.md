@@ -4,6 +4,8 @@ O V8.1 mantém o núcleo anti-inflação, anti-afirmações sem prova e antirret
 
 Essas extensões são deliberadamente observacionais. Elas não criam agentes autônomos, não aprovam efeitos, não alteram missão, não promovem claims e não transformam resultado desconhecido em permissão para repetir trabalho.
 
+O estado canônico é `.harness/state.yaml`, com checksum, gravação atômica e bloqueio entre escritores. Requer Python 3.11+ e PyYAML. Projetos antigos com apenas `.harness/state.sqlite` usam `migrate-sqlite` uma vez; o arquivo legado é preservado, mas deixa de ser o armazenamento vivo.
+
 ## Quando escolher
 
 - a missão precisa de um grafo legível fora da CLI;
@@ -26,6 +28,9 @@ Exemplo:
 ```powershell
 $h = '.\harnesses\v8.1\scripts\harness.py'
 $p = 'C:\projeto'
+python -m pip install pyyaml
+# Somente em projeto legado ainda sem state.yaml:
+python -B $h --project $p migrate-sqlite
 python -B $h --project $p graph --format mermaid --output "$p\MISSION_GRAPH.mmd"
 python -B $h --project $p report-pr --base main --head HEAD --format markdown --output "$p\PR_REPORT.md"
 python -B $h --project $p adapter-template --agent codex

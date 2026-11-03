@@ -149,7 +149,7 @@ class FeatureTests(unittest.TestCase):
     def test_derived_outputs_cannot_overwrite_unrelated_files_or_store(self):
         (self.root / 'notes.json').write_text('{"mine": true}', encoding='utf-8')
         self.refuse('PROTECTED_OUTPUT', lambda: self.h.capsule(output='notes.json'))
-        self.refuse('PATH', lambda: self.h.capsule(output='.harness/state.sqlite'))
+        self.refuse('PATH', lambda: self.h.capsule(output='.harness/state.yaml'))
         self.refuse('PATH', lambda: self.h.capsule(output='../escape.json'))
 
     def test_preparer_does_not_invent_tests_or_authorize_execution(self):
