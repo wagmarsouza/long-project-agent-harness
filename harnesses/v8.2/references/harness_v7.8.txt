@@ -1,0 +1,53 @@
+VERIMISSION CORE 7.8 — OPERATOR REFERENCE
+
+PURPOSE
+
+V7.8 coordinates a long-running mission through an explicit contract, review receipts, planned cycles, executable checks, artifact identity, claims, retractions, stagnation controls, resumption, metrics, export, and backup. It does not create an autonomous agent, increase permissions, authenticate semantic truth, or supervise commands run outside its CLI.
+
+CANONICAL STATE
+
+`.harness/state.yaml` is the sole live source. It contains state and audit history, is written atomically, and is protected by a checksum and process lock. Do not edit it directly. Reports and exports are derived. If a project has only `.harness/state.sqlite`, run `migrate-sqlite` once. The importer validates and reads SQLite without modifying it, creates YAML atomically, records source provenance, and refuses to overwrite existing YAML.
+
+MISSION LIFECYCLE
+
+1. Copy `mission.example.json` into the real project and replace all markers. Declare the objective, scope, exclusions, mode, budget, criteria, argv, timeout, and artifacts.
+2. Review every command and effect. Run `init` only when no harness state exists.
+3. Before each cycle, run `review --topic TOPIC` and read the returned facts, retractions, previous cycles, and residue.
+4. Copy `plan.example.json`, add the current review receipt, selected criteria, premise, approach, inputs, environment, dependencies, and expected residue reduction.
+5. Run `start`. Perform the planned authorised action.
+6. Run `check` for every selected criterion. Checks execute the mission's argv without a shell and compare declared artifacts before and after execution.
+7. Close as `verified` only when selected criteria have current passing checks. Otherwise close as blocked or interrupt the cycle and record a concrete next step.
+8. Run `validate` before reporting completion.
+
+CORE COMMANDS
+
+```text
+init migrate-sqlite review start check close interrupt resume validate
+claim retract step-back consolidate metrics export backup
+preview-mission revise-mission
+```
+
+Use `--help` for the exact arguments. Exit code `0` means the operation completed, `2` means refusal or invalid input/state, and `3` means a verification ran but did not pass. A JSON envelope with `ok: true` is not the same as `result.passed: true`.
+
+CLAIMS AND RETRACTIONS
+
+A claim records a bounded statement, evidence references, dependencies, and applicability. It is not automatically true because it was stored. Preserve hypotheses as candidates. A retraction identifies the affected claim, reason, and corrective evidence, preserves the original record, and marks declared dependants for review. Revalidation requires current evidence; do not promote old checks silently.
+
+MISSION REVISION
+
+Mission revision is exceptional and requires explicit user initiative or explicit approval of the concrete proposal. Prepare `mission-revision.example.json` with the current mission hash and revision, the real authorisation reference, reason, and full proposed mission. Run `preview-mission`; close or interrupt active cycles; then give the user the `revise-mission` command. The user must execute and confirm it personally in an interactive terminal. Never automate, pipe, simulate, or bypass confirmation. The executor backs up prior state, preserves history, and marks earlier conclusions for review.
+
+ANTI-INFLATION AND HONESTY
+
+- Bound every claim to the verified method, environment, sample, and conditions.
+- Never invent evidence. Preserve failures, timeouts, and contradictions.
+- Report coverage with an explicit denominator and exclusions. Unknown totals remain indeterminate.
+- Do not count activity, duplicates, renames, or retractions as new progress.
+- Require discriminating tests and relevant controls; a passing weak oracle remains weak.
+- Distinguish a passing check, completed cycle, satisfied requirement, and completed mission.
+
+For significant conclusions, state the claim, evidence, coverage, limits and contradictions, status, and next step. The harness improves provenance but is not a universal truth or dishonesty detector.
+
+RESUMPTION AND STAGNATION
+
+Run `resume` and `validate` at the start of a new session. After repeated no-progress or failed cycles, record `step-back` and change the technical premise, oracle, model, or approach rather than only its name. Use `consolidate` to remove redundant active notes without deleting audit history. `backup` protects harness state but does not replace backup of project artifacts.
