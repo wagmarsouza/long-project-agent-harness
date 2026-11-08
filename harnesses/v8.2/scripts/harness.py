@@ -261,6 +261,7 @@ class Harness:
             reported = sum(c.get('reported_usd', 0) for c in state['cycles'])
             require('max_reported_usd' not in budget or reported < budget['max_reported_usd'], 'BUDGET', 'Reported cost budget exhausted')
             last_cw = state['consolidations'][-1]['through_cycle'] if state['consolidations'] else 0
+            last_cw = max(last_cw, state['mission'].get('periodic_review', {}).get('anchor', 0))
             require(len(state['cycles']) - last_cw < budget['consolidate_every'], 'CONSOLIDATION_DUE', 'Consolidate before starting another cycle')
             review = state['reviews'].get(plan['review_id'])
             require(review and review['revision'] == state['revision'] and review['topic'] == plan['topic'], 'G1_STALE', 'Read a fresh review of the same topic')
@@ -376,6 +377,8 @@ class Harness:
             cycle = self.cycle(state, cycle_id)
             require(cycle['status'] == 'active', 'CYCLE', 'Cycle is not active')
             cycle.update(status='blocked', ended=now(), next_step=reason, progress=False)
+            if hasattr(self, 'periodic_interrupt'):
+                self.periodic_interrupt(state, cycle_id)
         return {'interrupted': cycle_id, 'history_preserved': True}
 
     def resume(self):

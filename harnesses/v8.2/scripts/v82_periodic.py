@@ -132,16 +132,31 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
         def periodic_init(self, state):
             policy = state['mission'].get('periodic_review')
             if policy:
+                require(policy['anchor'] == len(state['cycles']), 'PERIODIC_POLICY',
+                        'Adopt periodic controls at the current cycle count; init starts at zero')
                 _, raw = self._source(policy['governing_file'])
                 text = raw.decode('utf-8')
                 _, core_hash = self._layout(policy, text)
                 state['periodic_guard'] = {'mission_hash': state['mission_hash'], 'policy_sha256': digest(policy),
                                            'protected_sha256': core_hash, 'trusted_prompt': text}
+                if 'baseline' in policy:
+                    _, witness = self._observation(policy, policy['anchor'])
+                    state['periodic_guard']['baseline'] = witness
+
+        def _revision_preview(self, state, proposal):
+            result = super()._revision_preview(state, proposal)
+            policy = result['after'].get('periodic_review')
+            if policy:
+                require(policy['anchor'] == len(state['cycles']), 'PERIODIC_POLICY',
+                        'A human mission revision must explicitly anchor the new review epoch at the current cycle count')
+                if 'baseline' in policy:
+                    self._observation(policy, policy['anchor'])
+            return result
 
         def on_mission_revision(self, state):
             old = state.get('periodic_guard')
             policy = state['mission'].get('periodic_review')
-            if old and policy and old['policy_sha256'] == digest(policy):
+            if old and policy:
                 _, raw = self._source(policy['governing_file'])
                 _, fingerprint = self._layout(policy, raw.decode('utf-8'))
                 require(fingerprint == old['protected_sha256'], 'CORE_CHANGED', 'An unrelated mission revision cannot silently rebaseline weakened instructions')
@@ -166,7 +181,7 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
             witness, raw = self._source(relative)
             try:
                 value = self._json(raw)
-                require(isinstance(value, dict) and value.get('cycle') == cycle, 'DIGEST_SOURCE', 'Observation cycle does not match the requested window')
+                require(isinstance(value, dict) and type(value.get('cycle')) is int and value['cycle'] == cycle, 'DIGEST_SOURCE', 'Observation cycle does not match the requested window')
                 require(set(value) <= {'cycle', 'live', 'closed', 'transitions', 'facts_recorded', 'facts_used'}, 'DIGEST_SOURCE', 'Unknown observation field')
                 for field in ('live', 'closed'):
                     require(isinstance(value.get(field), dict) and all(nonempty(k) and isinstance(v, str) for k, v in value[field].items()),
@@ -207,8 +222,13 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
             config = policy['inventory']
             categories = config['categories']
             previous, baseline = self._observation(policy, window['start'] - 1)
+            if window['start'] - 1 == policy['anchor']:
+                require(baseline == state['periodic_guard'].get('baseline'), 'DIGEST_SOURCE', 'The initial inventory baseline changed after the contract was established')
+            else:
+                self._pinned_source(state, window['start'] - 1, baseline)
             sources = [baseline]
-            issues, rows, retractions, all_facts = [], [], [], set()
+            issues, rows, retractions = [], [], []
+            all_facts = set(previous.get('facts_recorded', [])) | set(previous.get('facts_used', []))
             universe = set(previous['closed'])
             rank = {name: position for position, name in enumerate(categories)}
             require(len(universe) == config['total'] and previous['live'] == previous['closed'] and all(x in rank for x in previous['closed'].values()),
@@ -232,7 +252,7 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                 unmarked, regressions, corrected = [], [], []
                 receipts = value.get('transitions', [])
                 changed = {key for key in universe & set(closed) if previous['closed'].get(key) != closed[key]}
-                receipt_ids = [r.get('id') for r in receipts if isinstance(r, dict)]
+                receipt_ids = [r['id'] for r in receipts if isinstance(r, dict) and nonempty(r.get('id'))]
                 if len(receipt_ids) != len(receipts) or len(set(receipt_ids)) != len(receipt_ids) or not set(receipt_ids) <= changed:
                     flags.append('invalid_transition_receipts')
                 for identifier in sorted(universe & set(closed)):
@@ -256,6 +276,9 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                     flags.append('monotonicity')
                 rows.append({'cycle': cid, 'counts': counts, 'total': len(closed), 'unmarked_promotions': unmarked,
                              'regressions': regressions, 'justified_retractions': corrected, 'metric_deltas': deltas,
+                             'coverage': {name: {'numerator': sum(counts[x] for x in group), 'denominator': config['total'],
+                                                'percent': round(100 * sum(counts[x] for x in group) / config['total'], 6)}
+                                          for name, group in config['monotonic'].items()},
                              'issues': flags, 'live_equals_closed': live == closed})
                 issues.extend({'cycle': cid, 'kind': flag} for flag in flags)
                 retractions.extend({'cycle': cid, 'id': key} for key in corrected)
@@ -273,11 +296,17 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
             notes = []
             for cid in range(window['start'], through + 1):
                 witness, raw = self._source(policy['notes_pattern'].format(cycle=cid))
+                if self.cycle(state, cid)['status'] != 'active':
+                    self._pinned_source(state, cid, witness)
                 notes.append({'cycle': cid, **witness, 'text': raw.decode('utf-8')})
             require(len({n['path'] for n in notes}) == policy['every'], 'DIGEST_SOURCE', 'Each cycle requires its own physical note')
             paths = [self.project_file(n['path']) for n in notes]
             require(not any(os.path.samefile(a, b) for i, a in enumerate(paths) for b in paths[i + 1:]), 'DIGEST_SOURCE', 'Cycle notes cannot alias one physical file')
             reconciliation, sources = self._reconcile(state, policy, window)
+            for source in sources:
+                for cid in range(window['start'], through + 1):
+                    if source['path'] == policy.get('observation_pattern', '').format(cycle=cid) and self.cycle(state, cid)['status'] != 'active':
+                        self._pinned_source(state, cid, source)
             cycles = state['cycles'][window['start'] - 1:through]
             payload = {'format': 'verimission-digest-v1', 'mission_hash': state['mission_hash'], 'window': window,
                        'notes': notes, 'sources': sources, 'reconciliation': reconciliation,
@@ -326,12 +355,18 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
             require(packet['reconciliation']['passed'], 'RECONCILIATION_FAILED', 'Digest records failed consistency checks; repair the source evidence before reviewing')
             return record
 
-        @staticmethod
-        def _digest_result(record):
+        def _digest_result(self, record):
             packet = record['packet']
-            return {'applicable': True, 'digest_sha256': record['digest_sha256'], 'window': record['window'], 'output': record['output'],
+            result = {'applicable': True, 'digest_sha256': record['digest_sha256'], 'window': record['window'], 'output': record['output'],
                     'notes': [{k: v for k, v in n.items() if k != 'text'} for n in packet['notes']],
                     'reconciliation': packet['reconciliation'], 'reread_required': True, 'semantic_correctness_verified': False}
+            with self.state() as current:
+                path = self.project_file(current['mission']['periodic_review']['governing_file'], exists=False)
+                result['review_template'] = {'window': record['window'], 'digest_sha256': record['digest_sha256'],
+                    'prompt_sha256': file_digest(path) if path.is_file() else None,
+                    'reread': [{'cycle': n['cycle'], 'sha256': n['sha256'], 'finding': ''} for n in packet['notes']],
+                    'updates': {}, 'reason': '', 'loss_acknowledgements': [{'id': name, 'reason': ''} for name in packet['reconciliation'].get('possible_losses', [])]}
+            return result
 
         def digest(self, through=None):
             with self.state() as state:
@@ -361,6 +396,9 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
             packet = self._json(path.read_bytes())
             window = self._window(state['mission']['periodic_review'], through)
             require(packet.get('window') == record['window'] == window, 'DIGEST_WINDOW', 'Digest and review must cover the same N-cycle window')
+            for source in [*packet['notes'], *packet['sources']]:
+                witness, _ = self._source(source['path'])
+                require(witness['sha256'] == source['sha256'], 'DIGEST_STALE', 'A physical source changed after digest production')
             fresh = self._build_digest(state, through)
             # Later retractions legitimately change current claim status. A
             # historical digest is not rewritten into a competing current ledger.
@@ -370,6 +408,7 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
             return record
 
         def _review_state(self, state, through, proposal):
+            require(through == len(state['cycles']), 'REVIEW_WINDOW', 'A historical boundary cannot retarget a later active or closed cycle')
             policy = state['mission']['periodic_review']
             record = self._current_digest(state, through)
             text, spans = self._guard(state)
@@ -386,20 +425,23 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
             require(nonempty(proposal['reason']), 'REVIEW_INPUT', 'Explain the review decision, including an unchanged decision')
             notes = {n['cycle']: n for n in record['packet']['notes']}
             rows = proposal['reread']
-            require(isinstance(rows, list) and len(rows) == len(notes) and all(isinstance(r, dict) and set(r) == {'cycle', 'sha256', 'finding'} for r in rows),
+            require(isinstance(rows, list) and len(rows) == len(notes) and all(isinstance(r, dict) and set(r) == {'cycle', 'sha256', 'finding'} and type(r['cycle']) is int for r in rows),
                     'REREAD_REQUIRED', 'Declare one substantive reread finding for every physical note')
             require(len({r['cycle'] for r in rows}) == len(notes) and all(r['cycle'] in notes and r['sha256'] == notes[r['cycle']]['sha256'] and nonempty(r['finding']) for r in rows),
                     'REREAD_REQUIRED', 'Reread declarations must cover every note exactly once with matching hashes')
             losses = record['packet']['reconciliation'].get('possible_losses', [])
             acknowledgements = proposal['loss_acknowledgements']
-            require(isinstance(acknowledgements, list) and all(isinstance(r, dict) and set(r) == {'id', 'reason'} and nonempty(r['reason']) for r in acknowledgements)
+            require(isinstance(acknowledgements, list) and all(isinstance(r, dict) and set(r) == {'id', 'reason'} and nonempty(r['id']) and nonempty(r['reason']) for r in acknowledgements)
                     and {r['id'] for r in acknowledgements} == set(losses), 'LOSS_REVIEW_REQUIRED', 'Explain every recorded fact that is no longer used; do not silently drop it')
             updates = proposal['updates']
             require(isinstance(updates, dict) and set(updates) <= {'objectives', 'scenario'} and all(nonempty(v) for v in updates.values()),
                     'REVIEW_INPUT', 'Only nonempty objectives/scenario replacements are accepted')
             candidate = text
+            changes = {}
             for a, b, key in reversed(spans):
                 if key in updates:
+                    if text[a:b] != updates[key]:
+                        changes[key] = {'before': text[a:b], 'after': updates[key]}
                     candidate = candidate[:a] + updates[key] + candidate[b:]
             _, protected = self._layout(policy, candidate)
             require(protected == state['periodic_guard']['protected_sha256'], 'CORE_CHANGED', 'Review cannot modify protected instructions')
@@ -410,7 +452,7 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                 self._atomic(policy['governing_file'], candidate.encode('utf-8'))
             state['periodic_guard']['trusted_prompt'] = candidate
             result = {'window': record['window'], 'digest_sha256': record['digest_sha256'], 'before_prompt_sha256': before,
-                      'after_prompt_sha256': after, 'updated_sections': sorted(updates), 'reread': copy.deepcopy(rows),
+                      'after_prompt_sha256': after, 'updated_sections': sorted(changes), 'changes': changes, 'reread': copy.deepcopy(rows),
                       'reason': proposal['reason'], 'loss_acknowledgements': copy.deepcopy(acknowledgements), 'at': now(),
                       'tripwire_passed': True, 'reread_is_declared_not_authenticated': True, 'mission_changed': False}
             state.setdefault('periodic_reviews', {})[record['digest_sha256']] = result
@@ -457,7 +499,14 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
         def periodic_close(self, state, cycle, proposal, outcome='verified'):
             policy = state['mission'].get('periodic_review')
             if not self._due(policy, cycle['id']):
-                require(proposal is None, 'REVIEW_INPUT', 'Review input applies only at a configured boundary')
+                try:
+                    require(proposal is None, 'REVIEW_INPUT', 'Review input applies only at a configured boundary')
+                    if policy:
+                        self._guard(state)
+                        self._pin_cycle(state, cycle['id'])
+                except Refusal as error:
+                    self.event(state, 'periodic-review-failed', cycle['id'], {'code': error.code, 'applicable': False, 'tripwire_passed': self._tripwire_outcome(error.code)})
+                    return {'blocked': True, 'code': error.code, 'detail': error.detail}
                 return {}
             try:
                 record = self._digest_state(state, cycle['id'])
@@ -467,6 +516,7 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                         self.current_check(state, cycle, cid)
                 audit = super().validate()
                 require(audit['passed'], 'STORE_INVALID', 'Existing evidence must be valid before automatic consolidation')
+                self._pin_cycle(state, cycle['id'])
                 return {'periodic_review': result, 'digest_sha256': record['digest_sha256'], 'audit': audit}
             except Refusal as error:
                 kind = 'periodic-review-pending' if error.code == 'PERIODIC_REVIEW_REQUIRED' else 'periodic-review-failed'
@@ -482,6 +532,28 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                         'STALE_REFERENCES', 'EVIDENCE', 'STALE_ARTIFACT', 'STORE_INVALID'}:
                 return True
             return None  # Not reached; absence of a test is not a passing test.
+
+        def _pin_cycle(self, state, cycle):
+            policy = state['mission']['periodic_review']
+            witnesses = [self._source(policy['notes_pattern'].format(cycle=cycle))[0]]
+            if 'observation_pattern' in policy:
+                witnesses.append(self._source(policy['observation_pattern'].format(cycle=cycle))[0])
+            key = f"{state['mission_hash']}:{cycle}"
+            previous = state.setdefault('cycle_sources', {}).get(key)
+            require(previous is None or previous == witnesses, 'DIGEST_SOURCE', 'Closed-cycle source hashes cannot be silently replaced')
+            state['cycle_sources'][key] = witnesses
+            self.event(state, 'cycle-sources-pinned', cycle, {'sources': witnesses})
+
+        def _pinned_source(self, state, cycle, witness):
+            key = f"{state['mission_hash']}:{cycle}"
+            require(witness in state.get('cycle_sources', {}).get(key, []), 'DIGEST_SOURCE', 'A closed-cycle source is missing its original hash or was changed')
+
+        def periodic_interrupt(self, state, cycle):
+            if state['mission'].get('periodic_review'):
+                try:
+                    self._pin_cycle(state, cycle)
+                except Refusal as error:
+                    self.event(state, 'interrupted-sources-unavailable', cycle, {'code': error.code})
 
         def finish_periodic_close(self, state, cycle, boundary):
             if not boundary:
@@ -510,6 +582,16 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                         require(identifier in state.get('periodic_reviews', {}), 'PERIODIC_REVIEW_REQUIRED', 'An interrupted or unreviewed boundary cannot be bypassed')
                 return super().start(plan)
 
+        def validate_operation_boundary(self, state, cycle_id, criterion=None, closing=False):
+            if state['mission'].get('periodic_review') and not closing:
+                self._guard(state)
+            return super().validate_operation_boundary(state, cycle_id, criterion, closing)
+
+        def operation_binding(self, state, operation):
+            if state['mission'].get('periodic_review'):
+                self._guard(state)
+            return super().operation_binding(state, operation)
+
         def validate(self):
             result = super().validate()
             with self.state() as state:
@@ -536,5 +618,22 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal):
                              'protected_prompt_sections': True, 'reread_declaration_authenticates_cognition': False,
                              'automatic_mission_revision': False}
             return result
+
+        def resume(self):
+            with self.state() as state:
+                result = super().resume()
+                policy = state['mission'].get('periodic_review')
+                if policy:
+                    pending = []
+                    for through in range(policy['anchor'] + policy['every'], len(state['cycles']) + 1, policy['every']):
+                        identifier = state.get('digest_windows', {}).get(f"{state['mission_hash']}:{through}")
+                        if identifier not in state.get('periodic_reviews', {}):
+                            pending.append(through)
+                    next_boundary = policy['anchor'] + (max(0, len(state['cycles']) - policy['anchor']) // policy['every'] + 1) * policy['every']
+                    result['periodic_review'] = {'every': policy['every'], 'anchor': policy['anchor'],
+                        'next_boundary': min(pending) if pending else next_boundary, 'pending_boundaries': pending,
+                        'digest_count': len(state.get('digests', {})), 'review_count': len(state.get('periodic_reviews', {})),
+                        'reread_is_declared_not_authenticated': True, 'domain_plugin_required': False}
+                return result
 
     return Harness82

@@ -1,5 +1,13 @@
 # Changelog
 
+## Control 8.2 — local preview, 2026-11-08
+
+- Integrated a native, domain-neutral digest producer and protected N-cycle review in `close`; no specialist repository is required.
+- Added strict mission policy, physical-note/source hashes, inventory consistency/transition reconciliation, justified retractions and possible-loss review.
+- Fingerprinted governing text outside objectives/scenario bodies; added trusted restoration, preserved damage and structured YAML review events.
+- Kept review/claim ceilings, manual mission authorization and all 8.1 features. Existing missions without the opt-in policy retain their earlier behavior.
+- Added generic fixtures and portability/recovery tests. This preview is not installed, deployed to live projects, pushed or published.
+
 ## Publication v2.1.2 — 2026-11-03
 
 - Standardised all current VeriMission documentation, skill metadata, templates, and operator references in neutral international English.

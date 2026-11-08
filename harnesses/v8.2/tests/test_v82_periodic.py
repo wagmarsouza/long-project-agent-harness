@@ -2,11 +2,13 @@ import copy
 import hashlib
 import importlib.util
 import json
+import io
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 SCRIPT = Path(__file__).resolve().parents[1] / 'scripts/harness.py'
 spec = importlib.util.spec_from_file_location('control82_tests', SCRIPT)
@@ -202,9 +204,12 @@ class PeriodicTests(unittest.TestCase):
         self.assertEqual(json.loads(process.stdout)['code'], 'DIGEST_REQUIRED')
 
     def test_justified_retraction_preserves_negative_delta_and_does_not_fake_progress(self):
+        first = self.start()
         self.items['ITEM-A'] = 'delivered'
-        self.observation(0)
-        cid = self.boundary()
+        self.observation(first, [{'id': 'ITEM-A', 'from': 'planned', 'to': 'delivered', 'kind': 'progress', 'reason': 'Bounded initial evidence',
+                                'evidence': [{'path': 'proof.txt', 'sha256': hashlib.sha256(b'ok').hexdigest()}]}])
+        self.h.close(first, 'verified', 'Continue')
+        cid = self.start()
         self.items['ITEM-A'] = 'planned'
         receipt = {'id': 'ITEM-A', 'from': 'delivered', 'to': 'planned', 'kind': 'retraction', 'reason': 'The earlier completion was overstated',
                    'evidence': [{'path': 'proof.txt', 'sha256': hashlib.sha256(b'ok').hexdigest()}]}
@@ -217,9 +222,12 @@ class PeriodicTests(unittest.TestCase):
         self.assertEqual(self.state()['claims'], {})
 
     def test_unexplained_regression_blocks(self):
+        first = self.start()
         self.items['ITEM-A'] = 'delivered'
-        self.observation(0)
-        cid = self.boundary()
+        self.observation(first, [{'id': 'ITEM-A', 'from': 'planned', 'to': 'delivered', 'kind': 'progress', 'reason': 'Bounded initial evidence',
+                                'evidence': [{'path': 'proof.txt', 'sha256': hashlib.sha256(b'ok').hexdigest()}]}])
+        self.h.close(first, 'verified', 'Continue')
+        cid = self.start()
         self.items['ITEM-A'] = 'planned'
         self.observation(cid)
         self.refuse('RECONCILIATION_FAILED', lambda: self.h.digest(cid))
@@ -292,6 +300,138 @@ class PeriodicTests(unittest.TestCase):
         process = subprocess.run([sys.executable, str(SCRIPT), '--project', str(self.root), 'decade-review', '--through-cycle', '1'], capture_output=True, timeout=15)
         self.assertEqual(0, process.returncode)
         self.assertEqual(before, self.h.db.read_bytes())
+
+    def test_baseline_and_closed_note_cannot_be_rewritten_before_first_digest(self):
+        cid = self.boundary()
+        baseline = self.root / 'observations/cycle-0.json'
+        original = baseline.read_bytes()
+        baseline.write_text(original.decode().replace('planned', 'delivered'))
+        self.refuse('DIGEST_SOURCE', lambda: self.h.digest(cid))
+        baseline.write_bytes(original)
+        (self.root / 'notes/cycle-1.md').write_text('A retroactively improved story.')
+        self.refuse('DIGEST_SOURCE', lambda: self.h.digest(cid))
+
+    def test_removed_core_blocks_execution_until_restored(self):
+        cid = self.start()
+        path = self.root / 'governing.md'
+        path.write_text(PROMPT.replace('KEEP_PROOF', 'removed'))
+        self.refuse('CORE_CHANGED', lambda: self.h.check(cid, 'C1'))
+        self.h.restore_prompt()
+        self.assertTrue(self.h.check(cid, 'C1')['passed'])
+
+    def test_close_records_tripwire_failure_without_closing_cycle(self):
+        cid = self.boundary()
+        path = self.root / 'governing.md'
+        path.write_text(PROMPT.replace('KEEP_PROOF', 'removed'))
+        self.refuse('CORE_CHANGED', lambda: self.h.close(cid, 'verified', 'Continue'))
+        state = self.state()
+        self.assertEqual(state['cycles'][-1]['status'], 'active')
+        self.assertFalse(state['events'][-1]['details']['tripwire_passed'])
+
+    def test_generated_review_template_is_not_a_completed_reread(self):
+        cid = self.boundary()
+        result = self.h.digest(cid)
+        self.refuse('REVIEW_INPUT', lambda: self.h.decade_review(cid, result['review_template']))
+
+    def test_resume_exposes_pending_boundary_without_dispatch(self):
+        self.boundary()
+        before = self.h.db.read_bytes()
+        result = self.h.resume()['periodic_review']
+        self.assertEqual(result['pending_boundaries'], [2])
+        self.assertEqual(result['next_boundary'], 2)
+        self.assertFalse(result['domain_plugin_required'])
+        self.assertEqual(before, self.h.db.read_bytes())
+
+    def test_counter_groups_report_numerators_and_denominators(self):
+        cid = self.boundary()
+        self.items['ITEM-A'] = 'delivered'
+        receipt = {'id': 'ITEM-A', 'from': 'planned', 'to': 'delivered', 'kind': 'progress', 'reason': 'Observed bounded fixture',
+                   'evidence': [{'path': 'proof.txt', 'sha256': hashlib.sha256(b'ok').hexdigest()}]}
+        self.observation(cid, [receipt])
+        result = self.h.digest(cid)
+        self.assertEqual(result['reconciliation']['cycles'][-1]['coverage']['delivered'], {'numerator': 1, 'denominator': 2, 'percent': 50.0})
+
+    def test_bad_receipt_type_is_structured_reconciliation_failure(self):
+        cid = self.boundary()
+        self.observation(cid, [{'id': ['not', 'an', 'id']}])
+        self.refuse('RECONCILIATION_FAILED', lambda: self.h.digest(cid))
+
+    def test_duplicate_inventory_keys_are_not_silently_collapsed(self):
+        cid = self.boundary()
+        (self.root / f'observations/cycle-{cid}.json').write_text('{"cycle":2,"live":{},"closed":{"ITEM-A":"planned","ITEM-A":"delivered"},"transitions":[]}')
+        self.refuse('DIGEST_SOURCE', lambda: self.h.digest(cid))
+
+    def test_process_termination_after_prompt_replace_requires_recovery(self):
+        cid = self.boundary()
+        result = self.h.digest(cid)
+        proposal = self.proposal(result)
+        proposal['updates'] = {'objectives': '\nA changed bounded objective before interrupted commit.\n'}
+        input_path = self.root / 'review-crash.json'
+        input_path.write_text(json.dumps(proposal), encoding='utf-8')
+        before = self.h.db.read_bytes()
+        script = "import sys,json,os;sys.path.insert(0,sys.argv[1]);from harness import Harness;h=Harness(sys.argv[2]);original=h._atomic\ndef replace_then_exit(path,raw):\n original(path,raw)\n if path=='governing.md': os._exit(73)\nh._atomic=replace_then_exit\nh.decade_review(2,json.load(open(sys.argv[3])))"
+        child = subprocess.run([sys.executable, '-c', script, str(SCRIPT.parent), str(self.root), str(input_path)], capture_output=True, timeout=15)
+        self.assertEqual(child.returncode, 73)
+        self.assertEqual(before, self.h.db.read_bytes())
+        self.assertIn('interrupted commit', (self.root / 'governing.md').read_text())
+        self.refuse('PERIODIC_REVIEW_REQUIRED', lambda: self.h.close(cid, 'verified', 'Continue'))
+        self.h.restore_prompt()
+        self.assertEqual(PROMPT, (self.root / 'governing.md').read_text())
+
+    def test_historical_review_cannot_retarget_a_later_active_cycle(self):
+        cid = self.boundary()
+        digest = self.h.digest(cid)
+        proposal = self.proposal(digest)
+        self.h.close(cid, 'verified', 'Next bounded task', review_input=proposal)
+        self.start()
+        proposal['updates'] = {'objectives': '\nAn obsolete target from a past window.\n'}
+        self.refuse('REVIEW_WINDOW', lambda: self.h.decade_review(cid, proposal))
+
+    def revision_proposal(self):
+        state = self.state()
+        mission = copy.deepcopy(state['mission'])
+        mission['objective'] += ' with explicitly revised scope'
+        return {'expected_mission_hash': state['mission_hash'], 'expected_revision': state['revision'],
+                'reason': 'Explicit user-requested scope revision',
+                'authorization': {'source': 'user', 'reference': 'Synthetic explicit user request'}, 'mission': mission}
+
+    def test_revision_requires_explicit_new_epoch(self):
+        self.h.close(self.start(), 'verified', 'Next')
+        proposal = self.revision_proposal()
+        self.refuse('PERIODIC_POLICY', lambda: self.h.preview_mission(proposal))
+
+    def test_init_cannot_skip_initial_review_cycles(self):
+        root = self.root / 'other'
+        root.mkdir()
+        (root / 'governing.md').write_text(PROMPT)
+        mission = copy.deepcopy(self.mission)
+        mission['periodic_review']['anchor'] = 4
+        self.refuse('PERIODIC_POLICY', lambda: module.Harness(root).init(mission))
+
+    def test_authorized_revision_starts_new_epoch_without_resetting_history(self):
+        self.h.close(self.start(), 'verified', 'Next')
+        proposal = self.revision_proposal()
+        policy = proposal['mission']['periodic_review']
+        policy['anchor'] = 1
+        policy['baseline'] = 'observations/cycle-1.json'
+        token = self.h.preview_mission(proposal)['confirmation']
+        class Terminal(io.StringIO):
+            def isatty(self):
+                return True
+        with patch.object(module.sys, 'stdin', Terminal()), patch.object(module.sys, 'stdout', Terminal()), \
+             patch.object(module, 'input', return_value=token, create=True), \
+             patch.dict(module.os.environ, {'CI': '', 'HARNESS_AUTOMATION': ''}):
+            result = self.h.revise_mission(proposal)
+        self.assertTrue(result['mission_revised'])
+        self.assertEqual(len(self.state()['cycles']), 1)
+        self.assertEqual(self.state()['cycles'][0]['status'], 'needs_review')
+        self.assertEqual(self.h.resume()['periodic_review']['next_boundary'], 3)
+        self.h.close(self.start(), 'verified', 'Next')
+        cid = self.start()
+        digest = self.h.digest(cid)
+        self.assertEqual(digest['window'], {'start': 2, 'end': 3})
+        self.h.close(cid, 'verified', 'Next', review_input=self.proposal(digest))
+        self.assertTrue(self.h.validate()['passed'])
 
 
 if __name__ == '__main__':

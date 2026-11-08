@@ -1,0 +1,9 @@
+{
+  "id": "OP1",
+  "cycle": 1,
+  "criterion": "C1",
+  "effect": "local",
+  "risk": "read",
+  "reason": "ENTER the reason for the exact operation",
+  "request_ref": "REFERENCE the real request; never invent authorisation"
+}

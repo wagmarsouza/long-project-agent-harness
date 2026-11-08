@@ -1,0 +1,12 @@
+{
+  "cycle": 0,
+  "live": {
+    "ITEM-A": "planned",
+    "ITEM-B": "planned"
+  },
+  "closed": {
+    "ITEM-A": "planned",
+    "ITEM-B": "planned"
+  },
+  "transitions": []
+}

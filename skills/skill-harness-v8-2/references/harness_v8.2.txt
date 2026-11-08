@@ -1,0 +1,202 @@
+# VeriMission Control 8.2
+
+Control 8.2 adds a native digest producer and protected cycle-boundary review for general long projects. It preserves the mission contract, claims, retractions, evidence freshness, coverage denominators, claim ceilings, anti-rework gates, graph/PR projections and optional cost accounting. No decompilation tool or other domain repository is required.
+
+Python 3.11+ and PyYAML 6.x are required. The canonical store is `.harness/state.yaml`. Use `migrate-sqlite` once for legacy projects; it preserves the SQLite source. Existing missions must not be reinitialized.
+
+## Commands
+
+```text
+digest [--through-cycle N]
+decade-review [--through-cycle N] [--input REVIEW.json]
+restore-prompt
+close --cycle N --outcome verified|blocked --next TEXT [--review-input REVIEW.json]
+graph --format json|mermaid|dot [--output FILE]
+report-pr --base REF --head REF --format json|markdown [--output FILE]
+adapter-template --agent codex|opencode|claude|hermes
+run-import --agent AGENT --input FILE.json
+cost-summary
+```
+
+All commands follow `python scripts/harness.py --project PROJECT COMMAND`. Output paths are project-relative. Choose a new path for Markdown, Mermaid, and DOT output.
+
+Graphs show declared relationships. PR reports include resolved Git commits, changed files, scope, checks, hashes, claims, retractions, coverage, and pending human review. Changed-file coverage is indeterminate without explicit file-to-criterion mapping.
+
+Adapters use explicit, hashed imports. They do not dispatch agents, select models, approve operations, revise missions, promote claims, or replay unknown outcomes. Read references/v81-projections-and-runs.md and fill the run-import template with source-supported values.
+
+Costs distinguish `actual`, `estimated`, and `unpriced`. Unknown prices and token counters use null. Parent/subagent links expose possible double counting.
+
+Mission changes still require explicit user authorization and personal interactive confirmation. A passing test remains limited by its method, environment, sample, and scope.
+
+The periodic-review policy is optional and belongs to the immutable mission contract. Configure cadence, physical note paths, governing-file invariants, objectives/scenario delimiters and optional general inventory observations. `close` invokes digest production and review at the boundary; until the notes are reread and a valid review is recorded it refuses closure with exit 2. Successful boundaries consolidate automatically. Mission revision still requires the existing explicit user authorization and interactive confirmation.
+
+Only immediate objectives/scenario may change. All other governing text is fingerprinted. Pin closed notes and baseline evidence. Detect conservation errors, unmarked transitions, differences between live/closed states and regressions, distinguishing justified retractions. Report actual denominators and losses without inventing progress. A generated digest never substitutes for physical rereading or semantic review.
+
+Read CORE.md for the full operating rules and references/v82-periodic-review.md for the policy, data formats, commands, recovery and limitations. A standalone text prompt gives procedural guidance; the supplied executor is required for mechanical gates. It does not control tools invoked outside it. No installation, daemon, schedule or live-project migration is implied.
+
+Skill ID: `skill-harness-v8-2`.
+
+---
+
+# VeriMission Control 8.2 — core operating rules
+
+The executor governs operations sent through its CLI. It does not intercept every host tool. Higher-priority instructions, the user's current request, and the authorized mission remain authoritative.
+
+## Persistent mission and evidence
+
+1. Recover before repeating. Run `resume` and `validate`, then `review` the topic. Search registered aliases and source terms. Read applicable claims, retractions, failed approaches, and remaining work.
+2. Define proof before implementation. The mission declares objective, scope, exclusions, executable acceptance criteria, artifacts, and budgets. Review command effects and authorization. Do not weaken acceptance to make a result pass.
+3. Start through the gates. A plan needs a fresh review receipt, residual work, technical approach, inputs, environment, dependencies, and selected criteria. Strict mode also requires reference review and a simple discriminating test.
+4. Execute the smallest useful authorized action. Files, elapsed time, attempts, and reports measure activity rather than objective progress. A pending decision blocks only work that depends on it; silence grants no authority.
+5. Record real verification. `check` executes approved argv without a shell and records exit status, duration, output hash, and artifact identity. A timeout, failure, or artifact drift blocks verified closure. Inspect the test's power to detect relevant faults.
+6. Close before claiming completion. Use verified closure only after selected checks pass with current evidence. Otherwise record a block or interruption and a concrete next step. A verified cycle is distinct from a satisfied requirement or completed mission.
+7. Stop unproductive repetition. Respect timeboxes, budgets, failure limits, and consolidation gates. Use `step-back` to reconsider premises, references, representations, and simpler alternatives. Renaming the same approach does not satisfy a gate.
+8. Separate hypotheses and facts. Hypotheses remain candidates. Facts require linked executed evidence. Register dependencies. Retractions preserve history and invalidate declared dependents; search for undeclared dependencies that also need review.
+9. Keep one canonical store. `.harness/state.yaml` contains state and audit history with a checksum, locking, and atomic replacement. Reports, capsules, search indexes, and graphs are derived. Do not edit the store directly or maintain a competing ledger.
+10. Consolidate and back up. Consolidation records reviewed cycles without inventing progress. A state backup does not replace a backup of project artifacts. Never delete old records as automatic cleanup.
+11. Measure controls honestly. Tool duration, declared tokens, and reported dollars are not quality scores or authenticated billing. Simplify overhead only when acceptance and authorization remain intact.
+12. Preserve boundaries. Do not create schedules, services, global installations, or production changes merely because the harness is active. Do not persist secrets. Respect explicit pauses and cancellation, and leave verifiable status and a next step.
+
+## Claim ceiling and honest coverage
+
+Apply these rules in both light and strict modes, including short reports.
+
+- Bound conclusions by the actual method, environment, sample, conditions, and tested scope. Static inspection does not demonstrate runtime behavior; simulation does not establish production or hardware correctness.
+- Never fabricate executions, commands, outputs, logs, citations, receipts, metrics, or results. Separate planned, executed, observed, and inferred work. Preserve failures and contradictions.
+- Report verified/total, critical verified/critical total, and changed verified/changed total when those universes exist. Define exclusions. Unknown totals mean indeterminate coverage; zero of zero is N/A. A sample is not universal coverage.
+- Do not count duplicated claims, renamed work, retries, retractions, or revalidation as new discoveries. Confidence percentages require an explicitly adopted method.
+- Check test discrimination. A zero exit code, echoed plan, or test mirroring the implementation is insufficient evidence by itself. Duplicate results are not independent evidence.
+- Stale evidence, retracted dependencies, and open requirements qualify conclusions. Do not erase history to preserve an appearance of success.
+
+For significant deliveries and completion claims, state the exact claim, supporting execution/source and artifacts, coverage with denominators, limitations and contradictions, current status, and next step. Use the length the result needs. The executor checks recorded provenance and invariants; it does not authenticate natural-language truth or observe every external action.
+
+## Mission revision — explicit user authorization only
+
+The mission remains frozen between revisions. A revision requires a specific user request or approval of a concrete proposal identifying objective, scope, criteria, and command changes. A generic continuation, old approval, silence, failure, timeout, or exhausted budget does not authorize revision.
+
+Cron jobs, loops, heartbeats, hooks, and other automation must not initiate or apply a mission revision.
+
+1. After authorization, run `resume` and prepare the mission-revision template using the current revision/hash, reason, actual user-authorization reference, and complete proposed mission.
+2. Run `preview-mission` and review exact changes, removed tests, denominators, exclusions, and new commands. The authorization reference documents an approval; it does not authenticate a person.
+3. Explicitly close or interrupt active cycles first. If the proposal becomes stale, prepare and review a fresh one.
+4. The user personally runs `revise-mission` in an interactive terminal and types the displayed confirmation, whose literal keyword is `REVISAR`. An agent must not answer on the user's behalf, create a pseudo-terminal to simulate consent, pipe confirmation, or add a bypass.
+5. The executor rechecks revision/hash and creates a validated YAML backup, preserving previous contracts, cycles, checks, failures, usage, and revision history. Prior conclusions require review under the new contract. Budgets do not silently reset.
+6. Resume, validate, review, and execute relevant checks again.
+
+The CLI rejects pipes, noninteractive terminals, and known CI/automation signals. This is a procedural protection rather than cryptographic human authentication; an operator with source/store access may bypass implementation controls.
+
+## Continuity, tasks, and governed operations
+
+- Use `evidence-scope` to state what a real check verifies, does not verify, and leaves untested. Arithmetic and annotations do not promote semantic truth.
+- Use `capsule` and `capsule-status` for resumption. A capsule is non-authoritative; omissions must be counted. Never import it as a mission, permanent truth, or authorization.
+- `prepare-mission` produces proposals and questions without initializing, revising, or executing a mission. Ready for review is not approval.
+- Register tasks with existing criteria and dependencies. `task-ready` reports eligibility without dispatching work. One claimed writer task and one active cycle remain the execution boundary.
+- `task-complete` needs current proof. Reopening preserves history and invalidates affected conclusions. `claim-reverify` requires the unchanged fact, fresh executed evidence, and explicit reason; it does not restore retractions or promote hypotheses.
+- Search relevance, context packs, and links do not establish applicability, truth, or authorization. Check `view-status`; recover full references rather than silently dropping required constraints.
+- `traceability` and `accept-mission` expose proof gaps. An accepted declared contract does not guarantee test quality or universal correctness.
+- Optional `operation-*` commands govern only routed operations. Approval is bound to one concrete operation and consumed once. Unknown outcomes need observed reconciliation and fresh checks; never replay an effect to learn whether it happened.
+- Diagnostic notes remain hypotheses until proven. Local tracing covers only recorded operations and must not contain secrets or raw private output.
+
+## Control 8.1 observations
+
+`graph` and `report-pr` are read-only projections. Source revisions, hashes, coverage, and limits must remain visible. Links do not become evidence, and PR reports do not approve or merge work.
+
+`run-import` accepts an explicit neutral record for Codex, OpenCode, Claude, or Hermes with a hashed source. Do not claim native parsing or source authentication. Imports do not dispatch agents, select models, approve actions, change missions, promote claims, or replay unknown results.
+
+Keep actual, estimated, and unpriced costs separate. Missing prices and token counters remain null. Preserve retries, cache counters, and subagent links when supported. Inspect parent/child billing overlap before interpreting totals.
+
+## Native periodic review — general long-project control
+
+- The native digest producer and review require no domain tool. Domain observations are optional inputs; no field, marker, denominator, schedule or proof ladder from a particular project is a universal rule.
+- A configured N-cycle boundary is one joint ritual: physically read all notes in the exact window, reconcile declared observations, verify the governing instructions, review staleness, and reconsider only immediate objectives/scenario. It is not a second schedule.
+- `close` invokes the ritual. A failed or incomplete review exits 2 without verified closure. A successful boundary consolidates automatically. Interrupting work remains possible but does not bypass the next-start gate.
+- Hash notes/observations at closure and pin the initial baseline. Preserve history; do not retroactively improve a past note to justify a current result. Record corrections and justified retractions explicitly. A lower metric can be an honest correction, not failure to manufacture progress.
+- Protect all governing text outside the two declared mutable bodies, including safeguards added before adoption. Keeping marker names while weakening their content is not permitted. Mutable planning text cannot override the mission, invariant core, acceptance criteria or authority boundaries.
+- Generated arithmetic and a digest skeleton do not complete the physical/semantic reread. Read the original notes or their verbatim copies; provide specific findings, acknowledge possible lost facts and distinguish observations from inference. Reread receipts record a declaration, not authenticated cognition.
+- Updates must be bound to the current digest/window, note hashes and prompt hash. Empty updates mean reviewed/unchanged. Never use this path for mission revision, criteria changes, new authority, automatic claim promotion, agent dispatch or installation.
+- An explicitly user-authorized mission revision must declare a new periodic anchor at the current cycle count and a matching inventory baseline when applicable. This starts a new review window without resetting consumed budgets, erasing prior history or treating earlier conclusions as revalidated. Initialization starts at cycle zero; a historical review cannot retarget later work.
+- If the tripwire fails, restore the trusted prompt before further execution. Preserve damaged bytes and structured audit events. A file replacement and YAML commit are not a single OS transaction; after interruption inspect hashes and recover rather than assuming success.
+- Arithmetic demonstrates declared consistency, not semantic correctness, test discrimination or universal coverage. Checksums are not operator authentication. All earlier claim ceilings, coverage denominators, retraction, anti-rework and explicit-user-authority rules continue to apply.
+
+---
+
+# Native periodic review — Control 8.2
+
+VeriMission is a general long-project harness. Digest production, reconciliation and protected review are built into the executor and require no domain repository, agent SDK, cron or service. Specialist tools may export observations, but are optional. Nothing is installed, scheduled or activated by these commands.
+
+## Adopt deliberately
+
+Python 3.11+ and PyYAML 6.x remain the requirements. An 8.1 YAML mission without `periodic_review` retains its previous behavior; do not reinitialize it. To enable the feature, the user uses the existing explicit `preview-mission` / interactive `revise-mission` workflow. Automation cannot perform that revision.
+
+Choose `anchor` deliberately when adopting into an existing mission, normally the last closed cycle. Boundaries are `anchor + N`, `anchor + 2N`, etc. A boundary ending at cycle C covers exactly `[C-N+1, C]`. Cadence is in harness cycles, never wall-clock time or a domain-specific numbering convention. `every` must match the mission's `budget.consolidate_every` so there is one cadence, not two schedules.
+
+The governing file must already have two uniquely delimited mutable sections: `objectives` and `scenario`. Its initial protected content must be reviewed before adoption. The rest of the document, including later safeguards present at adoption, is fingerprinted and frozen. Marker presence alone is not enough: weakening a sentence while retaining its marker also fails.
+
+## Contract fields
+
+Add the policy from `templates/periodic-policy.example.json` under `periodic_review` in the mission. All filenames, markers, categories, denominators and section delimiters are project configuration. Notes must have a distinct physical file per cycle. Relative patterns allow integer `{cycle}`, `{start}` and `{end}` placeholders, including padding such as `{cycle:04d}`; paths cannot leave the project.
+
+Optional inventory reconciliation requires `inventory`, `observation_pattern` and `baseline` together. No inventory is required for a research, writing, software or other general project. In that case the digest explicitly states that inventory arithmetic is not applicable; it does not invent coverage or a denominator.
+
+For inventories, `categories` is an ordered list of declared maturity states and `total` is the fixed universe size. `monotonic` can be a list of single-category counters or a mapping of counter names to category groups, such as `{"completed": ["implemented", "verified"]}`. The engine records real negative deltas; it does not redefine a metric to make it increase.
+
+## Physical inputs and honest reconciliation
+
+Each note is physically read as bytes, hashed and included verbatim in the digest artifact. The producer never substitutes a chat summary for that file. Notes/observations are pinned at cycle closure; the initial inventory baseline is pinned at adoption. Closed sources cannot be silently rewritten. Put corrections in later notes and explicit retraction records.
+
+An observation JSON contains `cycle`, `live` and `closed` mappings from stable item IDs to categories, plus `transitions`. Optional `facts_recorded` and `facts_used` are labels for surfacing possible lost context, not assertions that a fact is true.
+
+The native producer checks:
+
+- Conservation against the configured denominator and stable ID universe.
+- No unknown/unmarked categories and no unmarked upward transitions.
+- Equality of live and closed states by item identity, not only equal totals.
+- Declared counter changes and downward transitions.
+- Hashed transition evidence, with optional links to existing claim provenance.
+- Possible facts dropped from use across the window.
+
+A transition receipt identifies the exact item, before/after categories, `kind` (`progress` or `retraction`), reason and current hashed evidence files. A justified retraction may lower a counter and is reported as such; it is not counted as progress or silently erased. An unexplained regression blocks. File hashes and arithmetic establish declared consistency/provenance, not semantic truth. No claim is promoted automatically.
+
+## Closing a boundary
+
+Use the normal pattern with an absolute executor path:
+
+```text
+python /path/to/scripts/harness.py --project /project digest --through-cycle 10
+python /path/to/scripts/harness.py --project /project decade-review --through-cycle 10 --input /project/review.json
+python /path/to/scripts/harness.py --project /project close --cycle 10 --outcome verified --next "Next bounded target"
+```
+
+`close` itself invokes the native producer and review gate at the boundary. The explicit `digest` command is convenient for preparing the review in advance; it is not an external requirement. A first close without a review produces the digest, saves a structured pending event and exits 2, leaving the cycle active. It cannot pretend a semantic review occurred merely because a digest exists.
+
+Read every original note or its verbatim copy in the digest artifact. Fill `templates/periodic-review.example.json` with the actual window, digest SHA, current prompt SHA, one substantive finding and matching note hash per cycle, a reason, optional objectives/scenario replacements, and explanations for every possible lost fact. Empty updates explicitly mean “reviewed and unchanged.” Do not fabricate a reread declaration.
+
+The `digest` response includes a `review_template` with current hashes and deliberately blank findings/reason. It is a draft, not a successful reread receipt; fill it only after physically reading the notes.
+
+You may supply the prepared review with `close --review-input /project/review.json`. Successful review and verified checks complete the boundary and automatically append consolidation in the same canonical state update. The mission, scope, criteria, claims and previous records are not rewritten. If a prompt update changes a declared check artifact, run the affected check and refresh the digest/review before verified closure.
+
+An interrupted cycle remains stoppable. Resuming past an interrupted boundary still requires its digest/review and consolidation; interruption does not bypass the gate. Missing sources at interruption are recorded as unavailable, not invented. Recovery can require restoring the original source or an explicit user-authorized adoption/revision with a suitable anchor.
+
+## Tripwire, stale references and restoration
+
+The review verifies the registered digest artifact and exact window, rereads source files to verify freshness, and checks the complete protected instruction fingerprint. Missing, modified, stale or wrong-window digests refuse with exit 2. A non-boundary `decade-review` is a real no-op, including no timing write to the YAML store.
+
+Only section bodies may change. Unknown update keys, duplicate/nested delimiters, stale proposals, core edits and stale markers remaining after review are refused. Stale references outside permitted sections cannot be automatically edited; they need an explicitly reviewed contract/instruction change, never silent expansion of the mutable region.
+
+A review can retarget instructions only at the current cycle boundary. A historical digest may be inspected, but an old window cannot rewrite objectives after work has advanced to later cycles.
+
+A user-authorized mission revision starts a new periodic epoch. Its proposal must explicitly set `anchor` to the current number of cycles and, if inventory is enabled, supply a baseline observation for exactly that cycle. Initialization requires anchor zero. The new cadence counts forward from this anchor, while previous cycles, digests, declarations, consumed budgets and revision history remain preserved. Earlier conclusions still need revalidation under the revised mission. A revision cannot silently rebaseline changed protected instructions; restore the existing core first. This release deliberately refuses protected-core rewrites even within a scope revision.
+
+```text
+python /path/to/scripts/harness.py --project /project restore-prompt
+```
+
+Restoration uses the last trusted snapshot and preserves the damaged bytes in the canonical YAML. A damaged core blocks new starts, checks and governed-operation bindings until restored. Read-only recovery and explicit interruption remain available. The tool does not intercept unrelated host tools.
+
+## Audit, recovery and limits
+
+The canonical `.harness/state.yaml` holds digest versions, pinned source hashes, review declarations, prompt repair history and structured `events`. Events distinguish produced, pending, failed, passed, restored and consolidated states. A tripwire not reached is recorded as null, not a pass. Derived digest files do not form a second authoritative ledger.
+
+File replacement and YAML commit are not one cross-file OS transaction. An interrupted update can leave a prompt whose permitted bodies changed before the review receipt was committed. Hash binding causes a fresh review/recovery to be required; it does not authorize proceeding. Restore from the trusted snapshot or inspect the actual result before retrying. Never replay an unknown external operation to learn its outcome.
+
+Reread findings are declarations, not authentication of cognition. A weak test may pass; a fabricated input file can still misrepresent reality. Checksums detect byte drift, not a malicious operator who controls code and state. No native agent dispatch, model selection, autonomous mission revision, global installation, live-project migration or new schedule is introduced.

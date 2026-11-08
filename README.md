@@ -22,6 +22,7 @@ The harness uses its host's permissions. Installing a skill does not grant permi
 | Continuity 7.9 | Evidence scopes, resumption capsules, mission preparation | Work spread across many sessions |
 | Control 8.0 | Task dependencies, search, traceability, context, governed operations | Several workstreams and formal acceptance |
 | [Control 8.1](docs/harness-8.1.md) | Graph projections, PR reports, explicit run imports, cost accounting | Reviewable evidence across agents |
+| [Control 8.2 — local preview](docs/harness-8.2.md) | Native digest producer, protected periodic review, source pinning, automatic boundary consolidation | General long projects, without a domain-tool dependency |
 
 Maintained versions use YAML storage. Binary analysis and Renode skills are published separately in [DisasmLedger](https://github.com/wagmarsouza/disasmledger).
 

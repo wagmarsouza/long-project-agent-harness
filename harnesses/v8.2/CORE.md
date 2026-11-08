@@ -1,4 +1,4 @@
-# VeriMission Control 8.1 — core operating rules
+# VeriMission Control 8.2 — core operating rules
 
 The executor governs operations sent through its CLI. It does not intercept every host tool. Higher-priority instructions, the user's current request, and the authorized mission remain authoritative.
 
@@ -64,3 +64,16 @@ The CLI rejects pipes, noninteractive terminals, and known CI/automation signals
 `run-import` accepts an explicit neutral record for Codex, OpenCode, Claude, or Hermes with a hashed source. Do not claim native parsing or source authentication. Imports do not dispatch agents, select models, approve actions, change missions, promote claims, or replay unknown results.
 
 Keep actual, estimated, and unpriced costs separate. Missing prices and token counters remain null. Preserve retries, cache counters, and subagent links when supported. Inspect parent/child billing overlap before interpreting totals.
+
+## Native periodic review — general long-project control
+
+- The native digest producer and review require no domain tool. Domain observations are optional inputs; no field, marker, denominator, schedule or proof ladder from a particular project is a universal rule.
+- A configured N-cycle boundary is one joint ritual: physically read all notes in the exact window, reconcile declared observations, verify the governing instructions, review staleness, and reconsider only immediate objectives/scenario. It is not a second schedule.
+- `close` invokes the ritual. A failed or incomplete review exits 2 without verified closure. A successful boundary consolidates automatically. Interrupting work remains possible but does not bypass the next-start gate.
+- Hash notes/observations at closure and pin the initial baseline. Preserve history; do not retroactively improve a past note to justify a current result. Record corrections and justified retractions explicitly. A lower metric can be an honest correction, not failure to manufacture progress.
+- Protect all governing text outside the two declared mutable bodies, including safeguards added before adoption. Keeping marker names while weakening their content is not permitted. Mutable planning text cannot override the mission, invariant core, acceptance criteria or authority boundaries.
+- Generated arithmetic and a digest skeleton do not complete the physical/semantic reread. Read the original notes or their verbatim copies; provide specific findings, acknowledge possible lost facts and distinguish observations from inference. Reread receipts record a declaration, not authenticated cognition.
+- Updates must be bound to the current digest/window, note hashes and prompt hash. Empty updates mean reviewed/unchanged. Never use this path for mission revision, criteria changes, new authority, automatic claim promotion, agent dispatch or installation.
+- An explicitly user-authorized mission revision must declare a new periodic anchor at the current cycle count and a matching inventory baseline when applicable. This starts a new review window without resetting consumed budgets, erasing prior history or treating earlier conclusions as revalidated. Initialization starts at cycle zero; a historical review cannot retarget later work.
+- If the tripwire fails, restore the trusted prompt before further execution. Preserve damaged bytes and structured audit events. A file replacement and YAML commit are not a single OS transaction; after interruption inspect hashes and recover rather than assuming success.
+- Arithmetic demonstrates declared consistency, not semantic correctness, test discrimination or universal coverage. Checksums are not operator authentication. All earlier claim ceilings, coverage denominators, retraction, anti-rework and explicit-user-authority rules continue to apply.
