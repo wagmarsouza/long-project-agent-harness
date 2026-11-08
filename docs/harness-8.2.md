@@ -1,6 +1,6 @@
 # VeriMission Control 8.2 — general-project periodic review
 
-Local development preview; not yet published. No installation or live-project migration is implied.
+Public preview: [v2.2.0-rc.1](release-v2.2.0-rc.1.md). No installation or live-project migration is implied.
 
 Control 8.2 is self-contained. Its native producer reads physical cycle notes, reconciles optional declared inventory observations and emits a digest skeleton. The executor couples that digest to a protected governing-instructions review at the same N-cycle boundary. Research, software, writing and other long-running projects do not need a decompilation repository.
 

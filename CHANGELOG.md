@@ -1,12 +1,12 @@
 # Changelog
 
-## Control 8.2 — local preview, 2026-11-08
+## Publication v2.2.0-rc.1 / Control 8.2 — 2026-11-08
 
 - Integrated a native, domain-neutral digest producer and protected N-cycle review in `close`; no specialist repository is required.
 - Added strict mission policy, physical-note/source hashes, inventory consistency/transition reconciliation, justified retractions and possible-loss review.
 - Fingerprinted governing text outside objectives/scenario bodies; added trusted restoration, preserved damage and structured YAML review events.
 - Kept review/claim ceilings, manual mission authorization and all 8.1 features. Existing missions without the opt-in policy retain their earlier behavior.
-- Added generic fixtures and portability/recovery tests. This preview is not installed, deployed to live projects, pushed or published.
+- Added generic fixtures and portability/recovery tests. Released as an opt-in public preview; no installation, schedule or live-project migration is implied.
 
 ## Publication v2.1.2 — 2026-11-03
 

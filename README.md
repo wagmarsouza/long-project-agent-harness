@@ -8,7 +8,7 @@
 
 Evidence-based control for long-running projects with AI agents.
 
-[Brand assets](docs/branding.md) · [Control 8.1 guide](docs/harness-8.1.md) · [Verification](docs/v8.1-verification.md)
+[Brand assets](docs/branding.md) · [Control 8.1 guide](docs/harness-8.1.md) · [Control 8.2 preview](docs/release-v2.2.0-rc.1.md) · [Verification](docs/v8.1-verification.md)
 
 VeriMission provides local harnesses and agent skills for projects that span multiple sessions. It records an explicit mission, acceptance criteria, execution cycles, evidence, claims, retractions, and next steps. Its checks support traceability and bounded conclusions; test quality and semantic correctness still require review.
 
@@ -22,7 +22,7 @@ The harness uses its host's permissions. Installing a skill does not grant permi
 | Continuity 7.9 | Evidence scopes, resumption capsules, mission preparation | Work spread across many sessions |
 | Control 8.0 | Task dependencies, search, traceability, context, governed operations | Several workstreams and formal acceptance |
 | [Control 8.1](docs/harness-8.1.md) | Graph projections, PR reports, explicit run imports, cost accounting | Reviewable evidence across agents |
-| [Control 8.2 — local preview](docs/harness-8.2.md) | Native digest producer, protected periodic review, source pinning, automatic boundary consolidation | General long projects, without a domain-tool dependency |
+| [Control 8.2 — public preview](docs/harness-8.2.md) | Native digest producer, protected periodic review, source pinning, automatic boundary consolidation | General long projects, without a domain-tool dependency |
 
 Maintained versions use YAML storage. Binary analysis and Renode skills are published separately in [DisasmLedger](https://github.com/wagmarsouza/disasmledger).
 
@@ -39,6 +39,8 @@ Maintained versions use YAML storage. Binary analysis and Renode skills are publ
 npx skills add wagmarsouza/long-project-agent-harness --skill skill-harness-v8-1
 npx skills add wagmarsouza/long-project-agent-harness --list
 ```
+
+The [Control 8.2 public preview](docs/release-v2.2.0-rc.1.md) is available as `skill-harness-v8-2`; its periodic policy is opt-in and existing missions must not be reinitialized. The 8.1 examples above remain available.
 
 Other skill IDs: `skill-harness-v7-8`, `skill-harness-v7-9`, `skill-harness-v8-0`.
 
