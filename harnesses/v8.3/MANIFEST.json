@@ -4,8 +4,8 @@
   "files": [
     {
       "path": "CORE.md",
-      "bytes": 14994,
-      "sha256": "e4d0560c9f753b9c6c88cee41176bf0279fc0f9cda321751df124fc633a880d7"
+      "bytes": 16090,
+      "sha256": "b0dca8993a5777d15ed0476222efd73e767fa83c42c8e25b43d08f2927a74b2f"
     },
     {
       "path": "examples/run_periodic_pilot.py",
@@ -24,8 +24,8 @@
     },
     {
       "path": "harness_v8.3.txt",
-      "bytes": 39999,
-      "sha256": "837d3d4116b1832eeb232b305d301b3ba675542b3cd72da45e70942b9a57c386"
+      "bytes": 47943,
+      "sha256": "9354e26d21a3d4ef6aac167b63d30b264e849b2b6fc6cb34fd22c5ffc4c48fe7"
     },
     {
       "path": "references/harness_v7.7.txt",
@@ -63,6 +63,11 @@
       "sha256": "ef9443fbda56c8a8ab930d00e75afac794246d0134da2f4e5d9f6fdaf4a5446d"
     },
     {
+      "path": "references/v83-assurance.md",
+      "bytes": 6846,
+      "sha256": "6c6167a70ef297762ca32e4cbdeb3b26feeb92d67cd1dd4e2495fff1fffd47ec"
+    },
+    {
       "path": "references/v83-preservation.md",
       "bytes": 12043,
       "sha256": "b0a4f77dafa68598a684e42bd9b2766dabc477e997cfa1d56e9ef997d1a9428e"
@@ -73,9 +78,34 @@
       "sha256": "b4603b9468ade4d639d2c6f73b89d50e1fa5d227c73ab15be0382cca478513e6"
     },
     {
+      "path": "scripts/assurance.py",
+      "bytes": 4707,
+      "sha256": "b1304f9d6914c64ad6e48b5b2b9561f73921b0d47e86d43791289d533bc10bb6"
+    },
+    {
+      "path": "scripts/assurance_controls.py",
+      "bytes": 4023,
+      "sha256": "3f47adcdde5fb8aa15aa8d045e7d5dbb03569cc141ac46a23e7ded4cc4cd2505"
+    },
+    {
+      "path": "scripts/assurance_faults.py",
+      "bytes": 9101,
+      "sha256": "431299c8a0524f9a115699f813514164cdf1cc5c85f5296617bb6abc7d286552"
+    },
+    {
+      "path": "scripts/assurance_fixture.py",
+      "bytes": 5672,
+      "sha256": "91a46093ed2bb195d298f1f8c7c460c155aa3cfeb8c06dd0297c90c6b17ebe37"
+    },
+    {
+      "path": "scripts/assurance_lifecycle.py",
+      "bytes": 7711,
+      "sha256": "80001e1f2fa942a0801056410030ea1196451ba182423442f2ec39ec2bc16365"
+    },
+    {
       "path": "scripts/harness.py",
-      "bytes": 65395,
-      "sha256": "dcb71ef326cc118e2b77275b51fedae6c3e2f8918f381c77df9af0e632ce8e6a"
+      "bytes": 65910,
+      "sha256": "2cce5daf70564e42d241e809006ed36130eabce737d68cc2069ec4cdf32679b8"
     },
     {
       "path": "scripts/regression_contract.py",
@@ -321,6 +351,11 @@
       "path": "tests/test_v82_periodic.py",
       "bytes": 23713,
       "sha256": "395929d93c16003ea915f33cb833841b2f80e1947abd7002f2bbee41ecf1a13a"
+    },
+    {
+      "path": "tests/test_v83_assurance.py",
+      "bytes": 9624,
+      "sha256": "e06b33d924a3f9e80be01b9d85df910d7295add72ebac0c3ab375ae23ce7012f"
     },
     {
       "path": "tests/test_v83_contract.py",

@@ -787,7 +787,13 @@ Harness = _v83.extend(Harness, require, digest, now, file_digest, nonempty, Refu
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    # Explicit verifier tests use disposable projects, never the caller's --project or store.
+    if sys.argv[1:2] == ['assurance']:
+        _assurance_spec = importlib.util.spec_from_file_location('verimission_assurance', Path(__file__).with_name('assurance.py'))
+        _assurance = importlib.util.module_from_spec(_assurance_spec)
+        _assurance_spec.loader.exec_module(_assurance)
+        return _assurance.main(sys.argv[2:])
+    parser = argparse.ArgumentParser(description=__doc__, epilog='Verifier self-tests: harness.py assurance --help (without --project).')
     parser.add_argument('--project', required=True)
     sub = parser.add_subparsers(dest='command', required=True)
     sub.add_parser('baseline-preview').add_argument('--input', required=True)

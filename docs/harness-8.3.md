@@ -14,6 +14,11 @@ configuring policy or adopting a baseline. For periodic notes/inventories and pr
 the inherited [8.2 guide](../harnesses/v8.3/references/v82-periodic-review.md) remains applicable.
 Binary tools remain independent optional providers in DisasmLedger; no solver or emulator is required.
 
+The updated local preview also includes explicit finite [verifier assurance campaigns](../harnesses/v8.3/references/v83-assurance.md):
+known-bad controls with expected diagnoses, independent lifecycle programs and a 36-scenario YAML
+persistence sweep (18 abrupt worker terminations). Run `harness.py assurance --suite all` without
+`--project`. The canonical store remains YAML; no SQLite storage or background loop is introduced.
+
 ```powershell
 $h = (Resolve-Path '.\harnesses\v8.3\scripts\harness.py').Path
 python -B $h --project C:\your-project resume

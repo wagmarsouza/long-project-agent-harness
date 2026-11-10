@@ -102,3 +102,17 @@ Read `references/v83-preservation.md` for the precise contract, fresh results, d
 trust limits. Without this policy, inherited 8.2 cycle behavior remains available. Read `regression-plan`
 before selecting checks; use `regression-report` to inspect current case-level evidence. Native
 `close` enforces preservation together with all earlier gates; it does not implicitly launch checks.
+
+## Verifier assurance — explicit, finite and synthetic
+
+- When changing or releasing this verifier, use the bundled `assurance` campaigns to check test
+  discrimination, bounded lifecycle sequences and YAML persistence recovery. Read
+  [the campaign guide](references/v83-assurance.md) for commands and actual coverage.
+- A negative control counts only when the expected behavioral verdict/refusal is observed after
+  a healthy control passes. Infrastructure errors, unrelated crashes and absent cases are failures.
+- Record finite seeds/programs and injected boundaries. Preserve incomplete traces and actual
+  worker outcomes. No global mutation score, exhaustive proof or physical power-loss claim follows.
+- Campaign receipts do not approve a mission, replace project evidence or count replay as new
+  knowledge. No automatic campaign, installation, publishing, scheduler or human confirmation is added.
+- YAML remains canonical. SQLite is a testing-method reference; all prior authority, anti-inflation,
+  evidence/claim ceilings, honest-retraction and anti-rework rules remain in force.

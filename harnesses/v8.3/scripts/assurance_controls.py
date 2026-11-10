@@ -1,5 +1,6 @@
 """Known-bad controls must fail for their intended reason, after a healthy control passes."""
 import json
+import yaml
 
 from assurance_fixture import CASE, Fixture, case_result, engine
 
@@ -7,11 +8,21 @@ CONTROLS = {
     'missing-case': 'missing', 'skipped-case': 'skipped', 'wrong-answer': 'fail',
     'wrong-memory': 'fail', 'stale-run': 'foreign_run', 'incomplete-result': 'incomplete',
     'changed-oracle': 'REGRESSION_SOURCE', 'omitted-criterion': 'REGRESSION_PLAN',
+    'corrupt-store': 'STORE_INTEGRITY',
 }
 
 
 def _observe(fixture, control):
     h = fixture.h
+    if control == 'corrupt-store':
+        document = yaml.safe_load(h.db.read_text(encoding='utf-8'))
+        document['state']['mission']['objective'] = 'Deliberately corrupt synthetic YAML'
+        h.db.write_text(yaml.safe_dump(document), encoding='utf-8')
+        try:
+            h.resume()
+        except engine.Refusal as error:
+            return error.code
+        return 'accepted'
     if control == 'omitted-criterion':
         try:
             h.start(fixture.plan(['OTHER']))

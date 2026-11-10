@@ -3,6 +3,8 @@ import importlib.util
 from pathlib import Path
 import sys
 import subprocess
+import json
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -98,15 +100,90 @@ class PersistenceTests(unittest.TestCase):
         module = load('assurance_faults')
         result = subprocess.CompletedProcess([], 79, stdout='', stderr='')
         with patch.object(module.subprocess, 'run', return_value=result):
-            row = module.run_case('close', 'before-replace', 'crash')
+            row = module.run_case('review', 'before-replace', 'crash')
         self.assertFalse(row['passed'])
         self.assertFalse(row['fault_reached'])
+
+    def test_a_new_commit_misreported_as_precommit_is_rejected(self):
+        module = load('assurance_faults')
+        def falsely_report_precommit(argv, **kwargs):
+            h = module.fresh_engine(argv[4], argv[5])
+            h.review('wrong-stage-commit')
+            marker = {'fault_reached': argv[7], 'operation': argv[6], 'mode': argv[8]}
+            return subprocess.CompletedProcess(argv, 0, stdout=json.dumps(marker) + '\n', stderr='')
+        with patch.object(module.subprocess, 'run', side_effect=falsely_report_precommit):
+            row = module.run_case('review', 'before-replace', 'exception')
+        self.assertFalse(row['passed'])
+        self.assertTrue(row['fault_reached'])
+        self.assertEqual(row['error_type'], 'AssertionError')
 
     def test_unknown_boundary_or_mode_is_refused_before_execution(self):
         module = load('assurance_faults')
         for args in (('reset', 'before-replace', 'crash'), ('close', 'any', 'crash'), ('close', 'before-replace', 'retry')):
             with self.subTest(args=args), self.assertRaises(ValueError):
                 module.run_case(*args)
+
+
+class CampaignTests(unittest.TestCase):
+    def test_native_cli_runs_controls_without_initializing_the_current_directory(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            output = root / 'assurance.json'
+            result = subprocess.run([sys.executable, '-B', str(SCRIPTS / 'harness.py'), 'assurance',
+                                     '--suite', 'controls', '--output', str(output)], cwd=root,
+                                    capture_output=True, text=True, timeout=60)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            report = json.loads(output.read_text(encoding='utf-8'))
+            self.assertTrue(report['passed'])
+            self.assertEqual(report['format'], 'verimission-assurance-v1')
+            self.assertEqual(report['canonical_store'], 'YAML')
+            self.assertFalse(report['mission_acceptance'])
+            self.assertEqual({p.name for p in root.iterdir()}, {'assurance.json'})
+
+    def test_output_is_never_overwritten_and_invalid_budgets_do_not_run(self):
+        module = load('assurance')
+        with tempfile.TemporaryDirectory() as temp:
+            output = Path(temp) / 'existing.json'
+            output.write_text('keep me', encoding='utf-8')
+            with patch.object(module, 'run', side_effect=AssertionError('must not run')):
+                self.assertEqual(module.main(['--suite', 'controls', '--output', str(output)]), 2)
+            self.assertEqual(output.read_text(), 'keep me')
+        with patch.object(module, 'RUNNERS', {}), self.assertRaises(ValueError):
+            module.run(suite='all', seed=-1)
+
+    def test_empty_success_receipt_is_not_a_complete_campaign(self):
+        module = load('assurance')
+        with patch.dict(module.RUNNERS, {'controls': lambda: {'suite': 'controls', 'passed': True}}):
+            report = module.run(suite='controls')
+        self.assertFalse(report['complete'])
+        self.assertFalse(report['passed'])
+
+    def test_failing_campaign_has_nonzero_exit_and_preserves_diagnostics(self):
+        module = load('assurance')
+        with tempfile.TemporaryDirectory() as temp:
+            output = Path(temp) / 'failure.json'
+            failed = {'passed': False, 'complete': True, 'diagnostic': 'deliberate failed control'}
+            with patch.object(module, 'run', return_value=failed):
+                self.assertEqual(module.main(['--suite', 'controls', '--output', str(output)]), 3)
+            self.assertEqual(json.loads(output.read_text()), failed)
+
+    def test_non_fixture_worker_path_is_rejected_without_writes(self):
+        module = load('assurance_faults')
+        with tempfile.TemporaryDirectory() as temp:
+            with self.assertRaises(ValueError):
+                module.worker(temp, 'not-a-fixture', 'review', 'before-open', 'exception')
+            self.assertEqual(list(Path(temp).iterdir()), [])
+
+    def test_engine_identity_change_invalidates_an_otherwise_complete_receipt(self):
+        module = load('assurance')
+        fake = {'suite': 'controls', 'passed': True, 'positive_control': {'id': 'healthy'},
+                'cases': [{'id': name} for name in module.controls.CONTROLS]}
+        with patch.dict(module.RUNNERS, {'controls': lambda: fake}), patch.object(
+                module, 'source_manifest', side_effect=[{'harness.py': 'old'}, {'harness.py': 'new'}]):
+            report = module.run(suite='controls')
+        self.assertTrue(report['complete'])
+        self.assertFalse(report['engine_sources_unchanged'])
+        self.assertFalse(report['passed'])
 
 
 if __name__ == '__main__':

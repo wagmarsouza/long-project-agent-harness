@@ -25,6 +25,11 @@ Expected results and prior capabilities cannot be weakened to make a candidate p
 adoption/change on an existing mission uses the existing explicit human mission-revision gate.
 No separate baseline-approval bypass or background rebaselining exists.
 
+When changing/releasing the verifier, read [finite assurance campaigns](references/v83-assurance.md).
+`python /absolute/skill/scripts/harness.py assurance --suite all` exercises synthetic controls,
+bounded action sequences and YAML persistence faults without a real `--project`. A self-test pass
+does not establish project correctness or grant authority; do not run the full campaign on every task.
+
 Read [periodic review](references/v82-periodic-review.md) before changing notes, cadence, inventory
 or governing-file configuration. The native review/reconciliation remains self-contained and protects
 governing text outside the declared immediate-objectives/scenario bodies. No second scheduler is added.
@@ -136,3 +141,17 @@ Read `references/v83-preservation.md` for the precise contract, fresh results, d
 trust limits. Without this policy, inherited 8.2 cycle behavior remains available. Read `regression-plan`
 before selecting checks; use `regression-report` to inspect current case-level evidence. Native
 `close` enforces preservation together with all earlier gates; it does not implicitly launch checks.
+
+## Verifier assurance — explicit, finite and synthetic
+
+- When changing or releasing this verifier, use the bundled `assurance` campaigns to check test
+  discrimination, bounded lifecycle sequences and YAML persistence recovery. Read
+  [the campaign guide](references/v83-assurance.md) for commands and actual coverage.
+- A negative control counts only when the expected behavioral verdict/refusal is observed after
+  a healthy control passes. Infrastructure errors, unrelated crashes and absent cases are failures.
+- Record finite seeds/programs and injected boundaries. Preserve incomplete traces and actual
+  worker outcomes. No global mutation score, exhaustive proof or physical power-loss claim follows.
+- Campaign receipts do not approve a mission, replace project evidence or count replay as new
+  knowledge. No automatic campaign, installation, publishing, scheduler or human confirmation is added.
+- YAML remains canonical. SQLite is a testing-method reference; all prior authority, anti-inflation,
+  evidence/claim ceilings, honest-retraction and anti-rework rules remain in force.

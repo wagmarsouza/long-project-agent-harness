@@ -2,6 +2,9 @@
 
 ## Control 8.3 — local preview, 2026-11-10
 
+- Added explicit finite verifier assurance: nine expected-reason negative controls, independent
+  seed-replayable lifecycle programs and systematic YAML I/O/process-termination recovery scenarios.
+- Kept YAML canonical and all normal gates/authority unchanged; self-test receipts confer no mission acceptance.
 - Added opt-in native preservation policy, pinned baselines/oracles, complete case results and non-compensating comparisons.
 - Coupled start/check/close/acceptance to current proof, with explicit mission-revision authority and original failure history.
 - Added strict neutral/JUnit readers, a finite standard-library unittest runner, explicit metric floors/ceilings and conservative impact reuse.

@@ -26,7 +26,8 @@ def canonical(path):
 def sync():
     overview = (HARNESS / 'harness_v8.3.txt').read_text(encoding='utf-8').split('\n\n---\n\n', 1)[0]
     core = (HARNESS / 'CORE.md').read_text(encoding='utf-8')
-    guide = (HARNESS / 'references/v82-periodic-review.md').read_text(encoding='utf-8') + '\n\n' + (HARNESS / 'references/v83-preservation.md').read_text(encoding='utf-8')
+    guide = '\n\n'.join((HARNESS / 'references' / name).read_text(encoding='utf-8') for name in
+                         ('v82-periodic-review.md', 'v83-preservation.md', 'v83-assurance.md'))
     combined = overview.rstrip() + '\n\n---\n\n' + core.rstrip() + '\n\n---\n\n' + guide.rstrip() + '\n'
     (HARNESS / 'harness_v8.3.txt').write_text(combined, encoding='utf-8', newline='\n')
     for folder in ('scripts', 'tests', 'references', 'examples'):
@@ -60,7 +61,7 @@ def sync():
 def archive(source, root_name, output):
     staged = output / root_name
     shutil.copytree(source, staged, ignore=shutil.ignore_patterns('__pycache__', '*.pyc', '*.pyo'))
-    destination = output / (('skill-harness-v8_2' if root_name.startswith('skill-') else root_name) + '.zip')
+    destination = output / (('skill-harness-v8_3' if root_name.startswith('skill-') else root_name) + '.zip')
     with zipfile.ZipFile(destination, 'w', compression=zipfile.ZIP_DEFLATED) as package:
         for path in files(staged):
             info = zipfile.ZipInfo(root_name + '/' + path.relative_to(staged).as_posix(), (2026, 11, 8, 0, 0, 0))
