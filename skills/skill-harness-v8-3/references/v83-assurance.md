@@ -36,6 +36,9 @@ symlinks and paths inside `.harness`/`.git` (case-insensitive names) are refused
 canonical state or mission approval. Exit 0 means this finite campaign passed; 3 means campaign
 failure/incompleteness; 2 means invalid configuration or output/I/O failure. Retain diagnostics.
 
+The output destination is resolved before execution and the resolved path is opened exclusively.
+An alias/junction into protected state does not bypass the directory-name guard.
+
 ## 1. Sensitivity controls
 
 The healthy synthetic input must pass the native check, close and validation first. Nine bundled
@@ -81,6 +84,8 @@ must demonstrate that the intended boundary was reached. An unrelated crash is n
 
 A fresh parent-side engine validates integrity, lock recovery and complete old/new commit semantics:
 before replace, the previous YAML bytes must survive; after replace, state and audit must agree.
+The full pre-existing state/check/event history is compared with the explicitly permitted operation
+delta; native consistency and current-proof validation are additionally required after check/close.
 The native check scenario verifies that an orphan result remains separate from canonical proof.
 The close scenario verifies the joint verified-close/last-validated snapshot commit. Read-only
 recovery neither repeats an operation nor overwrites a result. Receipt counters distinguish these

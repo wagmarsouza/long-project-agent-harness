@@ -179,8 +179,8 @@
     },
     {
       "path": "references/harness_v8.3.txt",
-      "bytes": 47968,
-      "sha256": "7b2024a4b48761854eb1acd63c8c420ada5306da94ff8b2132cb92e170b8ed88"
+      "bytes": 48741,
+      "sha256": "f70a0ec23f55110973af98849a9145ae16ab6ea7c6baec9f0474f749f980e815"
     },
     {
       "path": "references/v79-features.md",
@@ -204,13 +204,13 @@
     },
     {
       "path": "references/v83-assurance.md",
-      "bytes": 6871,
-      "sha256": "ec66bd90505acaf1b66be31671c3ae74c571d9c9e72068b2da1f43a043d0c89c"
+      "bytes": 7250,
+      "sha256": "e11ba4a0c31ee4a32ca460e8143fb243db1aaba8103ffc2a0e28594e376656b2"
     },
     {
       "path": "references/v83-preservation.md",
-      "bytes": 12043,
-      "sha256": "b0a4f77dafa68598a684e42bd9b2766dabc477e997cfa1d56e9ef997d1a9428e"
+      "bytes": 12437,
+      "sha256": "cadf41e47ad942ec5fd8d3324288df666a06b060842c17d6b988006ba41120c3"
     },
     {
       "path": "requirements.txt",
@@ -219,8 +219,8 @@
     },
     {
       "path": "scripts/assurance.py",
-      "bytes": 4718,
-      "sha256": "be79ff6411603ba64580025cda782b3c9519feeebde0b5e023514c957bb8f019"
+      "bytes": 4964,
+      "sha256": "4e6df18e443daab450a21e3232bd2c267e2cdab9f43061cf79f872b835ab398a"
     },
     {
       "path": "scripts/assurance_controls.py",
@@ -229,8 +229,8 @@
     },
     {
       "path": "scripts/assurance_faults.py",
-      "bytes": 9101,
-      "sha256": "431299c8a0524f9a115699f813514164cdf1cc5c85f5296617bb6abc7d286552"
+      "bytes": 11531,
+      "sha256": "5200e089349291846cb56b18280a9d41213983427dadff5911670df193b5d855"
     },
     {
       "path": "scripts/assurance_fixture.py",
@@ -269,8 +269,8 @@
     },
     {
       "path": "scripts/v80_operations.py",
-      "bytes": 17020,
-      "sha256": "521e37192fb9d5270ab0e695d75483b206b28669b178d025481ab1ddeda93679"
+      "bytes": 17574,
+      "sha256": "35d55695c7d8b065d2a0338fa19f3a6c21881283af750922c9663b58b8b2762c"
     },
     {
       "path": "scripts/v81_insights.py",
@@ -371,6 +371,11 @@
       "path": "tests/test_v83_results.py",
       "bytes": 4950,
       "sha256": "0252a2ad543b96fb249d335eb2a17f8e2ecf97f32635ff18138814dbabcd6c21"
+    },
+    {
+      "path": "tests/test_v83_stabilization.py",
+      "bytes": 5888,
+      "sha256": "145ce62a40aac992a840c82a866b605302510a6b891f08449ce636d7ce67dfc0"
     },
     {
       "path": "tests/test_yaml_store.py",

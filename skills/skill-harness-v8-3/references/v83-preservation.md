@@ -97,6 +97,11 @@ and after the check; generated result files are separate outputs. Do not list th
 an input artifact. Existing result files are never overwritten by the bundled runner. An incomplete
 file left by a crash remains evidence of that interruption; a retry uses a new run ID/path.
 
+The optional governed `operation-run` adapter uses the same preservation preparation/finalization.
+Preflight happens before single-use approval is consumed; admission still commits before launch.
+An interruption after admission remains unresolved and cannot be replayed merely to discover its
+outcome. A completed operation must still produce a current passing preservation proof for closure.
+
 The result envelope is exactly:
 
 ```json

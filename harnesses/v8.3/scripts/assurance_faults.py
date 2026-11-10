@@ -8,7 +8,7 @@ import subprocess
 import sys
 from unittest.mock import patch
 
-from assurance_fixture import Fixture, fresh_engine, sha
+from assurance_fixture import Fixture, fresh_engine, sha, engine
 
 STAGES = ('before-open', 'partial-write', 'before-flush', 'before-fsync', 'before-replace', 'after-replace')
 OPERATIONS = ('review', 'check', 'close')
@@ -106,6 +106,39 @@ def _configuration(operation, stage, mode):
         raise ValueError('Select a bundled operation, persistence boundary and exception/crash mode')
 
 
+def _preserved(before, after, allowed):
+    if ({k:v for k,v in before.items() if k not in allowed} !=
+            {k:v for k,v in after.items() if k not in allowed}):
+        raise AssertionError('Previously committed history changed outside the allowed operation delta')
+
+
+def _committed_history(operation, old, state):
+    allowed = {'revision','reviews'} if operation == 'review' else {'revision','cycles','events'}
+    if operation == 'close': allowed.add('regression_guard')
+    _preserved(old,state,allowed)
+    if operation == 'review':
+        reviews = state['reviews']
+        if len(reviews) != len(old['reviews'])+1 or any(reviews.get(k) != value for k,value in old['reviews'].items()):
+            raise AssertionError('Review history was lost or changed')
+        return
+    if state['cycles'][:-1] != old['cycles'][:-1]:
+        raise AssertionError('Earlier cycle history changed')
+    before, after = old['cycles'][-1], state['cycles'][-1]
+    delta = {'checks'} if operation == 'check' else {
+        'status','ended','next_step','progress','tokens','reported_usd','usage_source','regression_assessment'}
+    _preserved(before,after,delta)
+    if operation == 'check' and (after['checks'][:-1] != before['checks'] or len(after['checks']) != len(before['checks'])+1):
+        raise AssertionError('Prior checks changed or more than one execution was recorded')
+    previous = old.get('events',[]); current = state.get('events',[])
+    kind = 'regression-check' if operation == 'check' else 'regression-assessed'
+    if len(current) != len(previous)+1 or current[:-1] != previous or current[-1]['kind'] != kind:
+        raise AssertionError('Prior event history changed or the expected operation event is missing')
+    if operation == 'close':
+        _preserved(old['regression_guard'],state['regression_guard'],{'last_validated'})
+        if state['regression_guard']['last_validated']['assessment_sha256'] != engine.digest(after['regression_assessment']):
+            raise AssertionError('Validated snapshot does not bind the committed assessment')
+
+
 def _recovery(fixture, operation, stage, old_bytes, before):
     h = fresh_engine(fixture.root, fixture.nonce)
     h.store.validate()
@@ -123,6 +156,7 @@ def _recovery(fixture, operation, stage, old_bytes, before):
             raise AssertionError('Persistence recovery changed the mission')
         if state['claims'] != old['claims'] or len(state['cycles']) != len(old['cycles']):
             raise AssertionError('Recovery fabricated claims or cycles')
+        _committed_history(operation,old,state)
         if operation == 'review':
             if len(state['reviews']) != len(old['reviews']) + 1:
                 raise AssertionError('Review commit missing')
@@ -136,6 +170,10 @@ def _recovery(fixture, operation, stage, old_bytes, before):
             current = state['cycles'][-1]
             if current['status'] != 'verified' or state['regression_guard']['last_validated']['cycle'] != 1:
                 raise AssertionError('Verified close and validated snapshot were not committed together')
+        if not h.validate()['passed']:
+            raise AssertionError('Recovered commit fails native consistency validation')
+        if operation in ('check','close') and not h.regression_report(1)['passed']:
+            raise AssertionError('Recovered execution has no current preservation proof')
     snapshots = {p.name: sha(p) for p in fixture.root.glob('reports/*.json')}
     if operation == 'check' and len(snapshots) != 1:
         raise AssertionError('Executed check result was silently lost or repeated')

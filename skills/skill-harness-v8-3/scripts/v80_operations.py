@@ -127,8 +127,12 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal, human_inp
                 remaining = state['mission']['budget']['max_cycle_seconds'] - (datetime.now(timezone.utc) - datetime.fromisoformat(cycle['started'])).total_seconds()
                 require(remaining > 0, 'TIMEBOX', 'Cycle timebox exceeded')
                 timeout = min(remaining, state['mission']['budget']['max_check_seconds'])
+                preservation = self.regression_prepare(state, cycle, criterion) if hasattr(self, 'regression_prepare') else None
+                if preservation:
+                    preservation['env']['VERIMISSION_TIMEOUT'] = str(timeout)
                 artifacts = {name: file_digest(self.project_file(name)) for name in criterion.get('artifacts', [])}
                 argv, cycle_id, criterion_id = criterion['argv'], cycle['id'], criterion['id']
+                execution_argv = preservation['argv'] if preservation else argv
                 checkpoint = {'at': now(), 'phase': 'admitted_before_launch', 'cycle': cycle_id, 'criterion': criterion_id,
                               'state_before_sha256': digest(state), 'artifact_preconditions': artifacts, 'argv_sha256': digest(argv)}
                 operation['checkpoints'].append(checkpoint)
@@ -139,7 +143,8 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal, human_inp
             # point before completion commits, the next session MUST reconcile.
             started = time.monotonic()
             try:
-                result = subprocess.run(argv, cwd=self.root, shell=False, capture_output=True, timeout=timeout)
+                result = subprocess.run(execution_argv, cwd=self.root, shell=False, capture_output=True, timeout=timeout,
+                                        env=preservation['env'] if preservation else None)
                 exit_code, outcome = result.returncode, 'executed'
                 output_hash = hashlib.sha256(result.stdout + b'\x00' + result.stderr).hexdigest()
             except subprocess.TimeoutExpired:
@@ -158,6 +163,8 @@ def extend(Base, require, digest, now, file_digest, nonempty, Refusal, human_inp
                 cycle = self.cycle(state, cycle_id)
                 require(operation['status'] == 'running' and cycle['status'] == 'active', 'OPERATION_CONFLICT', 'Execution was interrupted/reconciled concurrently; inspect the actual outcome before proceeding')
                 cycle['checks'].append(check)
+                if hasattr(self, 'regression_finish'):
+                    self.regression_finish(state, cycle, check, preservation)
                 operation.update(status='unknown' if outcome == 'timeout' else 'completed', result=check)
                 operation['checkpoints'].append({'at': now(), 'phase': 'result_recorded', 'check_id': check['id'], 'outcome': outcome})
                 self.event(state, 'operation-result', identifier, {'outcome': outcome, 'exit_code': exit_code, 'passed': check['passed']})

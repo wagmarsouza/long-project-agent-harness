@@ -2,6 +2,8 @@
 
 ## Control 8.3 — local preview, 2026-11-10
 
+- Fixed independent-review findings: resolve assurance output aliases, preserve full recovery
+  history/deltas and require current proofs, and integrate governed operations with preservation.
 - Added explicit finite verifier assurance: nine expected-reason negative controls, independent
   seed-replayable lifecycle programs and systematic YAML I/O/process-termination recovery scenarios.
 - Kept YAML canonical and all normal gates/authority unchanged; self-test receipts confer no mission acceptance.

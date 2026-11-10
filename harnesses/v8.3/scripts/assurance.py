@@ -70,14 +70,20 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         lifecycle.programs(args.seed, args.traces, args.steps)
-        if args.output and (args.output.exists() or args.output.is_symlink() or
-                            not args.output.parent.is_dir() or any(x.casefold() in {'.harness', '.git'} for x in args.output.parts)):
-            raise ValueError('Receipt requires a new file outside protected state and an existing parent')
-        result = run(args.suite, args.seed, args.traces, args.steps)
+        target = None
         if args.output:
-            with args.output.open('x', encoding='utf-8', newline='\n') as stream:
+            try:
+                target = args.output.resolve()
+            except (OSError, RuntimeError) as error:
+                raise ValueError('Receipt destination cannot be resolved safely') from error
+            if (args.output.exists() or args.output.is_symlink() or not target.parent.is_dir() or
+                    any(x.casefold() in {'.harness', '.git'} for path in (args.output,target) for x in path.parts)):
+                raise ValueError('Receipt requires a new file outside protected state and an existing parent')
+        result = run(args.suite, args.seed, args.traces, args.steps)
+        if target:
+            with target.open('x', encoding='utf-8', newline='\n') as stream:
                 stream.write(json.dumps(result, ensure_ascii=True, indent=2) + '\n')
-            print(json.dumps({'passed': result['passed'], 'complete': result['complete'], 'receipt': str(args.output)}))
+            print(json.dumps({'passed': result['passed'], 'complete': result['complete'], 'receipt': str(target)}))
         else:
             print(json.dumps(result, ensure_ascii=True, indent=2))
         return 0 if result['passed'] else 3
