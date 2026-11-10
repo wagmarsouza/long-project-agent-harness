@@ -83,7 +83,9 @@ class YAMLStoreTests(unittest.TestCase):
         harness = module.Harness(self.root)
         harness.init(self.mission)
         before = harness.db.read_bytes()
-        with patch.object(module._store_module.os, 'replace', side_effect=OSError('fixture')):
+        # The runner can import yaml_store normally; the fallback's private module alias is optional.
+        store_os = module.YAMLStore._write_unlocked.__globals__['os']
+        with patch.object(store_os, 'replace', side_effect=OSError('fixture')):
             with self.assertRaises(OSError):
                 harness.review('will not commit')
         self.assertEqual(harness.db.read_bytes(), before)

@@ -399,8 +399,8 @@
     },
     {
       "path": "tests/test_yaml_store.py",
-      "bytes": 4378,
-      "sha256": "e006852319929fc952a077b38fde9e4b7d643b938fafc939646ba4f2a2fb94da"
+      "bytes": 4535,
+      "sha256": "e2074c42170e7b2e5f76917fa2017cd31dd956325f9dc238dbf28b0d09f826ba"
     }
   ],
   "manifest_excludes_itself": true
