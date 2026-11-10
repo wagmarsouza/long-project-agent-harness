@@ -1,0 +1,19 @@
+{
+  "cycle": 1,
+  "check_id": "COPY the real ID returned by check",
+  "method": "dynamic",
+  "environment": "DESCRIBE the environment actually used; the label does not authenticate production",
+  "verifies": ["DESCRIBE the bounded conclusion supported by the test"],
+  "does_not_verify": ["DESCRIBE the extrapolation that the test does not permit"],
+  "untested": ["LIST relevant untested conditions"],
+  "coverage": [
+    {
+      "label": "Explicitly declared cases",
+      "numerator": 0,
+      "denominator": null,
+      "unit": "cases",
+      "universe": "ENTER the actual universe or state that it remains unknown",
+      "exclusions": []
+    }
+  ]
+}

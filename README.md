@@ -26,6 +26,12 @@ The harness uses its host's permissions. Installing a skill does not grant permi
 
 Maintained versions use YAML storage. Binary analysis and Renode skills are published separately in [DisasmLedger](https://github.com/wagmarsouza/disasmledger).
 
+## Control 8.3 — local development preview
+
+The isolated 8.3 generation adds native case-level preservation gates and a new
+`skill-harness-v8-3`, retaining the complete 8.2 core. See [the guide](docs/harness-8.3.md).
+This preview is not installed or published; the public 8.2 release and older generations remain unchanged.
+
 ## Requirements
 
 - Python 3.11 or later.

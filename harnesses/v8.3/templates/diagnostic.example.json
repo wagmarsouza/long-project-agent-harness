@@ -1,0 +1,10 @@
+{
+  "id": "D1",
+  "symptom": "ENTER the observed symptom",
+  "evidence": "failure.txt",
+  "hypotheses": [
+    "ENTER a hypothesis without claiming a proven cause"
+  ],
+  "criterion": "C1",
+  "next_test": "ENTER a real discriminating test"
+}

@@ -1,8 +1,18 @@
-# Control 8.2
+# Control 8.3 — implementation tracking
 
-- [x] Isolate development and run the 128-test 8.1 baseline.
-- [x] Specify mission policy and write failing behavioral tests.
-- [x] Implement native digest and reconciliation.
-- [x] Integrate boundary closure, prompt protection/restoration and YAML events.
-- [x] Pass targeted and inherited regressions, including generic portability examples (163 tests and a standalone general-project pilot).
-- [x] Synchronize skill resources and build verified archives without installing or publishing (both manifests verified; extracted skill passed 35 periodic tests and validation; both extracted pilots passed).
+- [x] T01 — Inherited baseline and contract
+- [x] T02 — Strict identities and baseline schema
+- [x] T03 — Per-case non-compensating comparison
+- [x] T04 — Neutral results and finite unittest runner
+- [x] T05 — Fresh-output check integration
+- [x] T06 — Native cycle and acceptance gates
+- [x] T07 — Existing explicit human authority workflow
+- [x] T08 — Canonical audit, invalidation and recovery
+- [x] T09 — JUnit and explicit metric readers
+- [x] T10 — Independent DisasmLedger witness exporter
+- [x] T11 — Protected corpus and targeted negative controls
+- [x] T12 — Conservative declared-dependency reuse
+- [x] T13 — Core, CLI and portable pilots
+- [ ] T14 — Final extracted-package verification, parity and ZIP receipts.
+
+No installed skills, live missions, remote repository or schedules modified.

@@ -1,0 +1,17 @@
+{
+  "topic": "source or component name",
+  "task": "stable task identifier",
+  "premise": "technical hypothesis to be tested",
+  "residual": "what the review showed remains unresolved",
+  "review_id": "COPY the ID returned by review",
+  "reviewed_claims": [],
+  "relies_on": [],
+  "criteria": ["C1"],
+  "approach": {
+    "method": "concrete method",
+    "inputs": "inputs actually used",
+    "environment": "relevant technical conditions"
+  },
+  "reference_review": "required in strict mode: what the reference already answers",
+  "simplest_test": "required in strict mode: simplest test that distinguishes the hypotheses"
+}

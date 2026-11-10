@@ -1,5 +1,15 @@
 # Changelog
 
+## Control 8.3 — local preview, 2026-11-10
+
+- Added opt-in native preservation policy, pinned baselines/oracles, complete case results and non-compensating comparisons.
+- Coupled start/check/close/acceptance to current proof, with explicit mission-revision authority and original failure history.
+- Added strict neutral/JUnit readers, a finite standard-library unittest runner, explicit metric floors/ceilings and conservative impact reuse.
+- Retired stale proofs without deleting them; facts require explicit revalidation and revalidation is not counted as new knowledge.
+- Preserved periodic reconciliation/protected review and summarize preservation in the same consolidation.
+- Added generic software/research pilots, adversarial tests, self-contained skill resources and local archives.
+- No installation, publishing, schedule, live mission migration, implicit autonomy or mandatory specialist engine.
+
 ## Publication v2.2.0-rc.1 / Control 8.2 — 2026-11-08
 
 - Integrated a native, domain-neutral digest producer and protected N-cycle review in `close`; no specialist repository is required.

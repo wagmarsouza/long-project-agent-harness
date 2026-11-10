@@ -1,0 +1,11 @@
+{
+  "window": {"start": 1, "end": 10},
+  "digest_sha256": "REPLACE_WITH_CURRENT_DIGEST_SHA256",
+  "prompt_sha256": "REPLACE_WITH_CURRENT_GOVERNING_FILE_SHA256",
+  "reread": [
+    {"cycle": 1, "sha256": "REPLACE_WITH_NOTE_SHA256", "finding": "REPLACE with a substantive observation after physically reading this note; include every cycle exactly once"}
+  ],
+  "updates": {},
+  "reason": "REPLACE with why the immediate objectives/scenario were changed or explicitly left unchanged",
+  "loss_acknowledgements": []
+}

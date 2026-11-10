@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "baseline": {
+    "path": "analysis/preservation-v1.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "input_patterns": [
+    "src/*.py",
+    "tests/*.py"
+  ],
+  "criteria": {
+    "REG": {
+      "output_pattern": "reports/preservation-{run}.json"
+    }
+  },
+  "mode": "full",
+  "graph": {},
+  "graph_complete": false,
+  "environment": []
+}

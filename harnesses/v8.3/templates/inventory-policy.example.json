@@ -1,0 +1,9 @@
+{
+  "observation_pattern": "observations/cycle-{cycle:04d}.json",
+  "baseline": "observations/baseline.json",
+  "inventory": {
+    "categories": ["planned", "implemented", "verified"],
+    "total": 2,
+    "monotonic": {"completed": ["implemented", "verified"]}
+  }
+}
