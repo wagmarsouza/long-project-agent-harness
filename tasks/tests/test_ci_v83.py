@@ -14,6 +14,15 @@ spec.loader.exec_module(m)
 
 
 class CIRunnerTests(unittest.TestCase):
+    def test_packager_uses_explicit_portable_path_order(self):
+        spec=importlib.util.spec_from_file_location('ci_packager',m.ROOT/'tasks/package_v83.py')
+        packager=importlib.util.module_from_spec(spec);spec.loader.exec_module(packager)
+        with tempfile.TemporaryDirectory() as temp:
+            root=Path(temp);(root/'assets').mkdir()
+            for name in ('SKILL.md','README.md','assets/data.txt'):(root/name).write_text('fixture')
+            actual=[p.relative_to(root).as_posix() for p in packager.files(root)]
+            self.assertEqual(actual,['README.md','SKILL.md','assets/data.txt'])
+
     def test_workflow_matrix_and_evidence_policy_are_explicit(self):
         # BaseLoader preserves the YAML key "on" instead of YAML 1.1 boolean coercion.
         doc=yaml.load((m.ROOT/'.github/workflows/ci.yml').read_text(),Loader=yaml.BaseLoader)

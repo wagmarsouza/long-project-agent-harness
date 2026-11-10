@@ -3,6 +3,11 @@
   "canonical_text": "UTF-8 LF",
   "files": [
     {
+      "path": "SKILL.md",
+      "bytes": 19036,
+      "sha256": "31139d059d5a22be143e91e733c6e3a6af2a6084fd8a450313523607c024b8af"
+    },
+    {
       "path": "assets/templates/alias.example.json",
       "bytes": 51,
       "sha256": "7bced08704768783d6d128ff211a5e575711adcd373369a154d57fe17a2a4ab4"
@@ -301,11 +306,6 @@
       "path": "scripts/yaml_store.py",
       "bytes": 11624,
       "sha256": "0db6b240fbc2a2e44b73476c616518c253c650e103ac97e5250febe54c173af7"
-    },
-    {
-      "path": "SKILL.md",
-      "bytes": 19036,
-      "sha256": "31139d059d5a22be143e91e733c6e3a6af2a6084fd8a450313523607c024b8af"
     },
     {
       "path": "tests/fixtures/harness_v78.py",

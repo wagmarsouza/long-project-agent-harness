@@ -13,9 +13,10 @@ TEXT = {'.py', '.md', '.txt', '.json', '.yaml', '.yml', '.toml', '.csv'}
 
 
 def files(root):
-    return sorted(p for p in root.rglob('*') if p.is_file() and
+    return sorted((p for p in root.rglob('*') if p.is_file() and
                   '__pycache__' not in p.parts and p.suffix not in {'.pyc', '.pyo'} and
-                  not any(x.startswith('.') for x in p.relative_to(root).parts))
+                  not any(x.startswith('.') for x in p.relative_to(root).parts)),
+                  key=lambda p: p.relative_to(root).as_posix())
 
 
 def canonical(path):

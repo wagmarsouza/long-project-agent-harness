@@ -85,7 +85,8 @@ def execute(name,argv,root,out,source,timeout,resume=False,cases=None,extra_env=
         try:row['outputs']=output_identity(outputs)
         except (OSError,ValueError) as error:row.update(passed=False,output_error=str(error))
     atomic(receipt,row)
-    print(json.dumps(row),flush=True)
+    print(json.dumps({**{k:v for k,v in row.items() if k!='outputs'},
+                      'output_files':sum(len(entries) for entries in row.get('outputs',{}).values())}),flush=True)
     return row
 
 
@@ -145,7 +146,7 @@ def main(argv=None):
         for name,start,runner,minimum in [
             ('unit-harness','harnesses/v8.3/tests',H/'scripts/result_runner.py',259),
             ('unit-skill','skills/skill-harness-v8-3/tests',S/'scripts/result_runner.py',259),
-            ('unit-ci','tasks/tests',H/'scripts/result_runner.py',9)]:
+            ('unit-ci','tasks/tests',H/'scripts/result_runner.py',10)]:
             case={'path':str(out/(name+'.cases.json')),'run_id':name+'-'+source[:20],
                   'context_sha256':source,'minimum':minimum}
             env={'VERIMISSION_REPORT':case['path'],'VERIMISSION_RUN_ID':case['run_id'],'VERIMISSION_CONTEXT_SHA256':source}
@@ -159,9 +160,11 @@ def main(argv=None):
         for name,command in commands:
             outputs={'assurance':[str(out/'assurance.json')],'package':[str(out/'packages')]}.get(name)
             rows.append(execute(name,command,ROOT,out,source,args.timeout,args.resume,outputs=outputs))
-        unchanged=resources()==source
+        final_source=resources()
+        unchanged=final_source==source
         report={'format':'verimission-ci-v1','passed':unchanged and all(r['passed'] for r in rows),
-                'source_unchanged':unchanged,'jobs':rows,'source_sha256':source,'installed':False,'published':False}
+                'source_unchanged':unchanged,'jobs':rows,'source_sha256':source,
+                'final_source_sha256':final_source,'installed':False,'published':False}
         atomic(out/'qualification.json',report)
         return 0 if report['passed'] else 3
     except (OSError,ValueError,KeyError) as error:
