@@ -16,6 +16,21 @@ import yaml
 
 FORMAT = 'verimission-yaml-store'
 STORAGE_SCHEMA = 1
+_SAFE_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
+_SAFE_DUMPER = getattr(yaml, 'CSafeDumper', yaml.SafeDumper)
+
+
+def yaml_backend():
+    """Expose the actual safe backend for qualification; no change to storage schema or checks."""
+    return {'loader': _SAFE_LOADER.__name__, 'dumper': _SAFE_DUMPER.__name__}
+
+
+def _yaml_load(text):
+    return yaml.load(text, Loader=_SAFE_LOADER)
+
+
+def _yaml_dump(document):
+    return yaml.dump(document, Dumper=_SAFE_DUMPER, allow_unicode=True, sort_keys=False, default_flow_style=False)
 
 
 class StoreError(Exception):
@@ -150,14 +165,14 @@ class YAMLStore:
         if not self.path.exists():
             raise StoreError('NOT_INITIALIZED', 'Run init first, or migrate-sqlite for a legacy store')
         try:
-            document = yaml.safe_load(self.path.read_text(encoding='utf-8'))
+            document = _yaml_load(self.path.read_text(encoding='utf-8'))
         except yaml.YAMLError as error:
             raise StoreError('STORE', 'Canonical YAML could not be parsed') from error
         return self._validate(document)
 
     def _write_unlocked(self, document):
         self._validate(document)
-        text = yaml.safe_dump(document, allow_unicode=True, sort_keys=False, default_flow_style=False)
+        text = _yaml_dump(document)
         temporary = self.path.with_name(self.path.name + '.' + uuid.uuid4().hex + '.tmp')
         try:
             with temporary.open('x', encoding='utf-8', newline='\n') as stream:
@@ -218,12 +233,12 @@ class YAMLStore:
         target = Path(target)
         if target.exists():
             raise StoreError('BACKUP', 'Backup target already exists')
-        text = yaml.safe_dump(document, allow_unicode=True, sort_keys=False, default_flow_style=False)
+        text = _yaml_dump(document)
         with target.open('x', encoding='utf-8', newline='\n') as stream:
             stream.write(text)
             stream.flush()
             os.fsync(stream.fileno())
-        self._validate(yaml.safe_load(target.read_text(encoding='utf-8')))
+        self._validate(_yaml_load(target.read_text(encoding='utf-8')))
 
     def backup(self, target):
         with _FileLock(self.lock_path):

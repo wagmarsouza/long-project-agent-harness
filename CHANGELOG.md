@@ -2,6 +2,12 @@
 
 ## Control 8.3 — local preview, 2026-11-10
 
+- Added portable source/output-bound qualification receipts and a locally prepared six-cell CI
+  matrix; actual executed platforms are reported separately, with no implicit publication.
+- Added bounded native-cycle and seeded YAML-history benchmarks, and safe LibYAML acceleration
+  with a safe Python fallback. Storage schema, integrity checks and authority remain unchanged.
+- Retained the prior no-selected-reuse-license policy as explicitly requested by the owner.
+
 - Fixed independent-review findings: resolve assurance output aliases, preserve full recovery
   history/deltas and require current proofs, and integrate governed operations with preservation.
 - Added explicit finite verifier assurance: nine expected-reason negative controls, independent

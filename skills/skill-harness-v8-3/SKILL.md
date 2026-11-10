@@ -37,6 +37,10 @@ Read [8.1 projections/imports](references/v81-projections-and-runs.md) for graph
 Without the optional new policy, inherited 8.2 workflow remains available. Historical references
 retain their original version labels; the complete current core below governs current operation.
 
+For release qualification, portability, finite large-YAML experiments and the retained reuse policy,
+read [qualification](references/v83-qualification.md). Benchmarks use synthetic fixtures and grant no
+mission acceptance or authority. A declared CI matrix must not be reported as actually executed.
+
 # VeriMission Control 8.3 — core operating rules
 
 The executor governs operations sent through its CLI. It does not intercept every host tool. Higher-priority instructions, the user's current request, and the authorized mission remain authoritative.

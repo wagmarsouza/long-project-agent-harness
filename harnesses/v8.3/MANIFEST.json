@@ -24,8 +24,8 @@
     },
     {
       "path": "harness_v8.3.txt",
-      "bytes": 48741,
-      "sha256": "f70a0ec23f55110973af98849a9145ae16ab6ea7c6baec9f0474f749f980e815"
+      "bytes": 53582,
+      "sha256": "360fa609e46f0309233d3cd1cbdad285cadeb0118897a7264f334bce9cddf235"
     },
     {
       "path": "references/harness_v7.7.txt",
@@ -73,14 +73,19 @@
       "sha256": "cadf41e47ad942ec5fd8d3324288df666a06b060842c17d6b988006ba41120c3"
     },
     {
+      "path": "references/v83-qualification.md",
+      "bytes": 4839,
+      "sha256": "e17208c89a2b652d31e9066176efa5364000a9e87ceefeaf3366ef184c2ab4dd"
+    },
+    {
       "path": "requirements.txt",
       "bytes": 15,
       "sha256": "b4603b9468ade4d639d2c6f73b89d50e1fa5d227c73ab15be0382cca478513e6"
     },
     {
       "path": "scripts/assurance.py",
-      "bytes": 4964,
-      "sha256": "4e6df18e443daab450a21e3232bd2c267e2cdab9f43061cf79f872b835ab398a"
+      "bytes": 4963,
+      "sha256": "261ab92d62e2d37a8199437c71b02b0ee8b99e508666345edf3a0bdf1082681e"
     },
     {
       "path": "scripts/assurance_controls.py",
@@ -106,6 +111,11 @@
       "path": "scripts/harness.py",
       "bytes": 65910,
       "sha256": "2cce5daf70564e42d241e809006ed36130eabce737d68cc2069ec4cdf32679b8"
+    },
+    {
+      "path": "scripts/history_benchmark.py",
+      "bytes": 8716,
+      "sha256": "4a7781620302477cd1621a146bcce4d322f0bd757a591481959dce11247f5fda"
     },
     {
       "path": "scripts/regression_contract.py",
@@ -149,8 +159,8 @@
     },
     {
       "path": "scripts/yaml_store.py",
-      "bytes": 11230,
-      "sha256": "0241c39835ad0fd47e70fab883866accac079b6819572ea376f5d8d83f728ed3"
+      "bytes": 11624,
+      "sha256": "0db6b240fbc2a2e44b73476c616518c253c650e103ac97e5250febe54c173af7"
     },
     {
       "path": "templates/alias.example.json",
@@ -368,6 +378,11 @@
       "sha256": "c84ea3162659fc852e234ab317cb1ce29305ccab0ebd386ab8569285d21f6407"
     },
     {
+      "path": "tests/test_v83_history_benchmark.py",
+      "bytes": 2424,
+      "sha256": "d6a4d09a0b74a2da5c8b38a2570d34bb6f00d662cfa229a7c597991887062fc3"
+    },
+    {
       "path": "tests/test_v83_results.py",
       "bytes": 4950,
       "sha256": "0252a2ad543b96fb249d335eb2a17f8e2ecf97f32635ff18138814dbabcd6c21"
@@ -376,6 +391,11 @@
       "path": "tests/test_v83_stabilization.py",
       "bytes": 5888,
       "sha256": "145ce62a40aac992a840c82a866b605302510a6b891f08449ce636d7ce67dfc0"
+    },
+    {
+      "path": "tests/test_v83_yaml_backends.py",
+      "bytes": 2689,
+      "sha256": "991cc04a8116b570483bfcfb954a24df59cbbf46c2aaca96f2a5b54a490f1992"
     },
     {
       "path": "tests/test_yaml_store.py",

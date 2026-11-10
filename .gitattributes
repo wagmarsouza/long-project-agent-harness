@@ -1,3 +1,6 @@
 # Published manifests hash canonical LF bytes in Git archives on every platform.
 /harnesses/** text eol=lf
 /skills/** text eol=lf
+/tasks/** text eol=lf
+/.github/** text eol=lf
+/requirements-ci.txt text eol=lf

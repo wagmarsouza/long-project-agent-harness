@@ -1,0 +1,2 @@
+# Tested qualification dependency; the product retains its supported 6.x range.
+PyYAML==6.0.3

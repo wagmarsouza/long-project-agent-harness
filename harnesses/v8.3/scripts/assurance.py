@@ -60,6 +60,18 @@ def run(suite='all', seed=0, traces=2, steps=24):
             'physical_power_loss_simulated': False, 'installed': False, 'published': False}
 
 
+def receipt_destination(path):
+    if path is None:return None
+    try:
+        target=path.resolve()
+    except (OSError,RuntimeError) as error:
+        raise ValueError('Receipt destination cannot be resolved safely') from error
+    if (path.exists() or path.is_symlink() or not target.parent.is_dir() or
+            any(x.casefold() in {'.harness','.git'} for item in (path,target) for x in item.parts)):
+        raise ValueError('Receipt requires a new file outside protected state and an existing parent')
+    return target
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--suite', choices=('all', 'controls', 'lifecycle', 'persistence'), default='all')
@@ -70,15 +82,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         lifecycle.programs(args.seed, args.traces, args.steps)
-        target = None
-        if args.output:
-            try:
-                target = args.output.resolve()
-            except (OSError, RuntimeError) as error:
-                raise ValueError('Receipt destination cannot be resolved safely') from error
-            if (args.output.exists() or args.output.is_symlink() or not target.parent.is_dir() or
-                    any(x.casefold() in {'.harness', '.git'} for path in (args.output,target) for x in path.parts)):
-                raise ValueError('Receipt requires a new file outside protected state and an existing parent')
+        target = receipt_destination(args.output)
         result = run(args.suite, args.seed, args.traces, args.steps)
         if target:
             with target.open('x', encoding='utf-8', newline='\n') as stream:

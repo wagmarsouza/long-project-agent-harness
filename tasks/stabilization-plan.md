@@ -11,7 +11,8 @@ owner-selected reuse license. No skill installation or publication is authorized
   temporary filesystem, not on the Windows mount. WSL results are identified as WSL, not native macOS.
 - No connected macOS environment has been found; GitHub CLI has no authenticated account.
   Prepare the workflow locally, then request only the indispensable access for remote execution.
-- License choice and macOS availability were asked asynchronously. No license is inferred from silence.
+- The owner selected the same reuse policy as previous versions. Repository/history inspection found
+  no selected general reuse license, so that explicit policy is retained. macOS access remains pending.
 - A separate reviewer has been assigned a read-only review of the actual source, with isolated
   reproductions and no installation/publication. Findings must be reproduced and fixed, then re-reviewed.
 
@@ -26,7 +27,7 @@ owner-selected reuse license. No skill installation or publication is authorized
 4. If a bottleneck is demonstrated, make the smallest safe optimization, keep old/new measurements
    under the same conditions, preserve integrity/locking/safe YAML and run regression tests.
 5. Resolve actionable independent-review findings with focused red/green tests and fresh review.
-6. Apply the explicitly selected license and update public-facing documentation consistently.
+6. Preserve the explicitly selected previous reuse policy and document it consistently.
 7. Run final OS-qualified checks, regenerate synchronized skill and ZIPs, and report qualification
    and pending environments honestly. Do not label unexecuted CI cells as passed or stable.
 

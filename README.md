@@ -119,4 +119,4 @@ Apply the same pattern to earlier version folders. Tests use local fixtures. See
 
 ## Publication and reuse
 
-Do not publish credentials or restricted evidence. See [SECURITY.md](SECURITY.md). No reuse license has been selected; public visibility alone does not grant general modification or redistribution rights. Historical source references retain their original wording. Current public presentation and Control 8.1 guidance use English.
+Do not publish credentials or restricted evidence. See [SECURITY.md](SECURITY.md). No reuse license has been selected; public visibility alone does not grant general modification or redistribution rights. At the owner's request, Control 8.3 retains that same policy; it does not add a different license. Historical source references retain their original wording. Current public presentation and Control 8.1 guidance use English.

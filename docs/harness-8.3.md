@@ -48,3 +48,8 @@ Hash identities/receipts do not authenticate a person, runner honesty, cognition
 
 The skill ID is `skill-harness-v8-3`; request it in natural language after a separate authorized
 installation. There is no host-independent slash command. No installation is performed by packaging.
+
+Release qualification now has a finite [CI/history guide](../harnesses/v8.3/references/v83-qualification.md)
+and a Windows/Linux/macOS workflow. Read actual run receipts before claiming platform coverage.
+The safe C YAML backend is used when present, with a safe Python fallback and unchanged storage
+schema/integrity gates. The owner retained the previous no-selected-reuse-license policy.
