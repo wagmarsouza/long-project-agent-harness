@@ -24,8 +24,8 @@
     },
     {
       "path": "harness_v8.3.txt",
-      "bytes": 47943,
-      "sha256": "9354e26d21a3d4ef6aac167b63d30b264e849b2b6fc6cb34fd22c5ffc4c48fe7"
+      "bytes": 47968,
+      "sha256": "7b2024a4b48761854eb1acd63c8c420ada5306da94ff8b2132cb92e170b8ed88"
     },
     {
       "path": "references/harness_v7.7.txt",
@@ -64,8 +64,8 @@
     },
     {
       "path": "references/v83-assurance.md",
-      "bytes": 6846,
-      "sha256": "6c6167a70ef297762ca32e4cbdeb3b26feeb92d67cd1dd4e2495fff1fffd47ec"
+      "bytes": 6871,
+      "sha256": "ec66bd90505acaf1b66be31671c3ae74c571d9c9e72068b2da1f43a043d0c89c"
     },
     {
       "path": "references/v83-preservation.md",
@@ -79,8 +79,8 @@
     },
     {
       "path": "scripts/assurance.py",
-      "bytes": 4707,
-      "sha256": "b1304f9d6914c64ad6e48b5b2b9561f73921b0d47e86d43791289d533bc10bb6"
+      "bytes": 4718,
+      "sha256": "be79ff6411603ba64580025cda782b3c9519feeebde0b5e023514c957bb8f019"
     },
     {
       "path": "scripts/assurance_controls.py",
@@ -354,8 +354,8 @@
     },
     {
       "path": "tests/test_v83_assurance.py",
-      "bytes": 9624,
-      "sha256": "e06b33d924a3f9e80be01b9d85df910d7295add72ebac0c3ab375ae23ce7012f"
+      "bytes": 10215,
+      "sha256": "a00a8bc52e1924c132676793027375c29171c2df729921ce3595bb24b28a6de5"
     },
     {
       "path": "tests/test_v83_contract.py",

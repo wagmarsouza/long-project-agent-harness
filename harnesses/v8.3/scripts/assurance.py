@@ -71,7 +71,7 @@ def main(argv=None):
     try:
         lifecycle.programs(args.seed, args.traces, args.steps)
         if args.output and (args.output.exists() or args.output.is_symlink() or
-                            not args.output.parent.is_dir() or any(x in {'.harness', '.git'} for x in args.output.parts)):
+                            not args.output.parent.is_dir() or any(x.casefold() in {'.harness', '.git'} for x in args.output.parts)):
             raise ValueError('Receipt requires a new file outside protected state and an existing parent')
         result = run(args.suite, args.seed, args.traces, args.steps)
         if args.output:

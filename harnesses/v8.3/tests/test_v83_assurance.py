@@ -185,6 +185,17 @@ class CampaignTests(unittest.TestCase):
         self.assertFalse(report['engine_sources_unchanged'])
         self.assertFalse(report['passed'])
 
+    def test_reserved_output_directory_names_are_case_insensitive(self):
+        module = load('assurance')
+        with tempfile.TemporaryDirectory() as temp:
+            for name in ('.HARNESS', '.GIT'):
+                directory = Path(temp) / name
+                directory.mkdir()
+                output = directory / 'receipt.json'
+                with patch.object(module, 'run', return_value={'passed': True, 'complete': True}):
+                    self.assertEqual(module.main(['--suite', 'controls', '--output', str(output)]), 2)
+                self.assertFalse(output.exists())
+
 
 if __name__ == '__main__':
     unittest.main()

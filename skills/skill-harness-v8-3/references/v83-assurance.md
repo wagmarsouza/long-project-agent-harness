@@ -32,7 +32,7 @@ is finite; there is no background loop, retry-until-green or automatic launch at
 
 Without `--output`, stdout contains the full JSON receipt. With it, stdout is a small summary
 and the new file contains the full receipt. The parent directory must exist. Existing files,
-symlinks and paths inside `.harness`/`.git` are refused. Receipts are derived evidence, never a
+symlinks and paths inside `.harness`/`.git` (case-insensitive names) are refused. Receipts are derived evidence, never a
 canonical state or mission approval. Exit 0 means this finite campaign passed; 3 means campaign
 failure/incompleteness; 2 means invalid configuration or output/I/O failure. Retain diagnostics.
 
