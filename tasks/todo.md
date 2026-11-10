@@ -13,6 +13,13 @@
 - [x] T11 — Protected corpus and targeted negative controls
 - [x] T12 — Conservative declared-dependency reuse
 - [x] T13 — Core, CLI and portable pilots
-- [ ] T14 — Final extracted-package verification, parity and ZIP receipts.
+- [x] T14 — Final extracted-package verification, parity and ZIP receipts.
+
+Final delivery: `Entregas/VeriMission-8.3-preview-2026-11-10-r2` in the local library.
+All 21 verification jobs passed: 229/229 harness tests; 383 tests across primary suites,
+382 passed and one pre-existing Windows symlink skip. Six archives verified with resource parity.
+Package source commit: `eacbae5008b05ee09ff3ef25f00cd4123a2d88d6`;
+this completion note is documentation only. See delivery `VALIDACAO_FINAL.json` and
+`RELATORIO_VALIDACAO.md` for exact scope, repeated checks and limitations.
 
 No installed skills, live missions, remote repository or schedules modified.
