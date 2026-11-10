@@ -1,6 +1,6 @@
 # Changelog
 
-## Control 8.3 — local preview, 2026-11-10
+## Publication v2.3.0-rc.1 / Control 8.3 — 2026-11-10
 
 - Added portable source/output-bound qualification receipts and a locally prepared six-cell CI
   matrix; actual executed platforms are reported separately, with no implicit publication.

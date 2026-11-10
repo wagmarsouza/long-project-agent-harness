@@ -2,11 +2,12 @@
 
 - [x] S1 — Real Ubuntu baseline and environment evidence (246/246; Python 3.14.4, WSL2 ext4 fixture).
 - [x] S2 — Reproducible, durable CI runner and local Windows/Linux/macOS workflow prepared; remote execution is separate.
-- [ ] S3 — Native sustained-use and separately seeded-history measurements.
-- [ ] S4 — Measured optimizations with unchanged safety and before/after evidence, if justified.
-- [ ] S5 — Independent review, actionable fixes and re-review.
+- [x] S3 — 100 native cycles/10 fresh-process resumes; separately seeded 1,000/5,000-vector measurements.
+- [x] S4 — Measured safe C YAML acceleration with safe Python fallback and unchanged safety checks.
+- [x] S5 — Six review findings resolved and re-reviewed; import-fixture and portable-order CI findings fixed.
 - [x] S6 — Preserve the prior reuse policy requested by the owner (no selected open reuse license); document consistently.
-- [ ] S7 — Final platform-qualified suites, skill parity, ZIPs and readiness report.
+- [x] S7 — Windows/Linux suites, source-bound qualification, skill parity, ZIPs and readiness report.
 
-No installation or publication. Missing macOS access does not block independent local work and must
-not be presented as a passed platform. S7 is complete only after actual platform evidence and final ZIP checks.
+Local qualification completed without installation or publication; the owner subsequently authorized
+publication based on Windows/Linux coverage without making macOS a prerequisite. No unexecuted
+platform is counted as passed. Publication documentation/metadata are separate from the tested runtime.

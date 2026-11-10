@@ -26,11 +26,20 @@ The harness uses its host's permissions. Installing a skill does not grant permi
 
 Maintained versions use YAML storage. Binary analysis and Renode skills are published separately in [DisasmLedger](https://github.com/wagmarsouza/disasmledger).
 
-## Control 8.3 — local development preview
+## Control 8.3 — Preview 1
 
 The isolated 8.3 generation adds native case-level preservation gates and a new
 `skill-harness-v8-3`, retaining the complete 8.2 core. See [the guide](docs/harness-8.3.md).
-This preview is not installed or published; the public 8.2 release and older generations remain unchanged.
+See [release notes and downloads](docs/release-v2.3.0-rc.1.md) for verified artifacts and quick-start
+instructions. Local qualification passed on Windows and Linux/WSL; published coverage follows actual
+test receipts. Earlier releases remain available. Publishing does not install or activate a skill.
+
+```shell
+npx skills add wagmarsouza/long-project-agent-harness --skill skill-harness-v8-3
+```
+
+Run the installation command only when you want to install it. After installation, ask your agent:
+`Use skill-harness-v8-3 for this project; resume the authorized mission and inspect preservation obligations.`
 
 ## Requirements
 

@@ -1,8 +1,9 @@
-# VeriMission Control 8.3 — local development preview
+# VeriMission Control 8.3 — Preview 1
 
 Control 8.3 adds opt-in, case-level preservation of previously accepted obligations to the complete
-8.2 harness. Nothing in this preview installs a skill, migrates a live mission, schedules work or
-publishes a release. The 8.2 generation remains unchanged.
+8.2 harness. Downloading or publishing this preview does not install a skill, migrate a live mission,
+schedule work or grant authority. The 8.2 generation remains unchanged.
+See [release notes, downloads and quick start](release-v2.3.0-rc.1.md).
 
 Preservation complements the existing anti-inflation, evidence/claim ceilings, retractions,
 mission-revision human gate, anti-rework controls, YAML recovery and native periodic review.
@@ -14,7 +15,7 @@ configuring policy or adopting a baseline. For periodic notes/inventories and pr
 the inherited [8.2 guide](../harnesses/v8.3/references/v82-periodic-review.md) remains applicable.
 Binary tools remain independent optional providers in DisasmLedger; no solver or emulator is required.
 
-The updated local preview also includes explicit finite [verifier assurance campaigns](../harnesses/v8.3/references/v83-assurance.md):
+The preview also includes explicit finite [verifier assurance campaigns](../harnesses/v8.3/references/v83-assurance.md):
 known-bad controls with expected diagnoses, independent lifecycle programs and a 36-scenario YAML
 persistence sweep (18 abrupt worker terminations). Run `harness.py assurance --suite all` without
 `--project`. The canonical store remains YAML; no SQLite storage or background loop is introduced.
