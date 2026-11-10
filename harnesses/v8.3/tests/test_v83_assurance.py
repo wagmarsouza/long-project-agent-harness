@@ -2,6 +2,7 @@
 import importlib.util
 from pathlib import Path
 import sys
+import subprocess
 import unittest
 from unittest.mock import patch
 
@@ -81,6 +82,31 @@ class LifecycleTests(unittest.TestCase):
         step = report['traces'][0]['steps'][-1]
         self.assertEqual(step['expected'], 'REGRESSION_BLOCKED')
         self.assertEqual(step['observed'], 'verified')
+
+
+class PersistenceTests(unittest.TestCase):
+    def test_all_named_boundaries_recover_complete_old_or_new_yaml_commits(self):
+        report = load('assurance_faults').run()
+        self.assertTrue(report['passed'], report)
+        self.assertEqual(len(report['cases']), 36)
+        self.assertEqual(sum(r['mode'] == 'crash' for r in report['cases']), 18)
+        self.assertTrue(all(r['fault_reached'] and r['passed'] for r in report['cases']))
+        self.assertFalse(report['physical_power_loss_simulated'])
+        self.assertEqual({r['commit'] for r in report['cases']}, {'old', 'new'})
+
+    def test_missing_crash_marker_is_an_infrastructure_failure(self):
+        module = load('assurance_faults')
+        result = subprocess.CompletedProcess([], 79, stdout='', stderr='')
+        with patch.object(module.subprocess, 'run', return_value=result):
+            row = module.run_case('close', 'before-replace', 'crash')
+        self.assertFalse(row['passed'])
+        self.assertFalse(row['fault_reached'])
+
+    def test_unknown_boundary_or_mode_is_refused_before_execution(self):
+        module = load('assurance_faults')
+        for args in (('reset', 'before-replace', 'crash'), ('close', 'any', 'crash'), ('close', 'before-replace', 'retry')):
+            with self.subTest(args=args), self.assertRaises(ValueError):
+                module.run_case(*args)
 
 
 if __name__ == '__main__':
