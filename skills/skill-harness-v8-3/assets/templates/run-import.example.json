@@ -1,0 +1,33 @@
+{
+  "format": "verimission-explicit-run-v1",
+  "id": "RUN-UNIQUE",
+  "agent": "codex",
+  "source": {
+    "path": "evidence/agent-run.jsonl",
+    "format": "DECLARE_THE_ACTUAL_EXPORTED_FORMAT",
+    "record_locator": "SESSION_TURN_OR_EVENT_ID"
+  },
+  "status": "unknown",
+  "started_at": "2026-01-01T00:00:00+00:00",
+  "ended_at": null,
+  "attempt": 1,
+  "retry_of": null,
+  "usage": [
+    {
+      "provider": "PROVIDER_OR_UNKNOWN",
+      "model": "MODEL_OR_UNKNOWN",
+      "input_tokens": null,
+      "output_tokens": null,
+      "cache_read_tokens": null,
+      "cache_write_tokens": null,
+      "cost": {
+        "status": "unpriced",
+        "amount_usd": null,
+        "method": "price unavailable",
+        "pricing_ref": ""
+      }
+    }
+  ],
+  "subagents": [],
+  "notes": "Record only values supported by the source; unknown is not zero."
+}

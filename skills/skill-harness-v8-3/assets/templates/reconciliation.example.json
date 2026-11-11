@@ -1,0 +1,6 @@
+{
+  "id": "OP1",
+  "outcome": "not_executed",
+  "evidence": "reconciliation.txt",
+  "reason": "ENTER the observed outcome and why the operation must not be repeated"
+}

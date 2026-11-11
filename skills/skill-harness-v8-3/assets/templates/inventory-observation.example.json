@@ -1,0 +1,12 @@
+{
+  "cycle": 1,
+  "live": {"ITEM-A": "planned", "ITEM-B": "verified"},
+  "closed": {"ITEM-A": "planned", "ITEM-B": "verified"},
+  "transitions": [
+    {"id": "ITEM-B", "from": "planned", "to": "verified", "kind": "progress",
+     "reason": "REPLACE with the actual bounded observation, not a completion claim",
+     "evidence": [{"path": "evidence/result.txt", "sha256": "REPLACE_WITH_ACTUAL_FILE_SHA256"}]}
+  ],
+  "facts_recorded": [],
+  "facts_used": []
+}

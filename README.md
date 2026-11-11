@@ -26,6 +26,21 @@ The harness uses its host's permissions. Installing a skill does not grant permi
 
 Maintained versions use YAML storage. Binary analysis and Renode skills are published separately in [DisasmLedger](https://github.com/wagmarsouza/disasmledger).
 
+## Control 8.3 — Preview 1
+
+The isolated 8.3 generation adds native case-level preservation gates and a new
+`skill-harness-v8-3`, retaining the complete 8.2 core. See [the guide](docs/harness-8.3.md).
+See [release notes and downloads](docs/release-v2.3.0-rc.1.md) for verified artifacts and quick-start
+instructions. Local qualification passed on Windows and Linux/WSL; published coverage follows actual
+test receipts. Earlier releases remain available. Publishing does not install or activate a skill.
+
+```shell
+npx skills add wagmarsouza/long-project-agent-harness --skill skill-harness-v8-3
+```
+
+Run the installation command only when you want to install it. After installation, ask your agent:
+`Use skill-harness-v8-3 for this project; resume the authorized mission and inspect preservation obligations.`
+
 ## Requirements
 
 - Python 3.11 or later.
@@ -113,4 +128,4 @@ Apply the same pattern to earlier version folders. Tests use local fixtures. See
 
 ## Publication and reuse
 
-Do not publish credentials or restricted evidence. See [SECURITY.md](SECURITY.md). No reuse license has been selected; public visibility alone does not grant general modification or redistribution rights. Historical source references retain their original wording. Current public presentation and Control 8.1 guidance use English.
+Do not publish credentials or restricted evidence. See [SECURITY.md](SECURITY.md). No reuse license has been selected; public visibility alone does not grant general modification or redistribution rights. At the owner's request, Control 8.3 retains that same policy; it does not add a different license. Historical source references retain their original wording. Current public presentation and Control 8.1 guidance use English.

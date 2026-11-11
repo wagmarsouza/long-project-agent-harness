@@ -1,0 +1,627 @@
+# VeriMission Control 8.3
+
+Control 8.3 adds a native digest producer and protected cycle-boundary review for general long projects. It preserves the mission contract, claims, retractions, evidence freshness, coverage denominators, claim ceilings, anti-rework gates, graph/PR projections and optional cost accounting. No decompilation tool or other domain repository is required.
+
+Python 3.11+ and PyYAML 6.x are required. The canonical store is `.harness/state.yaml`. Use `migrate-sqlite` once for legacy projects; it preserves the SQLite source. Existing missions must not be reinitialized.
+
+## Commands
+
+```text
+digest [--through-cycle N]
+decade-review [--through-cycle N] [--input REVIEW.json]
+restore-prompt
+close --cycle N --outcome verified|blocked --next TEXT [--review-input REVIEW.json]
+graph --format json|mermaid|dot [--output FILE]
+report-pr --base REF --head REF --format json|markdown [--output FILE]
+adapter-template --agent codex|opencode|claude|hermes
+run-import --agent AGENT --input FILE.json
+cost-summary
+```
+
+All commands follow `python scripts/harness.py --project PROJECT COMMAND`. Output paths are project-relative. Choose a new path for Markdown, Mermaid, and DOT output.
+
+Graphs show declared relationships. PR reports include resolved Git commits, changed files, scope, checks, hashes, claims, retractions, coverage, and pending human review. Changed-file coverage is indeterminate without explicit file-to-criterion mapping.
+
+Adapters use explicit, hashed imports. They do not dispatch agents, select models, approve operations, revise missions, promote claims, or replay unknown outcomes. Read references/v81-projections-and-runs.md and fill the run-import template with source-supported values.
+
+Costs distinguish `actual`, `estimated`, and `unpriced`. Unknown prices and token counters use null. Parent/subagent links expose possible double counting.
+
+Mission changes still require explicit user authorization and personal interactive confirmation. A passing test remains limited by its method, environment, sample, and scope.
+
+The periodic-review policy is optional and belongs to the immutable mission contract. Configure cadence, physical note paths, governing-file invariants, objectives/scenario delimiters and optional general inventory observations. `close` invokes digest production and review at the boundary; until the notes are reread and a valid review is recorded it refuses closure with exit 2. Successful boundaries consolidate automatically. Mission revision still requires the existing explicit user authorization and interactive confirmation.
+
+Only immediate objectives/scenario may change. All other governing text is fingerprinted. Pin closed notes and baseline evidence. Detect conservation errors, unmarked transitions, differences between live/closed states and regressions, distinguishing justified retractions. Report actual denominators and losses without inventing progress. A generated digest never substitutes for physical rereading or semantic review.
+
+Read CORE.md for the full operating rules and references/v82-periodic-review.md for the policy, data formats, commands, recovery and limitations. A standalone text prompt gives procedural guidance; the supplied executor is required for mechanical gates. It does not control tools invoked outside it. No installation, daemon, schedule or live-project migration is implied.
+
+Skill ID: `skill-harness-v8-2`.
+
+---
+
+# VeriMission Control 8.3 — core operating rules
+
+The executor governs operations sent through its CLI. It does not intercept every host tool. Higher-priority instructions, the user's current request, and the authorized mission remain authoritative.
+
+## Persistent mission and evidence
+
+1. Recover before repeating. Run `resume` and `validate`, then `review` the topic. Search registered aliases and source terms. Read applicable claims, retractions, failed approaches, and remaining work.
+2. Define proof before implementation. The mission declares objective, scope, exclusions, executable acceptance criteria, artifacts, and budgets. Review command effects and authorization. Do not weaken acceptance to make a result pass.
+3. Start through the gates. A plan needs a fresh review receipt, residual work, technical approach, inputs, environment, dependencies, and selected criteria. Strict mode also requires reference review and a simple discriminating test.
+4. Execute the smallest useful authorized action. Files, elapsed time, attempts, and reports measure activity rather than objective progress. A pending decision blocks only work that depends on it; silence grants no authority.
+5. Record real verification. `check` executes approved argv without a shell and records exit status, duration, output hash, and artifact identity. A timeout, failure, or artifact drift blocks verified closure. Inspect the test's power to detect relevant faults.
+6. Close before claiming completion. Use verified closure only after selected checks pass with current evidence. Otherwise record a block or interruption and a concrete next step. A verified cycle is distinct from a satisfied requirement or completed mission.
+7. Stop unproductive repetition. Respect timeboxes, budgets, failure limits, and consolidation gates. Use `step-back` to reconsider premises, references, representations, and simpler alternatives. Renaming the same approach does not satisfy a gate.
+8. Separate hypotheses and facts. Hypotheses remain candidates. Facts require linked executed evidence. Register dependencies. Retractions preserve history and invalidate declared dependents; search for undeclared dependencies that also need review.
+9. Keep one canonical store. `.harness/state.yaml` contains state and audit history with a checksum, locking, and atomic replacement. Reports, capsules, search indexes, and graphs are derived. Do not edit the store directly or maintain a competing ledger.
+10. Consolidate and back up. Consolidation records reviewed cycles without inventing progress. A state backup does not replace a backup of project artifacts. Never delete old records as automatic cleanup.
+11. Measure controls honestly. Tool duration, declared tokens, and reported dollars are not quality scores or authenticated billing. Simplify overhead only when acceptance and authorization remain intact.
+12. Preserve boundaries. Do not create schedules, services, global installations, or production changes merely because the harness is active. Do not persist secrets. Respect explicit pauses and cancellation, and leave verifiable status and a next step.
+
+## Claim ceiling and honest coverage
+
+Apply these rules in both light and strict modes, including short reports.
+
+- Bound conclusions by the actual method, environment, sample, conditions, and tested scope. Static inspection does not demonstrate runtime behavior; simulation does not establish production or hardware correctness.
+- Never fabricate executions, commands, outputs, logs, citations, receipts, metrics, or results. Separate planned, executed, observed, and inferred work. Preserve failures and contradictions.
+- Report verified/total, critical verified/critical total, and changed verified/changed total when those universes exist. Define exclusions. Unknown totals mean indeterminate coverage; zero of zero is N/A. A sample is not universal coverage.
+- Do not count duplicated claims, renamed work, retries, retractions, or revalidation as new discoveries. Confidence percentages require an explicitly adopted method.
+- Check test discrimination. A zero exit code, echoed plan, or test mirroring the implementation is insufficient evidence by itself. Duplicate results are not independent evidence.
+- Stale evidence, retracted dependencies, and open requirements qualify conclusions. Do not erase history to preserve an appearance of success.
+
+For significant deliveries and completion claims, state the exact claim, supporting execution/source and artifacts, coverage with denominators, limitations and contradictions, current status, and next step. Use the length the result needs. The executor checks recorded provenance and invariants; it does not authenticate natural-language truth or observe every external action.
+
+## Mission revision — explicit user authorization only
+
+The mission remains frozen between revisions. A revision requires a specific user request or approval of a concrete proposal identifying objective, scope, criteria, and command changes. A generic continuation, old approval, silence, failure, timeout, or exhausted budget does not authorize revision.
+
+Cron jobs, loops, heartbeats, hooks, and other automation must not initiate or apply a mission revision.
+
+1. After authorization, run `resume` and prepare the mission-revision template using the current revision/hash, reason, actual user-authorization reference, and complete proposed mission.
+2. Run `preview-mission` and review exact changes, removed tests, denominators, exclusions, and new commands. The authorization reference documents an approval; it does not authenticate a person.
+3. Explicitly close or interrupt active cycles first. If the proposal becomes stale, prepare and review a fresh one.
+4. The user personally runs `revise-mission` in an interactive terminal and types the displayed confirmation, whose literal keyword is `REVISAR`. An agent must not answer on the user's behalf, create a pseudo-terminal to simulate consent, pipe confirmation, or add a bypass.
+5. The executor rechecks revision/hash and creates a validated YAML backup, preserving previous contracts, cycles, checks, failures, usage, and revision history. Prior conclusions require review under the new contract. Budgets do not silently reset.
+6. Resume, validate, review, and execute relevant checks again.
+
+The CLI rejects pipes, noninteractive terminals, and known CI/automation signals. This is a procedural protection rather than cryptographic human authentication; an operator with source/store access may bypass implementation controls.
+
+## Continuity, tasks, and governed operations
+
+- Use `evidence-scope` to state what a real check verifies, does not verify, and leaves untested. Arithmetic and annotations do not promote semantic truth.
+- Use `capsule` and `capsule-status` for resumption. A capsule is non-authoritative; omissions must be counted. Never import it as a mission, permanent truth, or authorization.
+- `prepare-mission` produces proposals and questions without initializing, revising, or executing a mission. Ready for review is not approval.
+- Register tasks with existing criteria and dependencies. `task-ready` reports eligibility without dispatching work. One claimed writer task and one active cycle remain the execution boundary.
+- `task-complete` needs current proof. Reopening preserves history and invalidates affected conclusions. `claim-reverify` requires the unchanged fact, fresh executed evidence, and explicit reason; it does not restore retractions or promote hypotheses.
+- Search relevance, context packs, and links do not establish applicability, truth, or authorization. Check `view-status`; recover full references rather than silently dropping required constraints.
+- `traceability` and `accept-mission` expose proof gaps. An accepted declared contract does not guarantee test quality or universal correctness.
+- Optional `operation-*` commands govern only routed operations. Approval is bound to one concrete operation and consumed once. Unknown outcomes need observed reconciliation and fresh checks; never replay an effect to learn whether it happened.
+- Diagnostic notes remain hypotheses until proven. Local tracing covers only recorded operations and must not contain secrets or raw private output.
+
+## Control 8.1 observations
+
+`graph` and `report-pr` are read-only projections. Source revisions, hashes, coverage, and limits must remain visible. Links do not become evidence, and PR reports do not approve or merge work.
+
+`run-import` accepts an explicit neutral record for Codex, OpenCode, Claude, or Hermes with a hashed source. Do not claim native parsing or source authentication. Imports do not dispatch agents, select models, approve actions, change missions, promote claims, or replay unknown results.
+
+Keep actual, estimated, and unpriced costs separate. Missing prices and token counters remain null. Preserve retries, cache counters, and subagent links when supported. Inspect parent/child billing overlap before interpreting totals.
+
+## Native periodic review — general long-project control
+
+- The native digest producer and review require no domain tool. Domain observations are optional inputs; no field, marker, denominator, schedule or proof ladder from a particular project is a universal rule.
+- A configured N-cycle boundary is one joint ritual: physically read all notes in the exact window, reconcile declared observations, verify the governing instructions, review staleness, and reconsider only immediate objectives/scenario. It is not a second schedule.
+- `close` invokes the ritual. A failed or incomplete review exits 2 without verified closure. A successful boundary consolidates automatically. Interrupting work remains possible but does not bypass the next-start gate.
+- Hash notes/observations at closure and pin the initial baseline. Preserve history; do not retroactively improve a past note to justify a current result. Record corrections and justified retractions explicitly. A lower metric can be an honest correction, not failure to manufacture progress.
+- Protect all governing text outside the two declared mutable bodies, including safeguards added before adoption. Keeping marker names while weakening their content is not permitted. Mutable planning text cannot override the mission, invariant core, acceptance criteria or authority boundaries.
+- Generated arithmetic and a digest skeleton do not complete the physical/semantic reread. Read the original notes or their verbatim copies; provide specific findings, acknowledge possible lost facts and distinguish observations from inference. Reread receipts record a declaration, not authenticated cognition.
+- Updates must be bound to the current digest/window, note hashes and prompt hash. Empty updates mean reviewed/unchanged. Never use this path for mission revision, criteria changes, new authority, automatic claim promotion, agent dispatch or installation.
+- An explicitly user-authorized mission revision must declare a new periodic anchor at the current cycle count and a matching inventory baseline when applicable. This starts a new review window without resetting consumed budgets, erasing prior history or treating earlier conclusions as revalidated. Initialization starts at cycle zero; a historical review cannot retarget later work.
+- If the tripwire fails, restore the trusted prompt before further execution. Preserve damaged bytes and structured audit events. A file replacement and YAML commit are not a single OS transaction; after interruption inspect hashes and recover rather than assuming success.
+- Arithmetic demonstrates declared consistency, not semantic correctness, test discrimination or universal coverage. Checksums are not operator authentication. All earlier claim ceilings, coverage denominators, retraction, anti-rework and explicit-user-authority rules continue to apply.
+
+## Native preservation — Control 8.3
+
+1. Preserve accepted obligations across sessions and changes. A plan cannot omit criteria required by an adopted preservation policy.
+2. Compare stable obligation/case identities and contracts. Equal test counts or improved aggregate percentages do not demonstrate retention.
+3. Protect the verifier: expected outputs, masks, tolerances, exclusions, discovery rules, fixtures, mocks and comparators are part of the oracle.
+4. Never regenerate/approve a baseline to absorb a failure. Changes to protected obligations/oracles use the existing explicitly human-authorized mission revision.
+5. A broken mandatory capability cannot be compensated by new passes, more coverage, files, grades, retries or reports.
+6. Missing, skipped, xfailed, timed-out, unsupported, partial or inconclusive results do not replace a required pass. Preserve all failure history and disclose instability.
+7. Bind checks to actual candidate inputs, approved argv, current runner/tool context, corpus, comparator and a fresh result file. Inputs and generated outputs are distinct.
+8. Invalidate affected current proofs through declared dependencies. Changed callees affect callers; unknown dependencies require broader replay or an inconclusive conclusion.
+9. Preserve reproducible counterexamples as explicit protected corpus/cases. Exploration does not silently modify accepted obligations or start background fuzzing.
+10. Inspect test discrimination with meaningful negative controls/mutations in isolated copies. Coverage and a zero exit code alone do not certify quality.
+11. Permit honest corrections/retractions with preserved history. A lower corrected metric is not automatically functional regression; revalidation is not a new discovery.
+12. Keep byte matching, structural similarity, sampled differential behavior, ABI, simulation and formal/refinement results distinct, with their real assumptions and limits.
+13. A changed requirement, oracle, denominator or tolerance needs explicit review/authorization. Silence, a failed test or a generic continuation supplies none.
+14. Recover without erasing: retain failed artifacts/audit, inspect unknown outcomes, and prepare authorized repair. No automatic destructive Git reset or corpus cleanup.
+15. Keep the core domain-neutral. Specialist tools export neutral evidence; no grade ladder, CPU, firmware denominator or solver is a universal harness requirement.
+16. Preservation grants no implicit installation, publication, schedule, execution or mission authority. Local hashes do not authenticate operators, cognition or a malicious runner.
+
+Configure `regression_policy` only for a new authorized mission or through explicit mission revision.
+Read `references/v83-preservation.md` for the precise contract, fresh results, debt, impact reuse and
+trust limits. Without this policy, inherited 8.2 cycle behavior remains available. Read `regression-plan`
+before selecting checks; use `regression-report` to inspect current case-level evidence. Native
+`close` enforces preservation together with all earlier gates; it does not implicitly launch checks.
+
+## Verifier assurance — explicit, finite and synthetic
+
+- When changing or releasing this verifier, use the bundled `assurance` campaigns to check test
+  discrimination, bounded lifecycle sequences and YAML persistence recovery. Read
+  [the campaign guide](references/v83-assurance.md) for commands and actual coverage.
+- A negative control counts only when the expected behavioral verdict/refusal is observed after
+  a healthy control passes. Infrastructure errors, unrelated crashes and absent cases are failures.
+- Record finite seeds/programs and injected boundaries. Preserve incomplete traces and actual
+  worker outcomes. No global mutation score, exhaustive proof or physical power-loss claim follows.
+- Campaign receipts do not approve a mission, replace project evidence or count replay as new
+  knowledge. No automatic campaign, installation, publishing, scheduler or human confirmation is added.
+- YAML remains canonical. SQLite is a testing-method reference; all prior authority, anti-inflation,
+  evidence/claim ceilings, honest-retraction and anti-rework rules remain in force.
+
+---
+
+# Native periodic review — Control 8.2
+
+VeriMission is a general long-project harness. Digest production, reconciliation and protected review are built into the executor and require no domain repository, agent SDK, cron or service. Specialist tools may export observations, but are optional. Nothing is installed, scheduled or activated by these commands.
+
+## Adopt deliberately
+
+Python 3.11+ and PyYAML 6.x remain the requirements. An 8.1 YAML mission without `periodic_review` retains its previous behavior; do not reinitialize it. To enable the feature, the user uses the existing explicit `preview-mission` / interactive `revise-mission` workflow. Automation cannot perform that revision.
+
+Choose `anchor` deliberately when adopting into an existing mission, normally the last closed cycle. Boundaries are `anchor + N`, `anchor + 2N`, etc. A boundary ending at cycle C covers exactly `[C-N+1, C]`. Cadence is in harness cycles, never wall-clock time or a domain-specific numbering convention. `every` must match the mission's `budget.consolidate_every` so there is one cadence, not two schedules.
+
+The governing file must already have two uniquely delimited mutable sections: `objectives` and `scenario`. Its initial protected content must be reviewed before adoption. The rest of the document, including later safeguards present at adoption, is fingerprinted and frozen. Marker presence alone is not enough: weakening a sentence while retaining its marker also fails.
+
+## Contract fields
+
+Add the policy from `templates/periodic-policy.example.json` under `periodic_review` in the mission. All filenames, markers, categories, denominators and section delimiters are project configuration. Notes must have a distinct physical file per cycle. Relative patterns allow integer `{cycle}`, `{start}` and `{end}` placeholders, including padding such as `{cycle:04d}`; paths cannot leave the project.
+
+Optional inventory reconciliation requires `inventory`, `observation_pattern` and `baseline` together. No inventory is required for a research, writing, software or other general project. In that case the digest explicitly states that inventory arithmetic is not applicable; it does not invent coverage or a denominator.
+
+For inventories, `categories` is an ordered list of declared maturity states and `total` is the fixed universe size. `monotonic` can be a list of single-category counters or a mapping of counter names to category groups, such as `{"completed": ["implemented", "verified"]}`. The engine records real negative deltas; it does not redefine a metric to make it increase.
+
+## Physical inputs and honest reconciliation
+
+Each note is physically read as bytes, hashed and included verbatim in the digest artifact. The producer never substitutes a chat summary for that file. Notes/observations are pinned at cycle closure; the initial inventory baseline is pinned at adoption. Closed sources cannot be silently rewritten. Put corrections in later notes and explicit retraction records.
+
+An observation JSON contains `cycle`, `live` and `closed` mappings from stable item IDs to categories, plus `transitions`. Optional `facts_recorded` and `facts_used` are labels for surfacing possible lost context, not assertions that a fact is true.
+
+The native producer checks:
+
+- Conservation against the configured denominator and stable ID universe.
+- No unknown/unmarked categories and no unmarked upward transitions.
+- Equality of live and closed states by item identity, not only equal totals.
+- Declared counter changes and downward transitions.
+- Hashed transition evidence, with optional links to existing claim provenance.
+- Possible facts dropped from use across the window.
+
+A transition receipt identifies the exact item, before/after categories, `kind` (`progress` or `retraction`), reason and current hashed evidence files. A justified retraction may lower a counter and is reported as such; it is not counted as progress or silently erased. An unexplained regression blocks. File hashes and arithmetic establish declared consistency/provenance, not semantic truth. No claim is promoted automatically.
+
+## Closing a boundary
+
+Use the normal pattern with an absolute executor path:
+
+```text
+python /path/to/scripts/harness.py --project /project digest --through-cycle 10
+python /path/to/scripts/harness.py --project /project decade-review --through-cycle 10 --input /project/review.json
+python /path/to/scripts/harness.py --project /project close --cycle 10 --outcome verified --next "Next bounded target"
+```
+
+`close` itself invokes the native producer and review gate at the boundary. The explicit `digest` command is convenient for preparing the review in advance; it is not an external requirement. A first close without a review produces the digest, saves a structured pending event and exits 2, leaving the cycle active. It cannot pretend a semantic review occurred merely because a digest exists.
+
+Read every original note or its verbatim copy in the digest artifact. Fill `templates/periodic-review.example.json` with the actual window, digest SHA, current prompt SHA, one substantive finding and matching note hash per cycle, a reason, optional objectives/scenario replacements, and explanations for every possible lost fact. Empty updates explicitly mean “reviewed and unchanged.” Do not fabricate a reread declaration.
+
+The `digest` response includes a `review_template` with current hashes and deliberately blank findings/reason. It is a draft, not a successful reread receipt; fill it only after physically reading the notes.
+
+You may supply the prepared review with `close --review-input /project/review.json`. Successful review and verified checks complete the boundary and automatically append consolidation in the same canonical state update. The mission, scope, criteria, claims and previous records are not rewritten. If a prompt update changes a declared check artifact, run the affected check and refresh the digest/review before verified closure.
+
+An interrupted cycle remains stoppable. Resuming past an interrupted boundary still requires its digest/review and consolidation; interruption does not bypass the gate. Missing sources at interruption are recorded as unavailable, not invented. Recovery can require restoring the original source or an explicit user-authorized adoption/revision with a suitable anchor.
+
+## Tripwire, stale references and restoration
+
+The review verifies the registered digest artifact and exact window, rereads source files to verify freshness, and checks the complete protected instruction fingerprint. Missing, modified, stale or wrong-window digests refuse with exit 2. A non-boundary `decade-review` is a real no-op, including no timing write to the YAML store.
+
+Only section bodies may change. Unknown update keys, duplicate/nested delimiters, stale proposals, core edits and stale markers remaining after review are refused. Stale references outside permitted sections cannot be automatically edited; they need an explicitly reviewed contract/instruction change, never silent expansion of the mutable region.
+
+A review can retarget instructions only at the current cycle boundary. A historical digest may be inspected, but an old window cannot rewrite objectives after work has advanced to later cycles.
+
+A user-authorized mission revision starts a new periodic epoch. Its proposal must explicitly set `anchor` to the current number of cycles and, if inventory is enabled, supply a baseline observation for exactly that cycle. Initialization requires anchor zero. The new cadence counts forward from this anchor, while previous cycles, digests, declarations, consumed budgets and revision history remain preserved. Earlier conclusions still need revalidation under the revised mission. A revision cannot silently rebaseline changed protected instructions; restore the existing core first. This release deliberately refuses protected-core rewrites even within a scope revision.
+
+```text
+python /path/to/scripts/harness.py --project /project restore-prompt
+```
+
+Restoration uses the last trusted snapshot and preserves the damaged bytes in the canonical YAML. A damaged core blocks new starts, checks and governed-operation bindings until restored. Read-only recovery and explicit interruption remain available. The tool does not intercept unrelated host tools.
+
+## Audit, recovery and limits
+
+The canonical `.harness/state.yaml` holds digest versions, pinned source hashes, review declarations, prompt repair history and structured `events`. Events distinguish produced, pending, failed, passed, restored and consolidated states. A tripwire not reached is recorded as null, not a pass. Derived digest files do not form a second authoritative ledger.
+
+File replacement and YAML commit are not one cross-file OS transaction. An interrupted update can leave a prompt whose permitted bodies changed before the review receipt was committed. Hash binding causes a fresh review/recovery to be required; it does not authorize proceeding. Restore from the trusted snapshot or inspect the actual result before retrying. Never replay an unknown external operation to learn its outcome.
+
+Reread findings are declarations, not authentication of cognition. A weak test may pass; a fabricated input file can still misrepresent reality. Checksums detect byte drift, not a malicious operator who controls code and state. No native agent dispatch, model selection, autonomous mission revision, global installation, live-project migration or new schedule is introduced.
+
+
+# Control 8.3 — native preservation of accepted obligations
+
+This is an opt-in, general-project control. It adds neither background execution nor specialist
+tools. Existing missions without `regression_policy` keep the inherited 8.2 behavior, including
+native periodic review, explicit mission revision, claims/retractions and anti-rework gates.
+
+## State and authority
+
+`init` adopts a declared baseline as part of a genuinely new authorized mission. For an existing
+mission, use the existing `preview-mission` / interactive `revise-mission` workflow after explicit
+user approval. Do not reinitialize a mission. Do not answer the human confirmation on the user's
+behalf, pipe it, simulate a terminal or create an approval bypass.
+
+There is no baseline-adopt/force/snapshot-update shortcut. A baseline contains accepted obligations,
+not an automatically trusted snapshot of whatever the candidate currently produces. Updating an
+expected value, normalization, exclusion, test selection or tolerance can weaken the oracle; review
+that effect explicitly. Use a new baseline file for a new epoch and preserve old files/history.
+
+`.harness/state.yaml` remains the only authoritative state. It records the adopted baseline,
+execution records, assessments and last validated snapshot. Result files are immutable evidence
+referenced by hash, not a second state store. A last validated snapshot does not replace an oracle.
+Changing an accepted requirement is distinct from legitimately retracting a false factual claim.
+
+## Baseline format
+
+Use `templates/preservation-baseline.example.json` (or `assets/templates/` in the skill).
+`verimission-baseline-v1` has these exact fields:
+
+- `reference`: `{kind: specification|commit, id: ...}`. Commit IDs must be resolved full hashes
+  present in the local repository. A specification ID documents the declared source of expectations;
+  it does not authenticate a person or certify that the old behavior was correct.
+- `protected_files`: project-relative paths and SHA-256 hashes of tests, oracles, comparator
+  configuration, masks, fixtures and retained counterexample corpus. At least one is required.
+- `context_files`: frozen toolchain/executor/lock/configuration file hashes. A change refuses reuse
+  and requires explicit context/contract review. Use side-by-side replay to study a changed tool.
+- `obligations`: unique `{id, criterion, case, critical, sources, comparator}` entries. `sources`
+  lists input-universe paths. The criterion must be declared in the mission and the policy.
+- `debt`: separate `{id, reason, owner, expires}` records. Debt is reported, never counted as a pass.
+
+Comparators: `{kind: status}` requires a real case pass; `{kind: exact, expected: JSON}` also
+compares the observed value; `{kind: numeric, expected: NUMBER, abs_tol: NUMBER, rel_tol: NUMBER}`
+uses the explicitly declared finite nonnegative tolerances. There is no default global epsilon.
+`{kind: minimum, expected: NUMBER}` and `{kind: maximum, expected: NUMBER}` impose an explicit
+finite floor or budget ceiling. They do not silently advance the accepted bound after a better
+measurement. A different bound requires review of the accepted contract; no universal percentage
+is supplied. Keep the scope, denominator and exclusions in the immutable case contract.
+For bitwise floating-point, NaN, signed zero or domain-specific treatment, use an explicitly tested
+domain comparator and a protected configuration; do not encode a universal floating-point policy.
+
+An optional obligation `contract` object must equal the case's contract. Put metric universe,
+exclusions, scope, reference identity, input assumptions and formula there. A denominator change
+then becomes incomparable rather than an artificial improvement. Exact JSON comparison is
+type/representation-sensitive; choose observable structures deliberately.
+
+## Mission policy
+
+`regression_policy` has exact fields:
+
+```json
+{
+  "schema": 1,
+  "baseline": {"path": "analysis/preservation-v1.json", "sha256": "REPLACE_WITH_REAL_HASH"},
+  "input_patterns": ["src/*.py", "tests/*.py", "corpus/*.json"],
+  "criteria": {"REG": {"output_pattern": "reports/preservation-{run}.json"}},
+  "mode": "full",
+  "graph": {},
+  "graph_complete": false,
+  "environment": []
+}
+```
+
+Use forward-slash paths inside the authorized project. Do not match `.git`, `.harness`, generated
+reports or build outputs with input patterns. Every pattern must match, and all obligation sources
+and protected files must be in the resolved input universe. New/deleted files are significant.
+Input symlinks are refused rather than silently broadening that universe. Include test discovery
+configuration, shared helpers, generated inputs and dependencies that could affect a conclusion.
+Undeclared dependencies remain outside the tool's observation; no universal preservation is claimed.
+
+The engine additionally hashes its bundled Python helpers and the resolved acceptance executable.
+It hashes only the values of explicitly named environment variables; it does not dump the complete
+environment into state. Dependency packages, remote services and tool options must be bound by
+the project's own context resources. Hashes do not prove an executor used the declared configuration.
+
+## Execution and result binding
+
+Inspect `regression-plan` after `review` and include every required criterion in the actual plan.
+`start` refuses omission. `check` runs the already authorized criterion argv without a shell and
+sets these variables for its result writer:
+
+- `VERIMISSION_REPORT`: fresh output path derived from the approved pattern;
+- `VERIMISSION_RUN_ID`: unique run ID;
+- `VERIMISSION_CONTEXT_SHA256`: identity of the declared/current check context;
+- `VERIMISSION_TIMEOUT`: check time budget (the outer cycle budget may be shorter).
+
+The acceptance executable is resolved and hashed before execution. Inputs are fingerprinted before
+and after the check; generated result files are separate outputs. Do not list the result file as
+an input artifact. Existing result files are never overwritten by the bundled runner. An incomplete
+file left by a crash remains evidence of that interruption; a retry uses a new run ID/path.
+
+The optional governed `operation-run` adapter uses the same preservation preparation/finalization.
+Preflight happens before single-use approval is consumed; admission still commits before launch.
+An interruption after admission remains unresolved and cannot be replayed merely to discover its
+outcome. A completed operation must still produce a current passing preservation proof for closure.
+
+The result envelope is exactly:
+
+```json
+{
+  "format": "verimission-results-v1",
+  "run_id": "CURRENT_RUN_ID",
+  "context_sha256": "CURRENT_CONTEXT_HASH",
+  "complete": true,
+  "cases": [{"id": "tests.C.test_old_capability", "status": "pass", "raw_status": "unittest:pass"}]
+}
+```
+
+States are `pass`, `fail`, `error`, `timeout`, `skipped`, `xfail`, `xpass`, `missing`, `unsupported`,
+`inconclusive`. A case may contain `observed` JSON and a structured `contract`. IDs must be unique.
+Missing/partial/foreign-run reports, malformed JSON and nonfinite values do not satisfy a protected
+pass. A green process cannot compensate for failed/missing cases. Repeated identical inputs after
+a failed check retain instability instead of becoming green by retry-until-pass.
+
+The bundled library-standard runner can be an acceptance command:
+
+```text
+python /absolute/skill/scripts/result_runner.py unittest --start tests --pattern test*.py
+```
+
+It records parent-test failures from failing subtests, skips and expected/unexpected successes.
+A test ID follows unittest's module/class/method naming. Renaming/replacing a protected case needs
+an explicit obligation/history mapping through the revised baseline, not a count-only comparison.
+
+JUnit is optional and does not require pytest in the harness. An explicitly authorized command can use:
+
+```text
+python /absolute/skill/scripts/result_runner.py junit --source reports/raw.xml -- python -m pytest --junitxml reports/raw.xml
+```
+
+The raw JUnit path must be new, inside the project, and writable by the approved command. Give each
+invocation a distinct raw path or use a project wrapper that derives one from the run ID. Raw XML
+must be UTF-8, complete, nonempty, without DTD/entities, consistent counts and duplicate IDs. IDs
+are `classname.name` as reported by JUnit. Recognized pytest xfail remains xfail; ambiguous states
+are not upgraded to a protected pass. The wrapper's child has a finite timeout; an interrupted
+runner leaves incomplete evidence and grants no authority to replay external effects.
+
+`result_readers.metric()` supports explicit coverage counts and Stryker's declared detected/valid
+mutation formula, keeping states, exclusions and scope. Timeout remains a distinct state even if
+the provider counts it as detected. Compile/runtime-invalid mutants are not credited as killed.
+Use neutral results with immutable metric contracts for an actual project gate; no threshold is
+enabled merely by importing a metric, and these helpers do not run coverage or mutation tools.
+
+## Gates and reporting
+
+- `regression-plan`: read-only required criteria and eligible original-proof references; no dispatch.
+- `baseline-preview --input mission.json`: read-only proposed policy, not adoption or authorization.
+- `regression-report [--cycle N]`: current assessment; `passed` is the verdict, command read-success
+  alone is not a preservation pass. Failed-case diagnostics and current-proof errors stay visible.
+- `close --outcome verified`: native preservation gate, then all inherited gates. On preservation
+  failure the cycle remains active and structured assessment/audit persist. Interrupt/block remains possible.
+- `resume`, `traceability`, `accept-mission` and `validate`: expose current evidence gaps. Declared
+  claim dependencies require current supporting checks. No report promotes a claim or a grade.
+
+At an existing periodic boundary the same assessment is summarized with consolidation, without
+creating a separate schedule, store or reconciler. Preserve the physical-note reread and core
+tripwire. A stored declaration of reading does not authenticate cognition.
+
+## Optional impact reuse
+
+Start with `mode: full`. Every protected suite is rerun for each verified cycle. `mode: impact`
+permits reuse only for noncritical criteria backed by a verified original cycle, unchanged
+mission/policy/context/report, the same input universe and an explicitly complete graph covering
+that universe. Edges point **caller/dependent -> callee/dependency**. The reverse transitive closure
+of changed sources invalidates callers, including cycles. Critical criteria are always selected.
+New/deleted inputs, incomplete graphs and unknown changed nodes fall back to full replay.
+
+The reused check is a reference to the original execution, not a fabricated new execution or new
+discovery. Later failures for identical declared inputs/context prevent silent reuse. This is
+conservative declared dependency analysis, not automatic discovery of imports, globals, indirect
+calls or hardware state. A false completeness declaration can still omit real dependencies;
+keep the claim ceiling explicit and prefer full replay when that uncertainty matters.
+
+## Recovery and limits
+
+The canonical YAML transaction atomically commits audit and last-validated state. A result file and
+YAML commit are not a single OS transaction. On interruption, inspect/resume; an orphan result does
+not advance the baseline or prove closure. The engine does not automatically reset Git, delete
+corpus files, repair a candidate or accept a new oracle.
+
+This is provenance/consistency enforcement within the routed workflow, not isolation against an
+operator who can rewrite the engine/store/OS or a malicious runner that fabricates results. For
+that threat model use separate permissions, independent review and CI outside the writer's control.
+No hardware correctness, universal equivalence, model honesty or human identity is authenticated.
+
+Counterexamples belong in the project's versioned, protected corpus with an obligation and justified
+expected behavior. Fuzz/property exploration is separately authorized and budgeted; discoveries do
+not silently become new obligations or modify accepted expectations. Use synthetic/authorized data;
+reports and corpus have the sensitivity of their contents, and hashing does not anonymize them.
+
+
+# Finite verifier assurance — Control 8.3
+
+The canonical store is still **`.harness/state.yaml`**. SQLite is a source of testing methods,
+not a new database dependency or storage migration. The pre-existing explicit, read-only import
+of legacy SQLite files remains unchanged. These campaigns never open a real project's store.
+
+## Explicit commands
+
+From the complete package:
+
+```powershell
+python -B harnesses/v8.3/scripts/harness.py assurance --suite all --seed 7 --traces 2 --steps 24 --output assurance-new.json
+```
+
+From the standalone harness or skill:
+
+```powershell
+python -B scripts/harness.py assurance --suite controls
+python -B scripts/harness.py assurance --suite lifecycle --seed 7 --traces 2 --steps 24
+python -B scripts/harness.py assurance --suite persistence
+```
+
+`assurance` deliberately has no `--project`: every operation uses an identified disposable
+synthetic workspace. It neither initializes the current directory nor adopts a mission/baseline.
+Direct invocation of `scripts/assurance.py` supports the same options. No network or specialist
+tool is required; Python 3.11+ and the existing PyYAML dependency suffice.
+
+Defaults are `--suite all --seed 0 --traces 2 --steps 24`. Valid seeds are integers 0..2^32−1;
+traces 1..4 and steps 16..64. Budgets are checked before fixtures start. Each persistence child
+has a 60-second limit, and each fixture acceptance command has a 15-second limit. The campaign
+is finite; there is no background loop, retry-until-green or automatic launch at cycle closure.
+
+Without `--output`, stdout contains the full JSON receipt. With it, stdout is a small summary
+and the new file contains the full receipt. The parent directory must exist. Existing files,
+symlinks and paths inside `.harness`/`.git` (case-insensitive names) are refused. Receipts are derived evidence, never a
+canonical state or mission approval. Exit 0 means this finite campaign passed; 3 means campaign
+failure/incompleteness; 2 means invalid configuration or output/I/O failure. Retain diagnostics.
+
+The output destination is resolved before execution and the resolved path is opened exclusively.
+An alias/junction into protected state does not bypass the directory-name guard.
+
+## 1. Sensitivity controls
+
+The healthy synthetic input must pass the native check, close and validation first. Nine bundled
+negative controls then exercise missing/skipped cases, wrong return, wrong memory observation,
+foreign run, incomplete envelope, changed protected oracle, omitted criterion and corrupt YAML.
+Each must produce its specified case-level verdict or refusal code. A timeout, launch/import error,
+unrelated exception, wrong diagnostic or accidentally accepted close fails the campaign.
+
+The fixture emits controlled synthetic observations to test the verifier; it does not execute real
+firmware. Corrupting the YAML is intentional only inside this campaign's owned disposable fixture.
+The nine controls are not a global mutation score. Unit tests additionally weaken a control result
+and confirm that the campaign itself turns red.
+
+## 2. Independent lifecycle model
+
+Each program begins with 16 discriminating actions, including closure before a check, valid closure,
+unjustified rework, failing candidate, interruption, repair/revalidation, reload and unauthorized
+mission revision. A versioned SHA-256-based seed generator appends additional actions. The receipt
+records seed, configuration, full generated programs, executed steps and expected/actual outcomes.
+Repeat the same configuration to replay the same action programs with the same generator version.
+UUIDs, timestamps and raw YAML bytes are not claimed to be identical between independent runs.
+
+The model tracks active phase, input generation and current successful witness independently of
+engine predicates. Invariants check mission authority, current evidence, cycle/revision history,
+budget retention, read-only recovery and non-inflated revalidation progress. Model/case failures
+stop that trace, remain visible and cannot count as complete exploration. There is no automatic
+human confirmation; the unauthorized-revision probe explicitly uses an automation source.
+
+This is bounded model-based testing with a deterministic generator, not Hypothesis integration,
+formal verification, exhaustive schedule coverage or a universal guarantee of correctness.
+
+## 3. YAML persistence fault sweep
+
+The sweep covers three native operations (`review`, `check`, `close`) × six write boundaries
+(`before-open`, `partial-write`, `before-flush`, `before-fsync`, `before-replace`, `after-replace`)
+× two modes: caught I/O exception and abrupt termination of the worker using `os._exit`.
+That is 36 scenarios, including 18 actual worker-process terminations.
+
+The worker verifies its synthetic temp-directory marker before intercepting any boundary. The
+test patches are scoped to that worker's canonical YAML target; the production store has no
+fault-injection environment switch or approval bypass. A marker plus the exact child exit outcome
+must demonstrate that the intended boundary was reached. An unrelated crash is not credited.
+
+A fresh parent-side engine validates integrity, lock recovery and complete old/new commit semantics:
+before replace, the previous YAML bytes must survive; after replace, state and audit must agree.
+The full pre-existing state/check/event history is compared with the explicitly permitted operation
+delta; native consistency and current-proof validation are additionally required after check/close.
+The native check scenario verifies that an orphan result remains separate from canonical proof.
+The close scenario verifies the joint verified-close/last-validated snapshot commit. Read-only
+recovery neither repeats an operation nor overwrites a result. Receipt counters distinguish these
+scenarios from unittest counts; repeated campaigns are not independent new discoveries.
+
+Process termination is not physical power-loss simulation. The sweep does not validate disk caches,
+controller behavior, every filesystem, directory-fsync fault behavior or every concurrent schedule.
+Windows execution does not establish Linux/macOS coverage. Temporary fixture cleanup does not
+authorize cleanup or history deletion in a real project.
+
+## When to run
+
+Use these campaigns when changing/releasing the verifier or explicitly investigating its controls.
+For a project task, choose the actual domain tests and current preservation policy. A successful
+self-test never replaces project evidence, grants new authority, satisfies arbitrary acceptance
+criteria or starts work in another project. Preserve the existing claim ceilings and retractions.
+
+## Method references
+
+- [SQLite anomaly/regression testing](https://www.sqlite.org/testing.html): discriminating bug cases
+  and systematic failure-boundary tests. No SQLite code or database was incorporated.
+- [LLVM regression-test guidance](https://llvm.org/docs/TestingGuide.html#best-practices-for-regression-tests):
+  small, explicit, reproducible tests with scope and preconditions.
+- [Hypothesis stateful testing](https://hypothesis.readthedocs.io/en/latest/stateful.html): sequences
+  and invariants motivate the bounded independent model; the package adds no Hypothesis dependency.
+
+
+# Control 8.3 — qualification, portability and reuse
+
+## Local and hosted gates
+
+From the repository root, with Python 3.11+ and PyYAML 6.0.3 available:
+
+```shell
+python -B tasks/ci_v83.py --output /absolute/new/qualification-directory
+```
+
+This finite coordinator checks manifests, resource parity and skill metadata, runs the complete
+harness and skill suites through case-level result envelopes, tests the coordinator, runs verifier
+assurance and generic/periodic pilots, then builds and verifies archives. It installs or publishes
+nothing. Output is derived evidence in a new directory, never a real mission or an agent skill path.
+The repository-level coordinator is distributed in the combined development package; standalone
+skills still include their full runtime/tests and can run `python -B -m unittest discover -s tests`.
+
+The workflow `.github/workflows/ci.yml` declares Ubuntu 24.04, Windows 2025 and macOS 15, each with
+Python 3.11 and 3.14. Actions are pinned to upstream commits, credentials are not persisted, permissions
+are read-only and evidence is uploaded even on failure. The required aggregate refuses failed,
+cancelled or skipped matrix jobs. There is no deployment step. A workflow file is not proof that its
+matrix ran; reports must name the actual executed platform/runtime. WSL is Linux qualification with
+its own filesystem, not macOS or a GitHub-hosted run. Repository branch protection is separate host
+configuration and is not established by adding this workflow.
+
+Each command receives an admission record before launch and a durable result/log afterwards.
+`--resume` reuses only matching source/runtime/command receipts with intact logs, case envelopes and
+declared outputs. Source identity includes the packager and CI tests. Assurance JSON and the complete
+packaging output file set/hashes are checked on reuse. Interrupted admissions without completion are
+unknown and not automatically replayed. A failed receipt remains failed; an operator may explicitly
+choose a fresh output directory for a new attempt, preserving the old evidence. These hashes detect
+accidental or unapproved changes; they do not authenticate a hostile writer with full OS access.
+
+## Large-history and sustained-use experiment
+
+```shell
+python -B /absolute/package/scripts/history_benchmark.py --native-cycles 100 --history-sizes 1000 5000 --samples 3 --memory --budget-seconds 600 --output /absolute/new/benchmark.json
+```
+
+This is an explicit, bounded, synthetic experiment, not a background loop. It has no `--project` and
+operates only on disposable fixtures. Native cycles execute start/check/close and periodically resume
+in a fresh process; revalidation must not create new progress. Seeded blocked-cycle vectors exercise
+real YAML I/O/integrity but are never counted as executed work or mission acceptance. The receipt
+keeps per-sample timings, actual source hashes, environment, sizes and separate counts.
+
+`--backend python` forces SafeLoader/SafeDumper only inside the experiment, allowing a paired
+comparison with `--backend auto`. Actual fresh-process resumes use the normal auto backend;
+per-cycle timing excludes those resumes, while total elapsed time includes them. Optional memory
+measurement uses a separate tracemalloc pass: Python allocation peak, not process RSS or total RAM.
+The budget is checked between operations and before success. An in-process YAML operation is not
+preempted; a deadline overrun yields incomplete/failed qualification after control returns. Fixed
+count limits and subprocess timeouts also apply. Synthetic minutes of use do not establish months
+of production reliability or a universal performance guarantee.
+
+## Safe YAML acceleration
+
+The store selects CSafeLoader/CSafeDumper when the existing PyYAML installation provides them,
+otherwise SafeLoader/SafeDumper. Schema, checksums, lock protocol, atomic replacement, fsync,
+audit/history and current-proof checks remain in place. Tests exercise both available safe backends,
+old text round trips, tamper refusal and refusal of Python-object constructors. Serialization bytes
+may differ between safe emitters; the integrity digest is over canonical document values, not emitter
+formatting. No C extension is downloaded at runtime and there is no unsafe-loader fallback.
+
+## Reuse policy retained from earlier versions
+
+The owner requested the same policy as previous versions. Those versions selected no general reuse
+license; 8.3 therefore does not introduce MIT, Apache, GPL or another license. Public visibility or a
+downloadable ZIP is not a general grant of modification/redistribution rights. References to upstream
+methods are attribution, not a relicensing of third-party works. A permissive/open-source license is
+still a separate owner decision if broad reuse is desired. Technical qualification does not resolve it.

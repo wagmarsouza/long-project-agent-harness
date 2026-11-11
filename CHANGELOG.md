@@ -1,5 +1,26 @@
 # Changelog
 
+## Publication v2.3.0-rc.1 / Control 8.3 — 2026-11-10
+
+- Added portable source/output-bound qualification receipts and a locally prepared six-cell CI
+  matrix; actual executed platforms are reported separately, with no implicit publication.
+- Added bounded native-cycle and seeded YAML-history benchmarks, and safe LibYAML acceleration
+  with a safe Python fallback. Storage schema, integrity checks and authority remain unchanged.
+- Retained the prior no-selected-reuse-license policy as explicitly requested by the owner.
+
+- Fixed independent-review findings: resolve assurance output aliases, preserve full recovery
+  history/deltas and require current proofs, and integrate governed operations with preservation.
+- Added explicit finite verifier assurance: nine expected-reason negative controls, independent
+  seed-replayable lifecycle programs and systematic YAML I/O/process-termination recovery scenarios.
+- Kept YAML canonical and all normal gates/authority unchanged; self-test receipts confer no mission acceptance.
+- Added opt-in native preservation policy, pinned baselines/oracles, complete case results and non-compensating comparisons.
+- Coupled start/check/close/acceptance to current proof, with explicit mission-revision authority and original failure history.
+- Added strict neutral/JUnit readers, a finite standard-library unittest runner, explicit metric floors/ceilings and conservative impact reuse.
+- Retired stale proofs without deleting them; facts require explicit revalidation and revalidation is not counted as new knowledge.
+- Preserved periodic reconciliation/protected review and summarize preservation in the same consolidation.
+- Added generic software/research pilots, adversarial tests, self-contained skill resources and local archives.
+- No installation, publishing, schedule, live mission migration, implicit autonomy or mandatory specialist engine.
+
 ## Publication v2.2.0-rc.1 / Control 8.2 — 2026-11-08
 
 - Integrated a native, domain-neutral digest producer and protected N-cycle review in `close`; no specialist repository is required.
