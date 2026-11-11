@@ -784,6 +784,10 @@ _v83_spec = importlib.util.spec_from_file_location('harness_v83_regression', Pat
 _v83 = importlib.util.module_from_spec(_v83_spec)
 _v83_spec.loader.exec_module(_v83)
 Harness = _v83.extend(Harness, require, digest, now, file_digest, nonempty, Refusal)
+_v84_spec = importlib.util.spec_from_file_location('harness_v84_measurements', Path(__file__).with_name('v84_measurements.py'))
+_v84 = importlib.util.module_from_spec(_v84_spec)
+_v84_spec.loader.exec_module(_v84)
+Harness = _v84.extend(Harness, require, digest, now, file_digest, nonempty, Refusal)
 
 
 def main():
@@ -862,6 +866,12 @@ def main():
     interrupt = sub.add_parser('interrupt')
     interrupt.add_argument('--cycle', type=int, required=True)
     interrupt.add_argument('--reason', required=True)
+    sub.add_parser('measurement-report')
+    audit_plan = sub.add_parser('measurement-audit-plan')
+    audit_plan.add_argument('--cycle', type=int, required=True)
+    audit_plan.add_argument('--full', action='store_true')
+    cycle_boundary = sub.add_parser('cycle-boundary')
+    cycle_boundary.add_argument('--cycle', type=int, required=True)
     sub.add_parser('resume')
     sub.add_parser('validate')
     sub.add_parser('metrics')
@@ -873,10 +883,16 @@ def main():
     harness = None
     read_only = args.command in ('prepare-mission', 'capsule', 'capsule-status', 'evidence-scopes', 'search', 'context-pack', 'view-status', 'accept-mission',
                                  'operation-status', 'graph', 'adapter-template', 'cost-summary', 'report-pr', 'digest', 'decade-review',
-                                 'baseline-preview', 'regression-plan', 'regression-report', *v80_reads)
+                                 'baseline-preview', 'regression-plan', 'regression-report', 'measurement-report', 'cycle-boundary', *v80_reads)
     try:
         harness = Harness(args.project)
-        if args.command == 'baseline-preview':
+        if args.command == 'measurement-report':
+            result = harness.measurement_report()
+        elif args.command == 'measurement-audit-plan':
+            result = harness.measurement_audit_plan(args.cycle, args.full)
+        elif args.command == 'cycle-boundary':
+            result = harness.cycle_boundary(args.cycle)
+        elif args.command == 'baseline-preview':
             result = harness.baseline_preview(json.loads(Path(args.input).read_text(encoding='utf-8-sig')))
         elif args.command == 'regression-plan':
             result = harness.regression_plan()
@@ -939,8 +955,8 @@ def main():
         else:
             result = getattr(harness, args.command)()
         print(json.dumps({'ok': True, 'result': result}, ensure_ascii=True, indent=2))
-        if args.command in ('check', 'validate') and not result['passed']:
-            harness.timing(args.command, time.monotonic() - started, 3)
+        if args.command in ('check', 'validate', 'cycle-boundary') and not result['passed']:
+            if not read_only:harness.timing(args.command, time.monotonic() - started, 3)
             return 3
         if args.command == 'capsule-status' and not result['fresh']:
             return 3
