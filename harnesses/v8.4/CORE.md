@@ -116,3 +116,35 @@ before selecting checks; use `regression-report` to inspect current case-level e
   knowledge. No automatic campaign, installation, publishing, scheduler or human confirmation is added.
 - YAML remains canonical. SQLite is a testing-method reference; all prior authority, anti-inflation,
   evidence/claim ceilings, honest-retraction and anti-rework rules remain in force.
+
+
+## Evidence-qualified quantities — native 8.4
+
+31. A headline is never a measurement. When a mission reports completed units, explicitly adopt
+    `measurement_policy`: a fixed universe of unique physical identities, exclusions, dependencies,
+    deliverables, executable verifier, required gates and audit cadence. Reuse the explicit human
+    mission-revision gate for changes; never weaken the denominator or acceptance automatically.
+32. Derive quantity from the exact dependency-closed set passing every required gate with current
+    physical proof. `check` must execute the adopted verifier, binding fresh output, context, tool,
+    artifact identities and hashes. Missing units, duplicate aliases, partial/replayed output,
+    unknown gates or mismatched cardinalities cannot qualify. A scalar and a manually edited
+    grade ledger cannot substitute for this evidence. Domain tools supply domain gates.
+33. Promote only at successful `close`, after all selected checks and due periodic reviews. Active,
+    blocked and interrupted cycles add no qualified units. `cycle-boundary` verifies this boundary;
+    it does not close, schedule or wake anything. A host must actually invoke/enforce that command
+    before announcing cycle completion. An external action remains outside the executor's control.
+34. Revalidate before reporting. `measurement-report` is the current read-only authority: changed
+    artifacts/context remove eligibility, and dependency invalidation propagates. Preserve old
+    seals and claims as history. Requalification/restoration of the same physical identity is not
+    a newly discovered unit. Use the current `claim_ceiling`, not a remembered/exported number.
+35. Audit the complete eligible ID set; freeze adversarial selection before reexecution. Require
+    physical healthy and known-bad controls, exact selected IDs, and actual fresh executions.
+    Repeating a plan cannot reroll the pending sample. Failure holds the quantity and requires a
+    full recovery audit. A complete recount is not full semantic reexecution; say which occurred.
+36. Present declared, verified-now, pending and stale separately. Verified + pending + stale
+    partition the approved live denominator; declared overlaps those rows. Keep explicit exclusions
+    visible. A valid measurement with zero eligible units can pass a measurement check without
+    satisfying mission acceptance. Preserve anti-inflation, retractions, coverage and claim ceilings.
+37. State the trust boundary. Hashes establish binding/freshness, not honest semantics or reviewer
+    identity. Adopted verifier, runner, review and input completeness remain trusted dependencies.
+    Sampling and finite witnesses are bounded evidence. No universal anti-lie or anti-tamper claim.

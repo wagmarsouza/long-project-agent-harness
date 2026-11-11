@@ -1,44 +1,15 @@
-# VeriMission Control 8.3
+# VeriMission Control 8.4
 
-Control 8.3 adds a native digest producer and protected cycle-boundary review for general long projects. It preserves the mission contract, claims, retractions, evidence freshness, coverage denominators, claim ceilings, anti-rework gates, graph/PR projections and optional cost accounting. No decompilation tool or other domain repository is required.
-
-Python 3.11+ and PyYAML 6.x are required. The canonical store is `.harness/state.yaml`. Use `migrate-sqlite` once for legacy projects; it preserves the SQLite source. Existing missions must not be reinitialized.
-
-## Commands
-
-```text
-digest [--through-cycle N]
-decade-review [--through-cycle N] [--input REVIEW.json]
-restore-prompt
-close --cycle N --outcome verified|blocked --next TEXT [--review-input REVIEW.json]
-graph --format json|mermaid|dot [--output FILE]
-report-pr --base REF --head REF --format json|markdown [--output FILE]
-adapter-template --agent codex|opencode|claude|hermes
-run-import --agent AGENT --input FILE.json
-cost-summary
-```
-
-All commands follow `python scripts/harness.py --project PROJECT COMMAND`. Output paths are project-relative. Choose a new path for Markdown, Mermaid, and DOT output.
-
-Graphs show declared relationships. PR reports include resolved Git commits, changed files, scope, checks, hashes, claims, retractions, coverage, and pending human review. Changed-file coverage is indeterminate without explicit file-to-criterion mapping.
-
-Adapters use explicit, hashed imports. They do not dispatch agents, select models, approve operations, revise missions, promote claims, or replay unknown outcomes. Read references/v81-projections-and-runs.md and fill the run-import template with source-supported values.
-
-Costs distinguish `actual`, `estimated`, and `unpriced`. Unknown prices and token counters use null. Parent/subagent links expose possible double counting.
-
-Mission changes still require explicit user authorization and personal interactive confirmation. A passing test remains limited by its method, environment, sample, and scope.
-
-The periodic-review policy is optional and belongs to the immutable mission contract. Configure cadence, physical note paths, governing-file invariants, objectives/scenario delimiters and optional general inventory observations. `close` invokes digest production and review at the boundary; until the notes are reread and a valid review is recorded it refuses closure with exit 2. Successful boundaries consolidate automatically. Mission revision still requires the existing explicit user authorization and interactive confirmation.
-
-Only immediate objectives/scenario may change. All other governing text is fingerprinted. Pin closed notes and baseline evidence. Detect conservation errors, unmarked transitions, differences between live/closed states and regressions, distinguishing justified retractions. Report actual denominators and losses without inventing progress. A generated digest never substitutes for physical rereading or semantic review.
-
-Read CORE.md for the full operating rules and references/v82-periodic-review.md for the policy, data formats, commands, recovery and limitations. A standalone text prompt gives procedural guidance; the supplied executor is required for mechanical gates. It does not control tools invoked outside it. No installation, daemon, schedule or live-project migration is implied.
-
-Skill ID: `skill-harness-v8-2`.
+Evolução local de 8.3 para projetos longos em geral: quantidades derivadas de identidades físicas,
+gates executados e fechamento; invalidação ao perder prova; auditoria com conjunto integral e
+seleção congelada. Preserva as funções anteriores e o núcleo anti-inflação, anti-mentira e
+anti-retrabalho. Não oferece detector infalível de mentiras nem interceptação de ferramentas
+externas. Leia references/v84-measurements.md e as limitações da entrega antes de adotar.
+Não instalado nem publicado. Use somente com missão autorizada.
 
 ---
 
-# VeriMission Control 8.3 — core operating rules
+# VeriMission Control 8.4 — core operating rules
 
 The executor governs operations sent through its CLI. It does not intercept every host tool. Higher-priority instructions, the user's current request, and the authorized mission remain authoritative.
 
@@ -156,6 +127,38 @@ before selecting checks; use `regression-report` to inspect current case-level e
   knowledge. No automatic campaign, installation, publishing, scheduler or human confirmation is added.
 - YAML remains canonical. SQLite is a testing-method reference; all prior authority, anti-inflation,
   evidence/claim ceilings, honest-retraction and anti-rework rules remain in force.
+
+
+## Evidence-qualified quantities — native 8.4
+
+31. A headline is never a measurement. When a mission reports completed units, explicitly adopt
+    `measurement_policy`: a fixed universe of unique physical identities, exclusions, dependencies,
+    deliverables, executable verifier, required gates and audit cadence. Reuse the explicit human
+    mission-revision gate for changes; never weaken the denominator or acceptance automatically.
+32. Derive quantity from the exact dependency-closed set passing every required gate with current
+    physical proof. `check` must execute the adopted verifier, binding fresh output, context, tool,
+    artifact identities and hashes. Missing units, duplicate aliases, partial/replayed output,
+    unknown gates or mismatched cardinalities cannot qualify. A scalar and a manually edited
+    grade ledger cannot substitute for this evidence. Domain tools supply domain gates.
+33. Promote only at successful `close`, after all selected checks and due periodic reviews. Active,
+    blocked and interrupted cycles add no qualified units. `cycle-boundary` verifies this boundary;
+    it does not close, schedule or wake anything. A host must actually invoke/enforce that command
+    before announcing cycle completion. An external action remains outside the executor's control.
+34. Revalidate before reporting. `measurement-report` is the current read-only authority: changed
+    artifacts/context remove eligibility, and dependency invalidation propagates. Preserve old
+    seals and claims as history. Requalification/restoration of the same physical identity is not
+    a newly discovered unit. Use the current `claim_ceiling`, not a remembered/exported number.
+35. Audit the complete eligible ID set; freeze adversarial selection before reexecution. Require
+    physical healthy and known-bad controls, exact selected IDs, and actual fresh executions.
+    Repeating a plan cannot reroll the pending sample. Failure holds the quantity and requires a
+    full recovery audit. A complete recount is not full semantic reexecution; say which occurred.
+36. Present declared, verified-now, pending and stale separately. Verified + pending + stale
+    partition the approved live denominator; declared overlaps those rows. Keep explicit exclusions
+    visible. A valid measurement with zero eligible units can pass a measurement check without
+    satisfying mission acceptance. Preserve anti-inflation, retractions, coverage and claim ceilings.
+37. State the trust boundary. Hashes establish binding/freshness, not honest semantics or reviewer
+    identity. Adopted verifier, runner, review and input completeness remain trusted dependencies.
+    Sampling and finite witnesses are bounded evidence. No universal anti-lie or anti-tamper claim.
 
 ---
 
@@ -625,3 +628,106 @@ license; 8.3 therefore does not introduce MIT, Apache, GPL or another license. P
 downloadable ZIP is not a general grant of modification/redistribution rights. References to upstream
 methods are attribution, not a relicensing of third-party works. A permissive/open-source license is
 still a separate owner decision if broad reuse is desired. Technical qualification does not resolve it.
+
+
+# Control 8.4 — quantidades comprovadas, sem especializar o harness
+
+Esta evolução é opcional e local. Preserva o contrato de missão, revisão explícita de missão,
+claims/retratações, projeções, digest e revisão periódica do 8.2, preservação e campanhas do 8.3.
+Sem `measurement_policy`, os fluxos anteriores continuam disponíveis. O store continua YAML:
+`.harness/state.yaml`. JSONs são provas imutáveis/projeções; não são um segundo ledger editável.
+
+## Responsabilidade
+
+O harness governa identidade, conjunto exato, denominador, checks executados, fechamento,
+invalidação, auditoria e teto de alegação para qualquer projeto longo. Não conhece C nem G4.
+O decompile fornece os cinco gates de reconstrução, compila e verifica recibos de execução.
+As barras do decompile consultam o harness vivo. Não é necessária uma terceira skill.
+
+## Adoção explícita
+
+Python 3.11+ e PyYAML 6.x. A pasta do projeto é distinta da pasta distribuída do harness.
+Leia a missão atual com `resume` e `validate`; não rode `init` em uma missão existente.
+Para adotar/alterar a política numa missão existente use a revisão de missão com autorização
+humana explícita, descrita no guia anterior; não edite state.yaml nem reinitialize a missão.
+O template `templates/measurement-policy.example.json` é apenas o objeto a incorporar na missão,
+com hashes/caminhos reais, critérios M/A, budgets e escopo revisados. Não é uma missão pronta.
+
+O universo `verimission-universe-v1` contém `units` com `id`, identidade física estável `identity`,
+`deliverable` relativo e `depends_on`; `excluded` contém IDs e razões explicitamente aprovadas.
+Não aumente o percentual classificando silenciosamente dificuldades como excluídas.
+`protected_files` fixa verificadores/contexto. `input_patterns` deve cobrir fontes, corpus,
+headers, linker scripts e demais entradas relevantes; omissões não são descobertas universalmente.
+`environment` fixa os valores relevantes via hash. `pinned_roles` ancora, no primeiro fechamento,
+papéis de prova cuja troca exige revisão de missão (por exemplo corpus/controle/verificador).
+
+## Comandos (ajuste executável, raiz, arquivos e ID de ciclo)
+
+```powershell
+$h = 'C:/Pacotes/harness_v8.4/scripts/harness.py'
+$p = 'C:/Trabalho/Projeto'
+python -B $h --project $p resume
+python -B $h --project $p validate
+python -B $h --project $p review --help
+python -B $h --project $p start --help
+python -B $h --project $p check --cycle 1 --criterion M
+python -B $h --project $p measurement-audit-plan --cycle 1
+python -B $h --project $p check --cycle 1 --criterion A
+python -B $h --project $p close --help
+python -B $h --project $p measurement-report
+python -B $h --project $p cycle-boundary --cycle 1
+```
+
+Use review/start com plano válido e M selecionado. Na cadência de auditoria selecione M e A
+no plano antes de iniciar; a omissão é recusada. Execute M, congele a seleção, execute A e
+feche com outcome verified apenas depois de todos os checks/revisões exigidos. Para recuperação
+ou auditoria integral use `measurement-audit-plan --cycle N --full`. Sem candidato válido não
+se planeja a amostra. Sem política, `measurement-report` informa não aplicável; não inventa prova.
+Um host/cron que ignora close continua fora da proteção de fechamento: integre cycle-boundary
+como condição de sucesso do próprio host. Nenhum serviço ou agendamento é instalado.
+
+## Contrato do produtor
+
+M e A são argv aprovados executados sem shell pelo check normal, inclusive pela via de operações
+governadas. O motor injeta VERIMISSION_MEASUREMENT_KIND, _RUN_ID, _CONTEXT_SHA256, _REPORT e
+_PREVIOUS (todos com prefixo VERIMISSION_MEASUREMENT); A recebe VERIMISSION_AUDIT_SELECTION.
+O produtor cria a saída nova exclusivamente, nunca sobrescreve prova anterior. Nomes completos
+estão nos scripts e nos exemplos. Respeite orçamento e timeout; complete=false não é sucesso.
+
+O formato M é `verimission-measurement-v1`: format/run_id/context_sha256/universe_sha256,
+complete=true, claimed_verified e units. Cada linha possui exatamente id/identity/gates/artifacts.
+Gates exigidos são pass/fail/unknown e não se compensam. Artifacts associa papel a {path,sha256};
+uma unidade qualificada precisa do deliverable exato do universo. Todas as unidades vivas
+aparecem uma vez, incluindo as pendentes. claimed_verified deve coincidir com a cardinalidade
+do conjunto qualificado fechado por dependências. O motor relê arquivos e não aceita o escalar.
+
+O formato A é `verimission-measurement-audit-v1`: format/run_id/context_sha256/complete/plan_id,
+recount_ids, units e controls. recount_ids é o conjunto integral elegível. units é precisamente
+a seleção congelada, cada uma com id/status/executed/artifacts. controls exige healthy_passed,
+known_bad_rejected e artifacts físicos. Recontagem integral e reexecução amostral são distintas.
+Falha impõe hold e próxima seleção integral. Falha de A ou ausência de prova não vira zero aprovado.
+
+## Leitura e limitações
+
+measurement-report retorna units/status, counts, denominator, source, audit_hold e claim_ceiling.
+`runs_commands:false` significa que a leitura relê/hashifica provas sem executar verificadores
+ou gravar o store. A contagem atual pode cair sem apagar o histórico. O fechamento posterior
+registra nova qualificação e reutiliza a invalidação de claims existente. Não promova por TSV.
+A fonte de uma unidade e seu conjunto de dependências devem ser declarados corretamente.
+
+O motor valida protocolo, identidade e validade física, não a honestidade de um produtor hostil.
+Controle do mesmo usuário sobre código e arquivos não é uma fronteira criptográfica. Um argv
+que somente imprime JSON mentiroso pode mentir; adote verificadores revisados e execução
+independente. Recibos/AST/corpus finito não provam equivalência universal. Reexecução de
+amostra não dá confiança estatística universal. A alegação final permanece limitada à prova.
+
+## Verificação
+
+```powershell
+python -B -m unittest discover -s C:/Pacotes/harness_v8.4/tests -v
+python -B C:/Pacotes/decompile/examples/run_measurement_pilot.py --harness $h
+```
+
+O segundo comando é um piloto sintético descartável. Com `--compiler /usr/bin/gcc` em Linux,
+ele compila/executa processos C reais; ainda não valida firmware, ARM ou hardware.
+Nenhuma instalação, publicação, modificação de missão real ou migração automática é efetuada.

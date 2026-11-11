@@ -1,11 +1,11 @@
 {
-  "version": "8.3",
+  "version": "8.4",
   "canonical_text": "UTF-8 LF",
   "files": [
     {
       "path": "CORE.md",
-      "bytes": 16090,
-      "sha256": "b0dca8993a5777d15ed0476222efd73e767fa83c42c8e25b43d08f2927a74b2f"
+      "bytes": 18865,
+      "sha256": "4064b3be24b0a39f4630aef0d52cb2bfd91ccb54cd33c55987b7f5a952bff571"
     },
     {
       "path": "examples/run_periodic_pilot.py",
@@ -23,9 +23,9 @@
       "sha256": "d9cf879218cbb632980f105cf69bf5157409ccbdc6ef89c1f0c558f946f1cb51"
     },
     {
-      "path": "harness_v8.3.txt",
-      "bytes": 53582,
-      "sha256": "360fa609e46f0309233d3cd1cbdad285cadeb0118897a7264f334bce9cddf235"
+      "path": "harness_v8.4.txt",
+      "bytes": 59993,
+      "sha256": "0f104fa616515de9e08fabfa28be4638c6b6190a8bf0458c07fc26afc2bc0b37"
     },
     {
       "path": "references/harness_v7.7.txt",
@@ -78,6 +78,11 @@
       "sha256": "e17208c89a2b652d31e9066176efa5364000a9e87ceefeaf3366ef184c2ab4dd"
     },
     {
+      "path": "references/v84-measurements.md",
+      "bytes": 6475,
+      "sha256": "6835615bead9466d8865db77db104979f6d87afe7538c1f25286502e2b8aff3f"
+    },
+    {
       "path": "requirements.txt",
       "bytes": 15,
       "sha256": "b4603b9468ade4d639d2c6f73b89d50e1fa5d227c73ab15be0382cca478513e6"
@@ -109,13 +114,18 @@
     },
     {
       "path": "scripts/harness.py",
-      "bytes": 65910,
-      "sha256": "2cce5daf70564e42d241e809006ed36130eabce737d68cc2069ec4cdf32679b8"
+      "bytes": 66961,
+      "sha256": "5b157ebe86cbf0086ce78216f49b19fa72b2c1338edc79d73f22d98df58af901"
     },
     {
       "path": "scripts/history_benchmark.py",
       "bytes": 8716,
       "sha256": "4a7781620302477cd1621a146bcce4d322f0bd757a591481959dce11247f5fda"
+    },
+    {
+      "path": "scripts/measurement_contract.py",
+      "bytes": 7657,
+      "sha256": "72533c70b6ae6522ae5da89969b25c650b1231b8623232b1bc61f35012df74ec"
     },
     {
       "path": "scripts/regression_contract.py",
@@ -156,6 +166,11 @@
       "path": "scripts/v83_regression.py",
       "bytes": 28016,
       "sha256": "773cef15c284c35485304fa3bdcf55368ec4627fed99fbde700d67163b85bab3"
+    },
+    {
+      "path": "scripts/v84_measurements.py",
+      "bytes": 27153,
+      "sha256": "6fa9ebc04045539ce0852ee9f96f0070f03f0358f420ec1b368fb1b9cd173a00"
     },
     {
       "path": "scripts/yaml_store.py",
@@ -206,6 +221,16 @@
       "path": "templates/inventory-policy.example.json",
       "bytes": 267,
       "sha256": "16f32d8b71fb9cebbdc22c91b9bba490db4e3e8f362ed7ff50186a33095025b5"
+    },
+    {
+      "path": "templates/measurement-policy.example.json",
+      "bytes": 598,
+      "sha256": "83fdae70d2da2e9325a1f6da811cc58bfcc85619302c4a2ae533d9f147344c39"
+    },
+    {
+      "path": "templates/measurement-universe.example.json",
+      "bytes": 224,
+      "sha256": "6e397c349f862f145427481aba57aa0f0a54b943bfcad400df11265ce4b4ebe0"
     },
     {
       "path": "templates/mission-periodic.example.json",
@@ -396,6 +421,16 @@
       "path": "tests/test_v83_yaml_backends.py",
       "bytes": 2689,
       "sha256": "991cc04a8116b570483bfcfb954a24df59cbbf46c2aaca96f2a5b54a490f1992"
+    },
+    {
+      "path": "tests/test_v84_measurement_contract.py",
+      "bytes": 5212,
+      "sha256": "de8a62fb96c267ada28be1694e58810803acff7084a7e09b3364a68c3210618e"
+    },
+    {
+      "path": "tests/test_v84_metrics.py",
+      "bytes": 17213,
+      "sha256": "91324c047707a3761573fccc2d028c72de657db15527f41193dd5b00d4f4dc39"
     },
     {
       "path": "tests/test_yaml_store.py",

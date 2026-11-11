@@ -25,6 +25,25 @@ class MeasurementContractTests(unittest.TestCase):
     def parse(self,r,universe=None):
         return self.m.parse_report(r,self.m.universe(universe or inventory()),['source','behavior'],'run','a'*64,'b'*64)
     def test_exact_set_has_two_units(self):self.assertEqual(self.parse(report(self.m))['eligible_ids'],['a','b'])
+    def test_audit_requires_exact_recount_selection_and_real_control_evidence(self):
+        import copy
+        selection={'id':'plan','units':['a']}
+        proof={'path':'audit.json','sha256':'c'*64}
+        valid={'format':'verimission-measurement-audit-v1','run_id':'run','context_sha256':'a'*64,
+            'complete':True,'plan_id':'plan','recount_ids':['a','b'],
+            'units':[{'id':'a','status':'pass','executed':True,'artifacts':{'execution':proof}}],
+            'controls':{'healthy_passed':True,'known_bad_rejected':True,'artifacts':{'control':proof}}}
+        parse=lambda v:self.m.parse_audit(v,selection,['a','b'],'run','a'*64)
+        self.assertTrue(parse(valid)['passed'])
+        for field,value in [('recount_ids',['a']),('units',[]),('plan_id','old')]:
+            bad=copy.deepcopy(valid);bad[field]=value
+            with self.subTest(field=field),self.assertRaises(ValueError):parse(bad)
+        bad=copy.deepcopy(valid);bad['controls']['artifacts']={}
+        with self.assertRaises(ValueError):parse(bad)
+        for target,field in [('controls','known_bad_rejected'),('unit','executed')]:
+            bad=copy.deepcopy(valid)
+            (bad['controls'] if target=='controls' else bad['units'][0])[field]=False
+            with self.subTest(field=field):self.assertFalse(parse(bad)['passed'])
     def test_claimed_headline_cannot_exceed_evidence(self):
         r=report(self.m);r['claimed_verified']=4745
         with self.assertRaises(ValueError):self.parse(r)
