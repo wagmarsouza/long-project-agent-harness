@@ -1,6 +1,6 @@
 # Control 8.4 — quantidades comprovadas, sem especializar o harness
 
-Esta evolução é opcional e local. Preserva o contrato de missão, revisão explícita de missão,
+Esta evolução é opcional. Preserva o contrato de missão, revisão explícita de missão,
 claims/retratações, projeções, digest e revisão periódica do 8.2, preservação e campanhas do 8.3.
 Sem `measurement_policy`, os fluxos anteriores continuam disponíveis. O store continua YAML:
 `.harness/state.yaml`. JSONs são provas imutáveis/projeções; não são um segundo ledger editável.

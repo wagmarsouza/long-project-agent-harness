@@ -5,7 +5,7 @@ gates executados e fechamento; invalidação ao perder prova; auditoria com conj
 seleção congelada. Preserva as funções anteriores e o núcleo anti-inflação, anti-mentira e
 anti-retrabalho. Não oferece detector infalível de mentiras nem interceptação de ferramentas
 externas. Leia references/v84-measurements.md e as limitações da entrega antes de adotar.
-Não instalado nem publicado. Use somente com missão autorizada.
+A publicação não instala nem ativa a ferramenta. Use somente com missão autorizada.
 
 ---
 
@@ -632,7 +632,7 @@ still a separate owner decision if broad reuse is desired. Technical qualificati
 
 # Control 8.4 — quantidades comprovadas, sem especializar o harness
 
-Esta evolução é opcional e local. Preserva o contrato de missão, revisão explícita de missão,
+Esta evolução é opcional. Preserva o contrato de missão, revisão explícita de missão,
 claims/retratações, projeções, digest e revisão periódica do 8.2, preservação e campanhas do 8.3.
 Sem `measurement_policy`, os fluxos anteriores continuam disponíveis. O store continua YAML:
 `.harness/state.yaml`. JSONs são provas imutáveis/projeções; não são um segundo ledger editável.

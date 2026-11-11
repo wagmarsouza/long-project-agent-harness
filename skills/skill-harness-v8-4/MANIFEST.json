@@ -194,8 +194,8 @@
     },
     {
       "path": "references/harness_v8.4.txt",
-      "bytes": 59993,
-      "sha256": "0f104fa616515de9e08fabfa28be4638c6b6190a8bf0458c07fc26afc2bc0b37"
+      "bytes": 60007,
+      "sha256": "c4b8f1c2ff4c82143bc06c794738403148042427827b35179531867211470e1b"
     },
     {
       "path": "references/v79-features.md",
@@ -234,8 +234,8 @@
     },
     {
       "path": "references/v84-measurements.md",
-      "bytes": 6475,
-      "sha256": "6835615bead9466d8865db77db104979f6d87afe7538c1f25286502e2b8aff3f"
+      "bytes": 6467,
+      "sha256": "8bfec131cd2d629e8815bba3496e6dad0169697fab3c80770017a2e26c452017"
     },
     {
       "path": "requirements.txt",

@@ -1,6 +1,9 @@
 # Changelog
 
-## Control 8.4 local preview — 2026-11-11 (not installed or published)
+## Publication v2.4.0-rc.1 / Control 8.4 — 2026-11-11
+
+- Published the qualified generation with standalone harness/skill, usage guides and source-bound receipts.
+- CI now selects 8.4 explicitly; the coordinator retains the original 8.3 default.
 
 - Added optional neutral measurement policy with a fixed physical universe, exact complete
   observations, dependency closure and fresh executable evidence; canonical state remains YAML.
