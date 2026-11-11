@@ -1,0 +1,12 @@
+{
+  "format": "verimission-universe-v1",
+  "units": [
+    {
+      "id": "U1",
+      "identity": "REPLACE_WITH_REAL_STABLE_PHYSICAL_ID",
+      "deliverable": "src/U1.txt",
+      "depends_on": []
+    }
+  ],
+  "excluded": []
+}

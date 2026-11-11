@@ -6,6 +6,9 @@
 
 # VeriMission
 
+**Latest release: [Control 8.4 — Preview 1](docs/release-v2.4.0-rc.1.md).**
+Evidence-qualified counts, native closure, live freshness and frozen audits. Publishing installs nothing.
+
 Evidence-based control for long-running projects with AI agents.
 
 [Brand assets](docs/branding.md) · [Control 8.1 guide](docs/harness-8.1.md) · [Control 8.2 preview](docs/release-v2.2.0-rc.1.md) · [Verification](docs/v8.1-verification.md)
@@ -25,6 +28,13 @@ The harness uses its host's permissions. Installing a skill does not grant permi
 | [Control 8.2 — public preview](docs/harness-8.2.md) | Native digest producer, protected periodic review, source pinning, automatic boundary consolidation | General long projects, without a domain-tool dependency |
 
 Maintained versions use YAML storage. Binary analysis and Renode skills are published separately in [DisasmLedger](https://github.com/wagmarsouza/disasmledger).
+
+## Control 8.4 — Preview 1
+
+Use `skill-harness-v8-4` or the standalone harness. Read [release notes/downloads](docs/release-v2.4.0-rc.1.md)
+and [the policy guide](harnesses/v8.4/references/v84-measurements.md). This optional policy preserves
+the previous core and keeps YAML canonical. Domain tools remain separate; extraction does not
+install a skill and adopting the policy requires an explicit authorized mission/revision.
 
 ## Control 8.3 — Preview 1
 

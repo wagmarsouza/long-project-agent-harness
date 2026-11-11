@@ -14,6 +14,18 @@ spec.loader.exec_module(m)
 
 
 class CIRunnerTests(unittest.TestCase):
+    def test_generation_84_routes_only_to_84_and_retains_legacy_default(self):
+        old=(m.H,m.S,m.GENERATION)
+        try:
+            def inspect_generation():
+                self.assertEqual(m.GENERATION,'8.4')
+                self.assertEqual(m.H,m.ROOT/'harnesses/v8.4')
+                self.assertEqual(m.S,m.ROOT/'skills/skill-harness-v8-4')
+                raise ValueError('Stop before any execution')
+            with tempfile.TemporaryDirectory() as temporary,patch.object(m,'resources',side_effect=inspect_generation):
+                self.assertEqual(m.main(['--generation','8.4','--output',temporary]),2)
+        finally:m.H,m.S,m.GENERATION=old
+        self.assertEqual(m.GENERATION,'8.3')
     def test_packager_uses_explicit_portable_path_order(self):
         spec=importlib.util.spec_from_file_location('ci_packager',m.ROOT/'tasks/package_v83.py')
         packager=importlib.util.module_from_spec(spec);spec.loader.exec_module(packager)

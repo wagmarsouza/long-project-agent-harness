@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "universe": {
+    "path": "analysis/universe.json",
+    "sha256": "REPLACE_WITH_64_HEX_SHA256"
+  },
+  "criterion": "M",
+  "output_pattern": "measurements/{run}.json",
+  "required_gates": [
+    "deliverable",
+    "behavior"
+  ],
+  "protected_files": {
+    "verify.py": "REPLACE_WITH_64_HEX_SHA256"
+  },
+  "input_patterns": [
+    "src/**/*",
+    "tests/**/*"
+  ],
+  "environment": [],
+  "pinned_roles": [
+    "witnesses"
+  ],
+  "acceptance_minimum": 1,
+  "audit": {
+    "criterion": "A",
+    "output_pattern": "audits/{run}.json",
+    "every_cycles": 5,
+    "sample_size": 1
+  }
+}

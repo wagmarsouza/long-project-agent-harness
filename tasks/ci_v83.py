@@ -14,6 +14,7 @@ import uuid
 import yaml
 
 ROOT=Path(__file__).resolve().parents[1]
+GENERATION='8.3'
 H=ROOT/'harnesses/v8.3'
 S=ROOT/'skills/skill-harness-v8-3'
 
@@ -108,17 +109,17 @@ def resources():
         h={p.relative_to(H/directory).as_posix():sha(p) for p in (H/directory).rglob('*') if p.is_file() and '__pycache__' not in p.parts}
         s={p.relative_to(S/directory).as_posix():sha(p) for p in (S/directory).rglob('*') if p.is_file() and '__pycache__' not in p.parts}
         # The skill additionally carries its consolidated text reference.
-        if directory=='references':s.pop('harness_v8.3.txt',None)
+        if directory=='references':s.pop('harness_v'+GENERATION+'.txt',None)
         if h!=s:raise ValueError('Harness/skill resources diverge: '+directory)
     for p in (H/'templates').rglob('*'):
         if p.is_file() and p.read_bytes()!=(S/'assets/templates'/p.relative_to(H/'templates')).read_bytes():
             raise ValueError('Template parity failed')
     text=(S/'SKILL.md').read_text(encoding='utf-8')
     meta=yaml.safe_load(text.split('---',2)[1])
-    if meta.get('name')!='skill-harness-v8-3' or not isinstance(meta.get('description'),str) or not meta['description'].strip():
+    if meta.get('name')!='skill-harness-v'+GENERATION.replace('.','-') or not isinstance(meta.get('description'),str) or not meta['description'].strip():
         raise ValueError('Skill metadata invalid')
     if (H/'CORE.md').read_text(encoding='utf-8') not in text:raise ValueError('Complete core missing from skill')
-    pipeline=[ROOT/'tasks/ci_v83.py',ROOT/'tasks/package_v83.py',ROOT/'requirements-ci.txt',ROOT/'.github/workflows/ci.yml']
+    pipeline=[ROOT/'tasks/ci_v83.py',ROOT/('tasks/package_v'+GENERATION.replace('.','')+'.py'),ROOT/'requirements-ci.txt',ROOT/'.github/workflows/ci.yml']
     pipeline+=sorted((ROOT/'tasks/tests').rglob('*.py'))
     if not pipeline[4:]:raise ValueError('CI self-tests missing')
     for path in pipeline:
@@ -129,12 +130,17 @@ def resources():
 
 
 def main(argv=None):
+    global H,S,GENERATION
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--resume',action='store_true')
     parser.add_argument('--timeout',type=int,default=1800)
+    parser.add_argument('--generation',choices=['8.3','8.4'],default='8.3',help='Explicit generation; legacy default remains 8.3')
     args=parser.parse_args(argv)
     try:
+        GENERATION=args.generation
+        H=ROOT/('harnesses/v'+GENERATION)
+        S=ROOT/('skills/skill-harness-v'+GENERATION.replace('.','-'))
         if not 30<=args.timeout<=3600:raise ValueError('Timeout must be 30..3600 seconds per step')
         out=args.output.resolve()
         if any(out.is_relative_to(p.resolve()) for p in (H,S,ROOT/'.git')):raise ValueError('Choose a separate derived-output directory')
@@ -144,8 +150,8 @@ def main(argv=None):
             'pyyaml':yaml.__version__,'source_sha256':source,'publication':False})
         rows=[]
         for name,start,runner,minimum in [
-            ('unit-harness','harnesses/v8.3/tests',H/'scripts/result_runner.py',259),
-            ('unit-skill','skills/skill-harness-v8-3/tests',S/'scripts/result_runner.py',259),
+            ('unit-harness',(H/'tests').relative_to(ROOT).as_posix(),H/'scripts/result_runner.py',292 if GENERATION=='8.4' else 259),
+            ('unit-skill',(S/'tests').relative_to(ROOT).as_posix(),S/'scripts/result_runner.py',292 if GENERATION=='8.4' else 259),
             ('unit-ci','tasks/tests',H/'scripts/result_runner.py',10)]:
             case={'path':str(out/(name+'.cases.json')),'run_id':name+'-'+source[:20],
                   'context_sha256':source,'minimum':minimum}
@@ -156,7 +162,7 @@ def main(argv=None):
                                '--output',str(out/'assurance.json')]),
                   ('generic-pilot',[sys.executable,'-B',str(H/'examples/run_regression_pilot.py')]),
                   ('periodic-pilot',[sys.executable,'-B',str(H/'examples/run_periodic_pilot.py')]),
-                  ('package',[sys.executable,'-B',str(ROOT/'tasks/package_v83.py'),'--output',str(out/'packages')])]
+                  ('package',[sys.executable,'-B',str(ROOT/('tasks/package_v'+GENERATION.replace('.','')+'.py')),'--output',str(out/'packages')])]
         for name,command in commands:
             outputs={'assurance':[str(out/'assurance.json')],'package':[str(out/'packages')]}.get(name)
             rows.append(execute(name,command,ROOT,out,source,args.timeout,args.resume,outputs=outputs))

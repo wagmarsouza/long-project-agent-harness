@@ -1,0 +1,8 @@
+{
+  "task": "same task identifier",
+  "premise": "same premise used in no-progress cycles",
+  "reference_review": "what was reread and what it answers",
+  "data_model_review": "existing configuration, data, and logic examined",
+  "simpler_alternative": "concrete alternative not yet tested",
+  "next_test": "test and result that would confirm or refute the alternative"
+}
