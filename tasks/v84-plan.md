@@ -38,21 +38,25 @@ declared. Lexical `if`/`goto`/register-name rules are only triage, never complet
 
 ## Ordered slices / tests
 
-- [ ] V1: neutral contract and unit evidence tests (missing/duplicate/excluded/wrong count, stale,
+- [x] V1: neutral contract and unit evidence tests (missing/duplicate/excluded/wrong count, stale,
   malformed or replayed reports, missing gates and deliverable bindings).
-- [ ] V2: native hook/start/check/close/report/acceptance integration; no policy means unchanged
+- [x] V2: native hook/start/check/close/report/acceptance integration; no policy means unchanged
   8.3 behavior; active/interrupted cycles never count; governed operation path shares the gate.
-- [ ] V3: frozen audit selection, exact recount, negative controls, failure hold/full recovery,
+- [x] V3: frozen audit selection, exact recount, negative controls, failure hold/full recovery,
   cadence and boundary; missing reviews/outputs/timeouts cannot promote.
-- [ ] D1: Decompile finite verifier/evidence protocol; wrong or old loaded image, stock reentry,
+- [x] D1: Decompile finite verifier/evidence protocol; wrong or old loaded image, stock reentry,
   indirect unknowns, weak controls, fabricated grades and source drift refused. Valid straight-line
   source remains admissible; no universal syntax or readability oracle is claimed.
-- [ ] D2: adapter and live census bars; declared/verified/pending/stale remain distinct; G4-stock
+- [x] D2: adapter and live census bars; declared/verified/pending/stale remain distinct; G4-stock
   and G4-recon stay separate and old CLI/data contracts remain intact.
-- [ ] P1: generic and real-compiler synthetic pilots where tools exist; full harness/skill,
+- [x] P1: generic and real-compiler synthetic pilots where tools exist; full harness/skill,
   Decompile and sibling regression suites; targeted guard-inversion experiments.
-- [ ] P2: current core/reference instructions, usage/templates, validator, manifests, ZIP CRC/SHA,
+- [x] P2: current core/reference instructions, usage/templates, validator, manifests, ZIP CRC/SHA,
   extracted-resource parity and relocation smoke checks; report actual counts/platform limits.
 
 Existing v8.2/v8.3 generations and actual project data are not modified. Missing compiler/emulator
 capabilities stay explicit; synthetic protocol tests are not real firmware validation.
+
+Qualification completed locally on Windows and Linux/WSL. See the dated delivery report for
+actual counts, source hashes, targeted guard inversions, extracted parity and remaining trust limits.
+No real firmware/macOS validation, installation, publishing or live mission revision performed.
