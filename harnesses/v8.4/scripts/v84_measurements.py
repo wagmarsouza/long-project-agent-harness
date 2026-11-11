@@ -3,6 +3,7 @@ import copy
 from datetime import datetime, timezone
 import hashlib
 import importlib.util
+import json
 import os
 from pathlib import Path
 import random
@@ -35,7 +36,7 @@ def extend(Base,require,digest,now,file_digest,nonempty,Refusal):
             try:
                 fields={'schema','universe','criterion','output_pattern','required_gates','protected_files',
                         'input_patterns','acceptance_minimum','audit'}
-                c.need(isinstance(p,dict) and fields<=set(p)<=fields|{'environment'},'Use the measurement policy template')
+                c.need(isinstance(p,dict) and fields<=set(p)<=fields|{'environment','pinned_roles'},'Use the measurement policy template')
                 c.need(type(p['schema']) is int and p['schema']==1,'Unsupported measurement policy')
                 c.reference(p['universe']);r=self._measurement_registry(p)
                 ids={row['id'] for row in value['criteria']};a=p['audit']
@@ -57,6 +58,9 @@ def extend(Base,require,digest,now,file_digest,nonempty,Refusal):
                 c.need(isinstance(p['input_patterns'],list) and p['input_patterns'] and len(set(p['input_patterns']))==len(p['input_patterns']),'Unique input patterns required')
                 for pattern in p['input_patterns']:c.relative(pattern,pattern=True)
                 c.need(isinstance(p.get('environment',[]),list) and all(c.text(k) and k.replace('_','a').isalnum() for k in p.get('environment',[])),'Declare relevant environment names')
+                roles=p.get('pinned_roles',[])
+                c.need(isinstance(roles,list) and all(c.text(r) for r in roles) and len(set(roles))==len(roles),
+                       'Pinned evidence roles must be unique names')
             except (ValueError,OSError,KeyError,TypeError) as e:raise Refusal('MEASUREMENT_POLICY',str(e)) from None
             return value
 
@@ -66,7 +70,8 @@ def extend(Base,require,digest,now,file_digest,nonempty,Refusal):
             if old:state.setdefault('measurement_history',[]).append(old)
             if state['mission'].get('measurement_policy'):
                 state['measurement_guard']={'mission_hash':state['mission_hash'],'anchor':len(state['cycles']),
-                                            'hold':False,'plans':[]}
+                                            'hold':False,'plans':[],'role_baselines':{},
+                                            'seen_identities':old.get('seen_identities',[]) if old else []}
 
         def _measurement_guard(self,state):
             require(digest(state['mission'])==state['mission_hash'],'MISSION_CHANGED','Mission changed outside revision')
@@ -159,14 +164,24 @@ def extend(Base,require,digest,now,file_digest,nonempty,Refusal):
             env={'VERIMISSION_MEASUREMENT_KIND':kind,'VERIMISSION_MEASUREMENT_RUN_ID':run,
                  'VERIMISSION_MEASUREMENT_CONTEXT_SHA256':meta['context_sha256'],
                  'VERIMISSION_MEASUREMENT_REPORT':str(path)}
+            previous=None
+            for prior in reversed(state['cycles']):
+                if prior['status']=='verified' and prior['mission_hash']==state['mission_hash']:
+                    records=[r for r in prior['checks'] if r['criterion']==p['criterion']]
+                    if records:
+                        try:self._measurement_read(state,records[-1]);previous=records[-1]['measurement']['report']
+                        except (Refusal,OSError,ValueError,KeyError):pass
+                        break
             if kind=='audit':
-                _,parsed=self._measurement_candidate(state,cycle)
+                candidate,parsed=self._measurement_candidate(state,cycle)
+                previous=candidate['measurement']['report']
                 candidates=[x for x in self._measurement_guard(state)['plans'] if x['cycle']==cycle['id'] and x['status']=='pending']
                 require(len(candidates)==1,'MEASUREMENT_AUDIT_PLAN','Freeze one current audit selection before execution')
                 plan=candidates[0];self._measurement_bind(plan['selection'])
                 require(plan['fingerprint']==self._measurement_fingerprint(state,cycle,parsed),
                         'MEASUREMENT_AUDIT_STALE','Audit candidate changed after sample selection')
                 meta['plan_id']=plan['id'];env['VERIMISSION_AUDIT_SELECTION']=str(self.project_file(plan['selection']['path']))
+            env['VERIMISSION_MEASUREMENT_PREVIOUS']=json.dumps(previous)
             if prepared is None:prepared={'argv':[exe,*criterion['argv'][1:]],'env':dict(os.environ)}
             prepared['measurement']=meta;prepared['env'].update(env)
             return prepared
@@ -191,6 +206,11 @@ def extend(Base,require,digest,now,file_digest,nonempty,Refusal):
                         if row['id'] in parsed['eligible_ids']:
                             ref=row['artifacts']['deliverable']
                             require(meta['inputs'].get(ref['path'])==ref['sha256'],'MEASUREMENT_INPUT','Deliverable must be in pre-execution input set')
+                            anchored=self._measurement_guard(state)['role_baselines'].get(row['id'],{})
+                            for role in p.get('pinned_roles',[]):
+                                require(role in row['artifacts'],'MEASUREMENT_ORACLE','Qualified unit lacks a pinned oracle role')
+                                require(role not in anchored or row['artifacts'][role]==anchored[role],
+                                        'MEASUREMENT_ORACLE','Accepted oracle changed; explicit mission revision is required')
                     e.update(verified_count=len(parsed['eligible_ids']),eligible_sha256=c.sha(parsed['eligible_ids']),
                              inputs_sha256=c.sha(meta['inputs']),passed=record['passed'])
                 else:
@@ -268,6 +288,16 @@ def extend(Base,require,digest,now,file_digest,nonempty,Refusal):
             super().regression_closed(state,cycle)
             if state['mission'].get('measurement_policy') and cycle['status']=='verified':
                 guard=self._measurement_guard(state)
+                _,parsed=self._measurement_candidate(state,cycle)
+                seen=set(guard['seen_identities']);registry=parsed['registry']['units']
+                new_units=sorted(u for u in parsed['eligible_ids'] if registry[u]['identity'] not in seen)
+                cycle['measurement_progress']={'new_unit_ids':new_units,'revalidation_is_new_work':False}
+                if new_units:cycle['progress']=True
+                guard['seen_identities']=sorted(seen|{registry[u]['identity'] for u in parsed['eligible_ids']})
+                for uid in parsed['eligible_ids']:
+                    guard['role_baselines'].setdefault(uid,{})
+                    for role in state['mission']['measurement_policy'].get('pinned_roles',[]):
+                        guard['role_baselines'][uid][role]=copy.deepcopy(parsed['units'][uid]['artifacts'][role])
                 if any(x['cycle']==cycle['id'] and x['status']=='passed' and x['full'] for x in guard['plans']):guard['hold']=False
 
         def _measurement_view(self,state):

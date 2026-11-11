@@ -29,6 +29,7 @@ with Path(os.environ['VERIMISSION_MEASUREMENT_REPORT']).open('x') as f:json.dump
 '''
 
 class Fixture:
+    def __init__(self,pinned_roles=None):self.pinned_roles=pinned_roles
     def __enter__(self):
         self.tmp=tempfile.TemporaryDirectory(prefix='measurement-test-');self.root=Path(self.tmp.name)
         (self.root/'src').mkdir()
@@ -41,6 +42,7 @@ class Fixture:
             'protected_files':{'verifier.py':self.sha('verifier.py')},
             'input_patterns':['src/*.c','candidate.json'], 'acceptance_minimum':2,
             'audit':{'criterion':'A','output_pattern':'audit/{run}.json','every_cycles':5,'sample_size':1}}
+        if self.pinned_roles is not None:self.policy['pinned_roles']=self.pinned_roles
         self.mission={'objective':'Synthetic generic quantity qualification','mode':'light','in_scope':['units'],
             'out_of_scope':['semantic truth'],'criteria':[{'id':cid,'description':cid,
                 'argv':[sys.executable,'verifier.py'],'artifacts':['verifier.py']} for cid in ('M','A')],
@@ -75,6 +77,32 @@ class Fixture:
     def close(self,cid):return self.h.close(cid,'verified','Continue only with qualified counts')
 
 class NativeMetricTests(unittest.TestCase):
+    def test_newly_qualified_units_are_progress_but_revalidation_is_not_new_work(self):
+        with Fixture() as f:
+            f.value['units'][1]['gates']['behavior']='unknown';f.value['claimed_verified']=1
+            f.write('candidate.json',f.value)
+            cid=f.start();f.h.check(cid,'M');f.close(cid)
+            f.candidate();cid=f.start();f.h.check(cid,'M');f.close(cid)
+            with f.h.state() as state:
+                self.assertTrue(state['cycles'][-1]['progress'])
+                self.assertEqual(state['cycles'][-1]['measurement_progress']['new_unit_ids'],['b'])
+            cid=f.start();f.h.check(cid,'M');f.close(cid)
+            with f.h.state() as state:
+                self.assertFalse(state['cycles'][-1]['progress'])
+                self.assertEqual(state['cycles'][-1]['measurement_progress']['new_unit_ids'],[])
+
+    def test_pinned_oracle_role_cannot_be_changed_to_make_a_candidate_pass(self):
+        with Fixture(pinned_roles=['oracle']) as f:
+            (f.root/'oracle.txt').write_text('expected behavior')
+            for row in f.value['units']:row['artifacts']['oracle']={'path':'oracle.txt','sha256':f.sha('oracle.txt')}
+            f.write('candidate.json',f.value)
+            cid=f.start();self.assertTrue(f.h.check(cid,'M')['passed']);f.close(cid)
+            (f.root/'oracle.txt').write_text('weaker expected behavior')
+            for row in f.value['units']:row['artifacts']['oracle']['sha256']=f.sha('oracle.txt')
+            f.write('candidate.json',f.value)
+            cid=f.start();self.assertFalse(f.h.check(cid,'M')['passed'])
+            self.assertEqual(f.h.measurement_report()['counts']['verified'],0)
+
     def test_checked_active_units_do_not_count_until_close(self):
         with Fixture() as f:
             cid=f.start();self.assertTrue(f.h.check(cid,'M')['passed'])
@@ -91,6 +119,7 @@ class NativeMetricTests(unittest.TestCase):
             view=f.h.measurement_report()
             self.assertEqual(view['counts']['verified'],0);self.assertEqual(view['counts']['stale'],2)
             self.assertEqual(f.h.db.read_bytes(),before)
+            self.assertFalse(f.h.validate()['passed'])
     def test_report_edit_or_deletion_cannot_keep_a_verified_count(self):
         for remove in (False,True):
             with self.subTest(remove=remove),Fixture() as f:
