@@ -1,0 +1,37 @@
+VERIMISSION CONTINUITY 7.9 — OPERATOR REFERENCE
+
+V7.9 includes the full VeriMission Core 7.8 contract and adds explicit evidence scope, resumption capsules, and structured mission preparation. Read the V7.8 reference for lifecycle, claims, retractions, mission revision, stagnation, and completion rules. Read `v79-features.md` before the first use of the new commands.
+
+ADDITIONAL COMMANDS
+
+```text
+evidence-scope evidence-scopes prepare-mission capsule capsule-status
+```
+
+EVIDENCE SCOPE
+
+Bind every important declaration to a real recorded check. State what it verifies, what it does not verify, its limitations, and coverage over a defined universe. The executor checks references and arithmetic, not semantic truth. A scope statement cannot replace a test, artifact, or bounded conclusion.
+
+CAPSULES
+
+Generate a capsule when a compact hand-off or resumption view is useful. Check it with `capsule-status` before relying on it. Capsules are derived, may omit items, and can become stale. They cannot be imported as canonical state, authorisation, or permanent memory. YAML and the original evidence prevail.
+
+MISSION PREPARATION
+
+Use `prepare-mission` to create a reviewable draft without side effects. The output is not approval, initialisation, execution, or mission revision. Do not invent dependencies or a technical approach to make the draft appear complete. Transfer only human-approved content into the mission template.
+
+PERSISTENCE AND MIGRATION
+
+`.harness/state.yaml` remains the only live source. `migrate-sqlite` is explicit and one-way from the perspective of later work: it preserves the validated legacy SQLite file, creates YAML atomically, and refuses existing YAML. New revisions are stored only in YAML.
+
+NON-NEGOTIABLE CONTROLS
+
+- Recover and validate before repeating work.
+- Keep mission revision explicit, interactive, and user-initiated or user-approved.
+- Preserve failed and contradictory evidence.
+- Bound claims to method and conditions.
+- Report coverage with a denominator and explicit exclusions.
+- Do not treat activity as progress or derived views as authority.
+- Reconcile unknown outcomes before any replay.
+
+V7.9 does not include V8.0 task coordination or governed operations, and it does not include V8.1 graph projections or run imports.

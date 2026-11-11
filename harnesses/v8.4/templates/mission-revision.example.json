@@ -1,0 +1,23 @@
+{
+  "expected_mission_hash": "COPY mission_hash returned by resume",
+  "expected_revision": 0,
+  "reason": "DESCRIBE the change requested or explicitly authorised by the user",
+  "authorization": {
+    "source": "user",
+    "reference": "REFERENCE the real user request or approval; never invent authorisation"
+  },
+  "mission": {
+    "objective": "ENTER the new authorised objective",
+    "mode": "light",
+    "in_scope": ["ENTER the authorised scope"],
+    "out_of_scope": ["ENTER the exclusions"],
+    "criteria": [
+      {
+        "id": "C1",
+        "description": "ENTER the new observable acceptance criterion",
+        "argv": ["REAL_PYTHON_PATH", "tests/acceptance.py"],
+        "artifacts": ["src/result.py", "tests/acceptance.py"]
+      }
+    ]
+  }
+}

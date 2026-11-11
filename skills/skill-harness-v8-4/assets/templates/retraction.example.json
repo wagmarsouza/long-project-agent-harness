@@ -1,0 +1,6 @@
+{
+  "id": "identifier of the previous claim",
+  "what_falls": "exact text of the previous claim",
+  "reason": "explicit correction and its reason",
+  "correction_evidence": "evidence/correction.txt"
+}

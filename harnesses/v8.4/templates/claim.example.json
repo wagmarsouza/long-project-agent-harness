@@ -1,0 +1,9 @@
+{
+  "id": "unique-identifier",
+  "topic": "same topic used during review",
+  "statement": "specific claim bounded by the available evidence",
+  "kind": "fact",
+  "cycle": 1,
+  "criterion": "C1",
+  "depends_on": []
+}

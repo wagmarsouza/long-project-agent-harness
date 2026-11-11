@@ -1,0 +1,41 @@
+{
+  "objective": "REPLACE with the new project objective",
+  "mode": "light",
+  "in_scope": [
+    "REPLACE with what may be changed"
+  ],
+  "out_of_scope": [
+    "REPLACE with the exclusions"
+  ],
+  "criteria": [
+    {
+      "id": "C1",
+      "description": "REPLACE with an observable success condition",
+      "argv": [
+        "<PYTHON_EXE>",
+        "tests/acceptance.py"
+      ],
+      "artifacts": [
+        "src/result.py",
+        "tests/acceptance.py"
+      ]
+    }
+  ],
+  "budget": {
+    "max_cycles": 20,
+    "max_cycle_seconds": 1800,
+    "max_check_seconds": 120,
+    "max_no_progress": 3,
+    "max_same_failures": 2,
+    "consolidate_every": 10
+  },
+  "requirements": [
+    {
+      "id": "R1",
+      "description": "ENTER an approved observable requirement",
+      "criteria": [
+        "C1"
+      ]
+    }
+  ]
+}

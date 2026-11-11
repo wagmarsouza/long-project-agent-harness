@@ -1,0 +1,56 @@
+{
+  "objective": "REPLACE with the new project objective",
+  "mode": "light",
+  "in_scope": [
+    "REPLACE with what may be changed"
+  ],
+  "out_of_scope": [
+    "REPLACE with the exclusions"
+  ],
+  "criteria": [
+    {
+      "id": "C1",
+      "description": "REPLACE with an observable success condition",
+      "argv": [
+        "<PYTHON_EXE>",
+        "tests/acceptance.py"
+      ],
+      "artifacts": [
+        "src/result.py",
+        "tests/acceptance.py"
+      ]
+    }
+  ],
+  "budget": {
+    "max_cycles": 20,
+    "max_cycle_seconds": 1800,
+    "max_check_seconds": 120,
+    "max_no_progress": 3,
+    "max_same_failures": 2,
+    "consolidate_every": 10
+  },
+  "periodic_review": {
+    "every": 10,
+    "anchor": 0,
+    "notes_pattern": "notes/cycle-{cycle:04d}.md",
+    "digest_pattern": "reports/digest-{start:04d}-{end:04d}.json",
+    "governing_file": "GOVERNING.md",
+    "invariant_markers": [
+      "EVIDENCE_FIRST",
+      "NO_IMPLICIT_AUTHORITY"
+    ],
+    "stale_markers": [
+      "REPLACE_WITH_A_PROJECT_SPECIFIC_STALE_REFERENCE"
+    ],
+    "mutable_sections": {
+      "objectives": {
+        "begin": "<!-- objectives -->",
+        "end": "<!-- /objectives -->"
+      },
+      "scenario": {
+        "begin": "<!-- scenario -->",
+        "end": "<!-- /scenario -->"
+      }
+    }
+  }
+}

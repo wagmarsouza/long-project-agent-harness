@@ -1,0 +1,10 @@
+{
+  "id": "T1",
+  "title": "ENTER the task within the active mission",
+  "criteria": [
+    "C1"
+  ],
+  "depends_on": [],
+  "relies_on": [],
+  "priority": 1
+}

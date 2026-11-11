@@ -1,0 +1,26 @@
+{
+  "format": "verimission-baseline-v1",
+  "reference": {
+    "kind": "specification",
+    "id": "REPLACE_WITH_APPROVED_SPECIFICATION"
+  },
+  "protected_files": {
+    "tests/test_existing.py": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "context_files": {},
+  "obligations": [
+    {
+      "id": "CAP-EXISTING",
+      "criterion": "REG",
+      "case": "test_existing.C.test_retained",
+      "critical": true,
+      "sources": [
+        "src/result.py"
+      ],
+      "comparator": {
+        "kind": "status"
+      }
+    }
+  ],
+  "debt": []
+}

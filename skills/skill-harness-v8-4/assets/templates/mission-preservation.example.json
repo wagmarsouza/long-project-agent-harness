@@ -1,0 +1,47 @@
+{
+  "objective": "REPLACE with the authorized objective",
+  "mode": "light",
+  "in_scope": [
+    "REPLACE with approved scope"
+  ],
+  "out_of_scope": [
+    "REPLACE with exclusions"
+  ],
+  "criteria": [
+    {
+      "id": "REG",
+      "description": "Retain the accepted capabilities",
+      "argv": [
+        "<PYTHON_EXE>",
+        "<ABSOLUTE_RESULT_RUNNER>",
+        "unittest",
+        "--start",
+        "tests"
+      ],
+      "artifacts": [
+        "src/result.py",
+        "tests/test_existing.py"
+      ]
+    }
+  ],
+  "regression_policy": {
+    "schema": 1,
+    "baseline": {
+      "path": "analysis/preservation-v1.json",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "input_patterns": [
+      "src/*.py",
+      "tests/*.py"
+    ],
+    "criteria": {
+      "REG": {
+        "output_pattern": "reports/preservation-{run}.json"
+      }
+    },
+    "mode": "full",
+    "graph": {},
+    "graph_complete": false,
+    "environment": []
+  }
+}
