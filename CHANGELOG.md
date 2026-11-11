@@ -1,5 +1,17 @@
 # Changelog
 
+## Control 8.4 local preview — 2026-11-11 (not installed or published)
+
+- Added optional neutral measurement policy with a fixed physical universe, exact complete
+  observations, dependency closure and fresh executable evidence; canonical state remains YAML.
+- Seal quantities only after verified close and due native reviews; invalidate current eligibility
+  on evidence drift and retain history. Requalification is not discovery of the same unit again.
+- Added frozen adversarial audit selection, full eligible-ID recount, physical controls,
+  failure hold/full recovery, read-only claim ceiling and explicit host cycle-boundary check.
+- Composed the existing 8.3 preservation and governed-operation paths; no domain tool is required.
+- Added finite inflation regression fixtures and current core/usage instructions. No automatic
+  migration, schedule, installation, publication or general semantic-authentication claim.
+
 ## Publication v2.3.0-rc.1 / Control 8.3 — 2026-11-10
 
 - Added portable source/output-bound qualification receipts and a locally prepared six-cell CI

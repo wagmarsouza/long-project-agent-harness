@@ -6,6 +6,9 @@
 
 # VeriMission
 
+Local development: [Control 8.4 evidence-qualified quantities](docs/control-8.4-local-preview.md).
+This new generation is packaged separately and is not installed or published by these sources.
+
 Evidence-based control for long-running projects with AI agents.
 
 [Brand assets](docs/branding.md) · [Control 8.1 guide](docs/harness-8.1.md) · [Control 8.2 preview](docs/release-v2.2.0-rc.1.md) · [Verification](docs/v8.1-verification.md)
