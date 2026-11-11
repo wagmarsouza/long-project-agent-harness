@@ -137,7 +137,7 @@ def extend(Base,require,digest,now,file_digest,nonempty,Refusal):
 
         def _measurement_due(self,state,cycle_id):
             p=state['mission']['measurement_policy'];g=self._measurement_guard(state)
-            closed={x['id'] for x in state['cycles'] if x['status']=='verified' and x['mission_hash']==state['mission_hash']}
+            closed={x['id'] for x in state['cycles'] if (x['status']=='verified' or x.get('measurement_seal')) and x['mission_hash']==state['mission_hash']}
             anchor=max([g['anchor']]+[x['cycle'] for x in g['plans'] if x['status']=='passed' and x['cycle'] in closed])
             return g['hold'] or cycle_id-anchor>=p['audit']['every_cycles']
 
@@ -226,6 +226,9 @@ def extend(Base,require,digest,now,file_digest,nonempty,Refusal):
                 plan=next(x for x in guard['plans'] if x['id']==meta['plan_id'])
                 plan.update(status='passed' if record['passed'] else 'failed',check_id=record['id'])
                 if not record['passed']:guard['hold']=True
+            else:
+                # Reuse the existing retirement/claim-dependency machinery; do not create another ledger.
+                self._reg_invalidate(state,cycle,record)
             self.event(state,'measurement-check',record['id'],{'kind':meta['kind'],'passed':record['passed']})
 
         def _measurement_fingerprint(self,state,cycle,parsed):
@@ -289,6 +292,8 @@ def extend(Base,require,digest,now,file_digest,nonempty,Refusal):
             if state['mission'].get('measurement_policy') and cycle['status']=='verified':
                 guard=self._measurement_guard(state)
                 _,parsed=self._measurement_candidate(state,cycle)
+                cycle['measurement_seal']={'check_id':next(r['id'] for r in reversed(cycle['checks']) if
+                    r['criterion']==state['mission']['measurement_policy']['criterion'])}
                 seen=set(guard['seen_identities']);registry=parsed['registry']['units']
                 new_units=sorted(u for u in parsed['eligible_ids'] if registry[u]['identity'] not in seen)
                 cycle['measurement_progress']={'new_unit_ids':new_units,'revalidation_is_new_work':False}
@@ -306,10 +311,10 @@ def extend(Base,require,digest,now,file_digest,nonempty,Refusal):
             guard=self._measurement_guard(state);registry=self._measurement_registry(p)
             latest=None
             for cycle in reversed(state['cycles']):
-                if cycle['status']=='verified' and cycle['mission_hash']==state['mission_hash']:
+                if (cycle['status']=='verified' or cycle.get('measurement_seal')) and cycle['mission_hash']==state['mission_hash']:
                     records=[r for r in cycle['checks'] if r['criterion']==p['criterion']]
                     if records:latest=(cycle,records[-1]);break
-            eligible=set();declared=set();stale=set();error=None
+            eligible=set();declared=set();stale=set();error=None;parsed=None
             if latest:
                 cycle,record=latest
                 try:
@@ -321,7 +326,8 @@ def extend(Base,require,digest,now,file_digest,nonempty,Refusal):
             for uid,original in sorted(registry['units'].items()):
                 status='excluded' if uid in registry['excluded'] else 'verified' if uid in eligible else 'stale' if uid in stale else 'pending'
                 states.append({'id':uid,'identity':original['identity'],'deliverable':original['deliverable'],'status':status,
-                               'reason':registry['excluded'].get(uid)})
+                               'depends_on':original['depends_on'],'reason':registry['excluded'].get(uid),
+                               'artifacts':parsed['units'][uid]['artifacts'] if parsed and uid in parsed['units'] else {}})
             counts={label:sum(u['status']==label for u in states) for label in ('verified','pending','stale','excluded')}
             active=[x for x in state['cycles'] if x['status']=='active']
             value={'format':'verimission-measurement-view-v1','applicable':True,'units':states,'counts':counts,

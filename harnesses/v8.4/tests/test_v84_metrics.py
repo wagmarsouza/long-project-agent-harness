@@ -1,5 +1,6 @@
 """Native metric gate, sealing, staleness and adversarial audit integration."""
 import copy
+import io
 import importlib.util
 import json
 import os
@@ -29,7 +30,7 @@ with Path(os.environ['VERIMISSION_MEASUREMENT_REPORT']).open('x') as f:json.dump
 '''
 
 class Fixture:
-    def __init__(self,pinned_roles=None):self.pinned_roles=pinned_roles
+    def __init__(self,pinned_roles=None,preservation=False):self.pinned_roles=pinned_roles;self.preservation=preservation
     def __enter__(self):
         self.tmp=tempfile.TemporaryDirectory(prefix='measurement-test-');self.root=Path(self.tmp.name)
         (self.root/'src').mkdir()
@@ -48,6 +49,19 @@ class Fixture:
                 'argv':[sys.executable,'verifier.py'],'artifacts':['verifier.py']} for cid in ('M','A')],
             'measurement_policy':self.policy,
             'budget':{'max_cycles':30,'max_no_progress':30,'max_same_failures':30,'consolidate_every':30}}
+        if self.preservation:
+            (self.root/'preservation.py').write_text("import json,os\nfrom pathlib import Path\n"+
+                "p={'format':'verimission-results-v1','run_id':os.environ['VERIMISSION_RUN_ID'],'context_sha256':os.environ['VERIMISSION_CONTEXT_SHA256'],'complete':True,'cases':[{'id':'keep','status':'pass','observed':1}]}\n"+
+                "with Path(os.environ['VERIMISSION_REPORT']).open('x') as f:json.dump(p,f)\n")
+            self.write('baseline.json',{'format':'verimission-baseline-v1','reference':{'kind':'specification','id':'legacy-capability'},
+                'protected_files':{'preservation.py':self.sha('preservation.py')},'context_files':{},'debt':[],
+                'obligations':[{'id':'KEEP','criterion':'R','case':'keep','critical':True,'sources':['preservation.py'],
+                                'comparator':{'kind':'exact','expected':1}}]})
+            self.mission['criteria'].append({'id':'R','description':'Retain 8.3 capability','argv':[sys.executable,'preservation.py'],
+                                            'artifacts':['preservation.py']})
+            self.mission['regression_policy']={'schema':1,'baseline':{'path':'baseline.json','sha256':self.sha('baseline.json')},
+                'input_patterns':['preservation.py'],'criteria':{'R':{'output_pattern':'legacy-results/{run}.json'}},
+                'mode':'full','graph':{},'graph_complete':False,'environment':[]}
         self.h=engine.Harness(self.root)
         self.candidate();self.audit_candidate()
         self.h.init(self.mission)
@@ -77,6 +91,50 @@ class Fixture:
     def close(self,cid):return self.h.close(cid,'verified','Continue only with qualified counts')
 
 class NativeMetricTests(unittest.TestCase):
+    def test_old_preservation_policy_and_new_metric_both_remain_mandatory(self):
+        with Fixture(preservation=True) as f:
+            with self.assertRaises(engine.Refusal):f.start(['M'])
+            cid=f.start(['M','R'])
+            self.assertTrue(f.h.check(cid,'M')['passed']);self.assertTrue(f.h.check(cid,'R')['passed'])
+            f.close(cid);self.assertEqual(f.h.measurement_report()['counts']['verified'],2)
+            self.assertTrue(f.h.regression_report(cid)['passed'])
+
+    def test_incomplete_periodic_review_does_not_seal_a_quantity(self):
+        with Fixture() as f:
+            cid=f.start();f.h.check(cid,'M')
+            with patch.object(f.h,'periodic_close',return_value={'blocked':True,'code':'REVIEW_DUE','detail':'reread missing'}):
+                with self.assertRaises(engine.Refusal):f.close(cid)
+            self.assertEqual(f.h.measurement_report()['counts']['verified'],0)
+            with f.h.state() as state:self.assertNotIn('measurement_seal',state['cycles'][-1])
+
+    def test_governed_operation_uses_the_same_metric_gate_and_closure(self):
+        class Terminal(io.StringIO):
+            def isatty(self):return True
+        with Fixture() as f:
+            cid=f.start()
+            f.h.operation_prepare({'id':'OP','cycle':cid,'criterion':'M','effect':'local','risk':'read',
+                'reason':'Synthetic metric verifier only','request_ref':'Isolated test authorization'})
+            token=f.h.operation_status('OP')['confirmation']
+            with patch.object(engine.sys,'stdin',Terminal()),patch.object(engine.sys,'stdout',Terminal()), \
+                 patch.object(engine,'input',return_value=token,create=True),patch.dict(os.environ,{'CI':'','HARNESS_AUTOMATION':''}):
+                f.h.operation_approve('OP')
+            row=f.h.operation_run('OP')['check'];self.assertTrue(row['passed'],row)
+            self.assertEqual(f.h.measurement_report()['counts']['verified'],0)
+            f.close(cid);self.assertEqual(f.h.measurement_report()['counts']['verified'],2)
+
+    def test_requalification_retires_stale_history_without_erasing_it(self):
+        with Fixture() as f:
+            first=f.start();f.h.check(first,'M');f.close(first)
+            (f.root/'src/a.c').write_text('new source requiring a new current proof')
+            self.assertEqual(f.h.measurement_report()['counts']['stale'],2)
+            f.candidate();second=f.start();f.h.check(second,'M');f.close(second)
+            self.assertEqual(f.h.measurement_report()['counts']['verified'],2)
+            self.assertTrue(f.h.validate()['passed'])
+            with f.h.state() as state:
+                self.assertEqual(state['cycles'][0]['status'],'needs_review')
+                self.assertTrue(state['cycles'][0]['checks'])
+                self.assertEqual(state['cycles'][-1]['measurement_progress']['new_unit_ids'],[])
+
     def test_newly_qualified_units_are_progress_but_revalidation_is_not_new_work(self):
         with Fixture() as f:
             f.value['units'][1]['gates']['behavior']='unknown';f.value['claimed_verified']=1
